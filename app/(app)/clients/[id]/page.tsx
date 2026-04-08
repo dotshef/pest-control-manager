@@ -1,0 +1,275 @@
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { ArrowLeft, Pencil, Trash2, FileText } from "lucide-react";
+import Link from "next/link";
+import { FACILITY_TYPES } from "@/lib/constants/facility-types";
+
+interface Visit {
+  id: string;
+  scheduled_date: string;
+  completed_at: string | null;
+  status: string;
+  method: string | null;
+  chemicals_used: string[] | null;
+  user_id: string | null;
+  certificates: { id: string; certificate_number: string; pdf_url: string | null } | null;
+}
+
+interface Schedule {
+  id: string;
+  cycle_months: number;
+  next_visit_date: string;
+  is_active: boolean;
+}
+
+interface ClientDetail {
+  id: string;
+  name: string;
+  facility_type: string;
+  area: number | null;
+  area_pyeong: number | null;
+  address: string | null;
+  contact_name: string | null;
+  contact_phone: string | null;
+  notes: string | null;
+  schedules: Schedule[];
+  visits: Visit[];
+  stats: {
+    totalVisits: number;
+    completionRate: number;
+    certificateCount: number;
+  };
+}
+
+export default function ClientDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+  const [client, setClient] = useState<ClientDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchClient = useCallback(async () => {
+    const res = await fetch(`/api/clients/${id}`);
+    if (!res.ok) {
+      router.push("/clients");
+      return;
+    }
+    const data = await res.json();
+    setClient(data);
+    setLoading(false);
+  }, [id, router]);
+
+  useEffect(() => {
+    fetchClient();
+  }, [fetchClient]);
+
+  async function handleDelete() {
+    if (!confirm("이 고객을 비활성화하시겠습니까?")) return;
+    await fetch(`/api/clients/${id}`, { method: "DELETE" });
+    router.push("/clients");
+  }
+
+  function getFacilityLabel(typeId: string) {
+    return FACILITY_TYPES.find((ft) => ft.id === typeId)?.label || typeId;
+  }
+
+  function formatDate(dateStr: string) {
+    const d = new Date(dateStr);
+    const days = ["일", "월", "화", "수", "목", "금", "토"];
+    return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-20">
+        <span className="loading loading-spinner loading-lg" />
+      </div>
+    );
+  }
+
+  if (!client) return null;
+
+  const activeSchedule = client.schedules?.find((s) => s.is_active);
+  const sortedVisits = [...(client.visits || [])].sort(
+    (a, b) => new Date(b.scheduled_date).getTime() - new Date(a.scheduled_date).getTime()
+  );
+
+  return (
+    <div>
+      {/* 상단 */}
+      <div className="flex items-center gap-3 mb-6">
+        <Link href="/clients" className="btn btn-ghost btn-sm btn-square">
+          <ArrowLeft size={18} />
+        </Link>
+        <h2 className="text-2xl font-bold flex-1">{client.name}</h2>
+        <Link href={`/clients/${id}/edit`} className="btn btn-ghost btn-sm gap-1">
+          <Pencil size={14} /> 수정
+        </Link>
+        <button onClick={handleDelete} className="btn btn-ghost btn-sm text-error gap-1">
+          <Trash2 size={14} /> 비활성화
+        </button>
+      </div>
+
+      {/* 상단 카드 영역 */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+        {/* 좌측: 시설 정보 */}
+        <div className="lg:col-span-2 card bg-base-100 border border-base-300">
+          <div className="card-body">
+            <h3 className="card-title text-base">시설 정보</h3>
+            <div className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm mt-2">
+              <div>
+                <span className="text-base-content/50">시설 유형</span>
+                <p className="font-medium">{getFacilityLabel(client.facility_type)}</p>
+              </div>
+              <div>
+                <span className="text-base-content/50">주소</span>
+                <p className="font-medium">{client.address || "-"}</p>
+              </div>
+              <div>
+                <span className="text-base-content/50">면적</span>
+                <p className="font-medium">
+                  {client.area ? `${client.area}㎡` : "-"}
+                  {client.area_pyeong ? ` (${client.area_pyeong}평)` : ""}
+                </p>
+              </div>
+              <div>
+                <span className="text-base-content/50">소독 주기</span>
+                <p className="font-medium">
+                  {activeSchedule ? `${activeSchedule.cycle_months}개월` : "-"}
+                </p>
+              </div>
+              <div>
+                <span className="text-base-content/50">담당자</span>
+                <p className="font-medium">{client.contact_name || "-"}</p>
+              </div>
+              <div>
+                <span className="text-base-content/50">연락처</span>
+                <p className="font-medium">{client.contact_phone || "-"}</p>
+              </div>
+              {client.notes && (
+                <div className="col-span-2">
+                  <span className="text-base-content/50">메모</span>
+                  <p className="font-medium">{client.notes}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* 우측 */}
+        <div className="space-y-4">
+          {/* 다음 방문 예정 */}
+          <div className="card bg-base-100 border border-base-300">
+            <div className="card-body py-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-sm">다음 방문 예정</h3>
+                <span className="badge badge-primary badge-sm">방문 예정</span>
+              </div>
+              <p className="text-lg font-bold mt-1">
+                {activeSchedule
+                  ? formatDate(activeSchedule.next_visit_date)
+                  : "예정 없음"}
+              </p>
+            </div>
+          </div>
+
+          {/* 요약 통계 */}
+          <div className="grid grid-cols-3 gap-2">
+            <div className="card bg-base-100 border border-base-300">
+              <div className="card-body py-3 px-4 items-center text-center">
+                <p className="text-2xl font-bold">{client.stats.totalVisits}</p>
+                <p className="text-xs text-base-content/50">총 방문</p>
+              </div>
+            </div>
+            <div className="card bg-base-100 border border-base-300">
+              <div className="card-body py-3 px-4 items-center text-center">
+                <p className="text-2xl font-bold">{client.stats.completionRate}%</p>
+                <p className="text-xs text-base-content/50">완료율</p>
+              </div>
+            </div>
+            <div className="card bg-base-100 border border-base-300">
+              <div className="card-body py-3 px-4 items-center text-center">
+                <p className="text-2xl font-bold">{client.stats.certificateCount}</p>
+                <p className="text-xs text-base-content/50">증명서</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 방문 이력 테이블 */}
+      <div className="card bg-base-100 border border-base-300">
+        <div className="card-body">
+          <h3 className="card-title text-base mb-3">방문 이력</h3>
+          <div className="overflow-x-auto">
+            <table className="table table-sm">
+              <thead>
+                <tr>
+                  <th>날짜</th>
+                  <th>소독 방법</th>
+                  <th>사용 약제</th>
+                  <th>상태</th>
+                  <th>증명서</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedVisits.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="text-center py-6 text-base-content/50">
+                      방문 이력이 없습니다
+                    </td>
+                  </tr>
+                ) : (
+                  sortedVisits.map((visit) => (
+                    <tr key={visit.id}>
+                      <td className="text-sm">{visit.scheduled_date}</td>
+                      <td className="text-sm">{visit.method || "-"}</td>
+                      <td className="text-sm">
+                        {visit.chemicals_used?.join(", ") || "-"}
+                      </td>
+                      <td>
+                        <span
+                          className={`badge badge-sm ${
+                            visit.status === "completed"
+                              ? "badge-success"
+                              : visit.status === "missed"
+                              ? "badge-error"
+                              : "badge-primary"
+                          }`}
+                        >
+                          {visit.status === "completed"
+                            ? "완료"
+                            : visit.status === "missed"
+                            ? "미완료"
+                            : "예정"}
+                        </span>
+                      </td>
+                      <td className="text-sm">
+                        {visit.certificates?.certificate_number || "-"}
+                      </td>
+                      <td>
+                        {visit.certificates?.pdf_url && (
+                          <a
+                            href={visit.certificates.pdf_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-ghost btn-xs"
+                          >
+                            <FileText size={14} />
+                            PDF
+                          </a>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
