@@ -1,4 +1,4 @@
-## 1. companies (방역업체)
+## 1. tenants (방역업체)
 
 멀티테넌시 루트 테이블. 모든 데이터가 여기에 종속.
 
@@ -15,16 +15,16 @@
 
 ---
 
-## 2. technicians (기사/사용자)
+## 2. users (사용자)
 
 로그인 주체이자 방문 수행자. Supabase Auth와 1:1 연결.
 
 - `id` (uuid, PK)
-- `company_id` (FK → companies)
+- `tenant_id` (FK → tenants)
 - `auth_user_id` (FK → auth.users, unique)
-- `name` (기사명)
+- `name` (사용자명)
 - `phone`
-- `role` (admin / technician)
+- `role` (admin / member)
 - `is_active` (boolean, default true)
 - `created_at`
 - `updated_at`
@@ -38,7 +38,7 @@
 방역업체가 관리하는 개별 시설.
 
 - `id` (uuid, PK)
-- `company_id` (FK → companies)
+- `tenant_id` (FK → tenants)
 - `name` (시설명)
 - `facility_type` (text — 서버 상수 FacilityTypeId 값)
 - `area` (면적, 제곱미터)
@@ -59,8 +59,8 @@
 
 - `id` (uuid, PK)
 - `client_id` (FK → clients)
-- `company_id` (FK → companies)
-- `technician_id` (FK → technicians, nullable)
+- `tenant_id` (FK → tenants)
+- `user_id` (FK → users, nullable)
 - `cycle_months` (방문 주기 — 1/2/3/6개월)
 - `next_visit_date` (다음 방문 예정일)
 - `is_active` (boolean, default true)
@@ -76,8 +76,8 @@
 - `id` (uuid, PK)
 - `schedule_id` (FK → schedules, nullable)
 - `client_id` (FK → clients)
-- `technician_id` (FK → technicians, nullable)
-- `company_id` (FK → companies)
+- `user_id` (FK → users, nullable)
+- `tenant_id` (FK → tenants)
 - `scheduled_date` (예정일)
 - `completed_at` (완료 시각, nullable)
 - `status` (scheduled / completed / missed)
@@ -94,7 +94,7 @@
 
 - `id` (uuid, PK)
 - `visit_id` (FK → visits, unique)
-- `company_id` (FK → companies)
+- `tenant_id` (FK → tenants)
 - `certificate_number` (발급번호 — 자동 채번)
 - `pdf_url` (생성된 PDF 스토리지 경로)
 - `sent_at` (카톡/문자 발송 시각, nullable)
@@ -105,9 +105,9 @@
 
 ## 관계 요약
 
-`companies 1 → N technicians
-companies 1 → N clients
-clients   1 → N schedules
+`tenants 1 → N users
+tenants 1 → N clients
+clients 1 → N schedules
 schedules 1 → N visits
 clients   1 → N visits
 visits    1 → 1 certificates`
@@ -116,6 +116,6 @@ visits    1 → 1 certificates`
 
 ## 증명서 번호 채번 규칙
 
-`CERT-YYYYMMDD-00001` 형식. 시퀀스 사용.
+`CERT-YYYYMMDD-00001` 형식. 서버에서 직접 채번.
 
 예시: `CERT-20260408-00001`

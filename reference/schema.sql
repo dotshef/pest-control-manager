@@ -3,8 +3,8 @@
 -- Supabase (PostgreSQL) 용
 -- ============================================
 
--- 1. companies (방역업체)
-create table companies (
+-- 1. tenants (방역업체)
+create table tenants (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   business_number text,
@@ -20,7 +20,7 @@ create table companies (
 -- 2. users (사용자)
 create table users (
   id uuid primary key default gen_random_uuid(),
-  company_id uuid not null references companies(id) on delete cascade,
+  tenant_id uuid not null references tenants(id) on delete cascade,
   auth_user_id uuid not null unique references auth.users(id) on delete cascade,
   name text not null,
   phone text,
@@ -34,7 +34,7 @@ create table users (
 -- facility_type은 서버 상수로 관리 (lib/constants/facility-types.ts)
 create table clients (
   id uuid primary key default gen_random_uuid(),
-  company_id uuid not null references companies(id) on delete cascade,
+  tenant_id uuid not null references tenants(id) on delete cascade,
   name text not null,
   facility_type text not null,
   area numeric,
@@ -52,7 +52,7 @@ create table clients (
 create table schedules (
   id uuid primary key default gen_random_uuid(),
   client_id uuid not null references clients(id) on delete cascade,
-  company_id uuid not null references companies(id) on delete cascade,
+  tenant_id uuid not null references tenants(id) on delete cascade,
   user_id uuid references users(id) on delete set null,
   cycle_months int not null check (cycle_months in (1, 2, 3, 6)),
   next_visit_date date not null,
@@ -67,7 +67,7 @@ create table visits (
   schedule_id uuid references schedules(id) on delete set null,
   client_id uuid not null references clients(id) on delete cascade,
   user_id uuid references users(id) on delete set null,
-  company_id uuid not null references companies(id) on delete cascade,
+  tenant_id uuid not null references tenants(id) on delete cascade,
   scheduled_date date not null,
   completed_at timestamptz,
   status text not null default 'scheduled' check (status in ('scheduled', 'completed', 'missed')),
@@ -81,7 +81,7 @@ create table visits (
 create table certificates (
   id uuid primary key default gen_random_uuid(),
   visit_id uuid not null unique references visits(id) on delete cascade,
-  company_id uuid not null references companies(id) on delete cascade,
+  tenant_id uuid not null references tenants(id) on delete cascade,
   certificate_number text not null unique,
   pdf_url text,
   sent_at timestamptz,
