@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Download, FileText } from "lucide-react";
 import Link from "next/link";
 import { FACILITY_TYPES } from "@/lib/constants/facility-types";
@@ -23,19 +23,27 @@ interface Certificate {
 }
 
 export default function CertificatesPage() {
-  const [certificates, setCertificates] = useState<Certificate[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [certificates, setCertificates] = useState<Certificate[] | null>(null);
 
-  const fetchCertificates = useCallback(async () => {
-    const res = await fetch("/api/certificates");
-    const data = await res.json();
-    setCertificates(data.certificates || []);
-    setLoading(false);
-  }, []);
+  const loading = !certificates;
 
   useEffect(() => {
+    let ignore = false;
+
+    async function fetchCertificates() {
+      const res = await fetch("/api/certificates");
+      const data = await res.json();
+      if (!ignore) {
+        setCertificates(data.certificates || []);
+      }
+    }
+
     fetchCertificates();
-  }, [fetchCertificates]);
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   function getFacilityLabel(typeId: string) {
     return FACILITY_TYPES.find((ft) => ft.id === typeId)?.label || typeId;
@@ -66,14 +74,14 @@ export default function CertificatesPage() {
                   <span className="loading loading-spinner loading-md" />
                 </td>
               </tr>
-            ) : certificates.length === 0 ? (
+            ) : certificates?.length === 0 ? (
               <tr>
                 <td colSpan={6} className="text-center py-8 text-base-content/50">
                   발급된 증명서가 없습니다
                 </td>
               </tr>
             ) : (
-              certificates.map((cert) => {
+              certificates?.map((cert) => {
                 const visit = cert.visits as unknown as Certificate["visits"];
                 const client = visit?.clients as unknown as { id: string; name: string; facility_type: string } | null;
                 return (

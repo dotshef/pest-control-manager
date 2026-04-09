@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, CheckCircle, XCircle, FileText, Download, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
@@ -36,7 +36,6 @@ export default function VisitDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [visit, setVisit] = useState<VisitDetail | null>(null);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -47,7 +46,9 @@ export default function VisitDetailPage() {
   const [notes, setNotes] = useState("");
   const [generatingCert, setGeneratingCert] = useState(false);
 
-  const fetchVisit = useCallback(async () => {
+  const loading = !visit;
+
+  async function fetchVisit() {
     const res = await fetch(`/api/visits/${id}`);
     if (!res.ok) {
       router.push("/calendar");
@@ -58,12 +59,32 @@ export default function VisitDetailPage() {
     setMethod(data.method || "");
     setSelectedChemicals(data.chemicals_used || []);
     setNotes(data.notes || "");
-    setLoading(false);
-  }, [id, router]);
+  }
 
   useEffect(() => {
-    fetchVisit();
-  }, [fetchVisit]);
+    let ignore = false;
+
+    async function load() {
+      const res = await fetch(`/api/visits/${id}`);
+      if (!res.ok) {
+        router.push("/calendar");
+        return;
+      }
+      const data = await res.json();
+      if (!ignore) {
+        setVisit(data);
+        setMethod(data.method || "");
+        setSelectedChemicals(data.chemicals_used || []);
+        setNotes(data.notes || "");
+      }
+    }
+
+    load();
+
+    return () => {
+      ignore = true;
+    };
+  }, [id, router]);
 
   function toggleChemical(chem: string) {
     setSelectedChemicals((prev) =>

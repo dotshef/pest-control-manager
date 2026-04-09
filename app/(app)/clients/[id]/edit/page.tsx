@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { FACILITY_TYPES } from "@/lib/constants/facility-types";
 
 export default function EditClientPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -22,29 +22,37 @@ export default function EditClientPage() {
     notes: "",
   });
 
-  const fetchClient = useCallback(async () => {
-    const res = await fetch(`/api/clients/${id}`);
-    if (!res.ok) {
-      router.push("/clients");
-      return;
-    }
-    const data = await res.json();
-    setForm({
-      name: data.name || "",
-      facilityType: data.facility_type || "",
-      area: data.area?.toString() || "",
-      areaPyeong: data.area_pyeong?.toString() || "",
-      address: data.address || "",
-      contactName: data.contact_name || "",
-      contactPhone: data.contact_phone || "",
-      notes: data.notes || "",
-    });
-    setLoading(false);
-  }, [id, router]);
-
   useEffect(() => {
+    let ignore = false;
+
+    async function fetchClient() {
+      const res = await fetch(`/api/clients/${id}`);
+      if (!res.ok) {
+        router.push("/clients");
+        return;
+      }
+      const data = await res.json();
+      if (!ignore) {
+        setForm({
+          name: data.name || "",
+          facilityType: data.facility_type || "",
+          area: data.area?.toString() || "",
+          areaPyeong: data.area_pyeong?.toString() || "",
+          address: data.address || "",
+          contactName: data.contact_name || "",
+          contactPhone: data.contact_phone || "",
+          notes: data.notes || "",
+        });
+        setLoaded(true);
+      }
+    }
+
     fetchClient();
-  }, [fetchClient]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [id, router]);
 
   function updateField(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -80,7 +88,7 @@ export default function EditClientPage() {
     }
   }
 
-  if (loading) {
+  if (!loaded) {
     return (
       <div className="flex justify-center py-20">
         <span className="loading loading-spinner loading-lg" />

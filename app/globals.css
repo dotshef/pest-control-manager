@@ -1,2 +1,37 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: light --default;
+}
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("/font/PretendardVariable.woff2") format("woff2-variations");
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── 폰트 기본 적용 ── */
+html {
+  font-family: "Pretendard", system-ui, sans-serif;
+}
+
+/* ── DaisyUI 테마 커스텀 ── */
+@theme {
+  --color-primary: oklch(0.37 0.09 260);       /* 딥 네이비 */
+  --color-primary-content: oklch(0.98 0.005 260);
+  --color-secondary: oklch(0.55 0.12 195);     /* 틸 */
+  --color-secondary-content: oklch(0.98 0.005 195);
+  --color-accent: oklch(0.62 0.16 155);        /* 클린 그린 */
+  --color-accent-content: oklch(0.98 0.005 155);
+  --color-neutral: oklch(0.30 0.02 260);
+  --color-neutral-content: oklch(0.95 0.005 260);
+  --color-base-100: oklch(0.99 0.002 260);     /* 거의 흰색, 아주 미세한 블루 톤 */
+  --color-base-200: oklch(0.96 0.005 250);
+  --color-base-300: oklch(0.91 0.008 250);
+  --color-base-content: oklch(0.25 0.03 260);
+  --color-success: oklch(0.60 0.15 155);
+  --color-error: oklch(0.58 0.18 25);
+  --color-warning: oklch(0.75 0.15 75);
+  --color-info: oklch(0.55 0.12 240);
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Upload } from "lucide-react";
 import Image from "next/image";
 
@@ -16,7 +16,6 @@ interface Tenant {
 
 export default function SettingsPage() {
   const [tenant, setTenant] = useState<Tenant | null>(null);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -31,7 +30,9 @@ export default function SettingsPage() {
     address: "",
   });
 
-  const fetchTenant = useCallback(async () => {
+  const loading = !tenant;
+
+  async function fetchTenant() {
     const res = await fetch("/api/settings");
     const data = await res.json();
     setTenant(data);
@@ -42,12 +43,32 @@ export default function SettingsPage() {
       phone: data.phone || "",
       address: data.address || "",
     });
-    setLoading(false);
-  }, []);
+  }
 
   useEffect(() => {
-    fetchTenant();
-  }, [fetchTenant]);
+    let ignore = false;
+
+    async function load() {
+      const res = await fetch("/api/settings");
+      const data = await res.json();
+      if (!ignore) {
+        setTenant(data);
+        setForm({
+          name: data.name || "",
+          businessNumber: data.business_number || "",
+          ownerName: data.owner_name || "",
+          phone: data.phone || "",
+          address: data.address || "",
+        });
+      }
+    }
+
+    load();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   async function handleSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

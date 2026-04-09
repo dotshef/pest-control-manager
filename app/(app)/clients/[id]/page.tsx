@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Pencil, Trash2, FileText } from "lucide-react";
 import Link from "next/link";
@@ -47,22 +47,30 @@ export default function ClientDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [client, setClient] = useState<ClientDetail | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  const fetchClient = useCallback(async () => {
-    const res = await fetch(`/api/clients/${id}`);
-    if (!res.ok) {
-      router.push("/clients");
-      return;
-    }
-    const data = await res.json();
-    setClient(data);
-    setLoading(false);
-  }, [id, router]);
+  const loading = !client;
 
   useEffect(() => {
+    let ignore = false;
+
+    async function fetchClient() {
+      const res = await fetch(`/api/clients/${id}`);
+      if (!res.ok) {
+        router.push("/clients");
+        return;
+      }
+      const data = await res.json();
+      if (!ignore) {
+        setClient(data);
+      }
+    }
+
     fetchClient();
-  }, [fetchClient]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [id, router]);
 
   async function handleDelete() {
     if (!confirm("이 고객을 비활성화하시겠습니까?")) return;

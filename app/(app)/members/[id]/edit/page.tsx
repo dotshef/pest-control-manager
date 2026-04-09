@@ -1,31 +1,39 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 export default function EditMemberPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({ name: "", phone: "" });
 
-  const fetchMember = useCallback(async () => {
-    const res = await fetch("/api/members");
-    const data = await res.json();
-    const member = data.members?.find((m: { id: string }) => m.id === id);
-    if (!member) {
-      router.push("/members");
-      return;
-    }
-    setForm({ name: member.name, phone: member.phone || "" });
-    setLoading(false);
-  }, [id, router]);
-
   useEffect(() => {
+    let ignore = false;
+
+    async function fetchMember() {
+      const res = await fetch("/api/members");
+      const data = await res.json();
+      const member = data.members?.find((m: { id: string }) => m.id === id);
+      if (!member) {
+        router.push("/members");
+        return;
+      }
+      if (!ignore) {
+        setForm({ name: member.name, phone: member.phone || "" });
+        setLoaded(true);
+      }
+    }
+
     fetchMember();
-  }, [fetchMember]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [id, router]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -53,7 +61,7 @@ export default function EditMemberPage() {
     }
   }
 
-  if (loading) {
+  if (!loaded) {
     return (
       <div className="flex justify-center py-20">
         <span className="loading loading-spinner loading-lg" />

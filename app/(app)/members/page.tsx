@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, UserCheck, UserX } from "lucide-react";
 
@@ -15,19 +15,33 @@ interface Member {
 }
 
 export default function MembersPage() {
-  const [members, setMembers] = useState<Member[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [members, setMembers] = useState<Member[] | null>(null);
 
-  const fetchMembers = useCallback(async () => {
+  const loading = !members;
+
+  async function fetchMembers() {
     const res = await fetch("/api/members");
     const data = await res.json();
     setMembers(data.members || []);
-    setLoading(false);
-  }, []);
+  }
 
   useEffect(() => {
-    fetchMembers();
-  }, [fetchMembers]);
+    let ignore = false;
+
+    async function load() {
+      const res = await fetch("/api/members");
+      const data = await res.json();
+      if (!ignore) {
+        setMembers(data.members || []);
+      }
+    }
+
+    load();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   async function handleToggleActive(member: Member) {
     if (member.role === "admin") return;
@@ -76,14 +90,14 @@ export default function MembersPage() {
                   <span className="loading loading-spinner loading-md" />
                 </td>
               </tr>
-            ) : members.length === 0 ? (
+            ) : members?.length === 0 ? (
               <tr>
                 <td colSpan={7} className="text-center py-8 text-base-content/50">
                   등록된 멤버가 없습니다
                 </td>
               </tr>
             ) : (
-              members.map((member) => (
+              members?.map((member) => (
                 <tr key={member.id} className="hover">
                   <td className="font-medium">{member.name}</td>
                   <td className="text-sm">{member.email}</td>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { CalendarCheck, FileText, ClipboardList } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -42,38 +43,36 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen">
       {/* 좌측 — 브랜드 소개 */}
-      <div className="hidden lg:flex lg:w-1/2 bg-primary flex-col justify-center px-16 text-primary-content">
+      <div className="hidden lg:flex lg:w-1/2 bg-primary flex-col items-center justify-center px-16 text-primary-content">
+        <div className="w-full max-w-sm">
         <h1 className="text-4xl font-bold mb-4">방역매니저</h1>
-        <p className="text-lg opacity-90 mb-2">소독 방역업체를 위한</p>
-        <p className="text-lg opacity-90 mb-8">올인원 관리 플랫폼</p>
-        <p className="text-sm opacity-70 mb-12">
-          스케줄 관리 · 증명서 발급 · 고객 이력
-        </p>
-        <div className="space-y-6">
+        <p className="text-lg opacity-90 mb-10">소독/방역업체를 위한 올인원 관리 플랫폼</p>
+        <div className="space-y-5">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-primary-content/20 flex items-center justify-center">
-              <span className="text-lg">📅</span>
+            <div className="w-10 h-10 rounded-lg bg-primary-content/15 flex items-center justify-center">
+              <CalendarCheck size={20} />
             </div>
-            <span className="opacity-90">스케줄 자동 관리</span>
+            <span className="text-sm opacity-80">스케줄 자동 관리</span>
           </div>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-primary-content/20 flex items-center justify-center">
-              <span className="text-lg">📄</span>
+            <div className="w-10 h-10 rounded-lg bg-primary-content/15 flex items-center justify-center">
+              <FileText size={20} />
             </div>
-            <span className="opacity-90">증명서 원클릭 발급</span>
+            <span className="text-sm opacity-80">증명서 원클릭 발급</span>
           </div>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-primary-content/20 flex items-center justify-center">
-              <span className="text-lg">📋</span>
+            <div className="w-10 h-10 rounded-lg bg-primary-content/15 flex items-center justify-center">
+              <ClipboardList size={20} />
             </div>
-            <span className="opacity-90">고객 이력 한눈에</span>
+            <span className="text-sm opacity-80">고객 이력 한눈에</span>
           </div>
+        </div>
         </div>
       </div>
 
       {/* 우측 — 로그인 폼 */}
       <div className="flex-1 flex items-center justify-center px-6 bg-base-200">
-        <div className="card w-full max-w-md bg-base-100 shadow-xl">
+        <div className="card w-full max-w-md">
           <div className="card-body">
             <h2 className="card-title text-2xl font-bold">로그인</h2>
             <p className="text-base-content/60 mb-6">

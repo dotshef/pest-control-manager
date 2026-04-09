@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { FACILITY_TYPES } from "@/lib/constants/facility-types";
@@ -27,24 +27,31 @@ export default function ClientsPage() {
   const [search, setSearch] = useState("");
   const [facilityType, setFacilityType] = useState("");
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
 
-  const fetchClients = useCallback(async () => {
-    setLoading(true);
-    const params = new URLSearchParams();
-    if (search) params.set("search", search);
-    if (facilityType) params.set("facilityType", facilityType);
-    params.set("page", String(page));
-
-    const res = await fetch(`/api/clients?${params}`);
-    const json = await res.json();
-    setData(json);
-    setLoading(false);
-  }, [search, facilityType, page]);
+  const loading = !data;
 
   useEffect(() => {
+    let ignore = false;
+
+    async function fetchClients() {
+      const params = new URLSearchParams();
+      if (search) params.set("search", search);
+      if (facilityType) params.set("facilityType", facilityType);
+      params.set("page", String(page));
+
+      const res = await fetch(`/api/clients?${params}`);
+      const json = await res.json();
+      if (!ignore) {
+        setData(json);
+      }
+    }
+
     fetchClients();
-  }, [fetchClients]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [search, facilityType, page]);
 
   function getFacilityLabel(id: string) {
     return FACILITY_TYPES.find((ft) => ft.id === id)?.label || id;
@@ -59,8 +66,8 @@ export default function ClientsPage() {
     <div>
       {/* 상단 헤더 */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">고객 관리</h2>
-        <Link href="/clients/new" className="btn btn-primary btn-sm gap-2">
+        <h2 className="text-2xl font-bold"></h2>
+        <Link href="/clients/new" className="btn btn-primary gap-2">
           <Plus size={16} />
           고객 등록
         </Link>
@@ -80,6 +87,7 @@ export default function ClientsPage() {
             onChange={(e) => {
               setSearch(e.target.value);
               setPage(1);
+              setData(null);
             }}
           />
         </div>
@@ -89,6 +97,7 @@ export default function ClientsPage() {
           onChange={(e) => {
             setFacilityType(e.target.value);
             setPage(1);
+            setData(null);
           }}
         >
           <option value="">전체 시설 유형</option>
@@ -156,7 +165,7 @@ export default function ClientsPage() {
             <button
               className="join-item btn btn-sm"
               disabled={page <= 1}
-              onClick={() => setPage(page - 1)}
+              onClick={() => { setPage(page - 1); setData(null); }}
             >
               <ChevronLeft size={16} />
             </button>
@@ -166,7 +175,7 @@ export default function ClientsPage() {
             <button
               className="join-item btn btn-sm"
               disabled={page >= data.totalPages}
-              onClick={() => setPage(page + 1)}
+              onClick={() => { setPage(page + 1); setData(null); }}
             >
               <ChevronRight size={16} />
             </button>

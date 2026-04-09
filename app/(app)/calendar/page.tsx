@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   getCalendarDays,
@@ -36,26 +36,33 @@ export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("month");
-  const [visits, setVisits] = useState<Visit[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [visits, setVisits] = useState<Visit[] | null>(null);
 
-  const fetchVisits = useCallback(async () => {
-    setLoading(true);
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1;
-    const res = await fetch(`/api/visits?year=${year}&month=${month}`);
-    const data = await res.json();
-    setVisits(data.visits || []);
-    setLoading(false);
-  }, [currentDate]);
+  const loading = !visits;
 
   useEffect(() => {
+    let ignore = false;
+
+    async function fetchVisits() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth() + 1;
+      const res = await fetch(`/api/visits?year=${year}&month=${month}`);
+      const data = await res.json();
+      if (!ignore) {
+        setVisits(data.visits || []);
+      }
+    }
+
     fetchVisits();
-  }, [fetchVisits]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [currentDate]);
 
   function getVisitsForDate(date: Date): Visit[] {
     const dateStr = format(date, "yyyy-MM-dd");
-    return visits.filter((v) => v.scheduled_date === dateStr);
+    return (visits ?? []).filter((v) => v.scheduled_date === dateStr);
   }
 
   function getStatusColor(status: string) {
@@ -76,10 +83,12 @@ export default function CalendarPage() {
 
   function handlePrev() {
     setCurrentDate((d) => subMonths(d, 1));
+    setVisits(null);
   }
 
   function handleNext() {
     setCurrentDate((d) => addMonths(d, 1));
+    setVisits(null);
   }
 
   const days = viewMode === "month"

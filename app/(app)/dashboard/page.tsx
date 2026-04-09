@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Calendar, CalendarCheck, AlertTriangle, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { FACILITY_TYPES } from "@/lib/constants/facility-types";
@@ -32,26 +32,36 @@ interface DashboardData {
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  const fetchDashboard = useCallback(async () => {
-    const res = await fetch("/api/dashboard");
-    const json = await res.json();
-    setData(json);
-    setLoading(false);
-  }, []);
+  const loading = !data;
 
   useEffect(() => {
+    let ignore = false;
+
+    async function fetchDashboard() {
+      const res = await fetch("/api/dashboard");
+      const json = await res.json();
+      if (!ignore) {
+        setData(json);
+      }
+    }
+
     fetchDashboard();
-  }, [fetchDashboard]);
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   function getFacilityLabel(typeId: string) {
     return FACILITY_TYPES.find((ft) => ft.id === typeId)?.label || typeId;
   }
 
+  const [now] = useState(() => Date.now());
+
   function getDaysAgo(dateStr: string) {
     const diff = Math.floor(
-      (Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24)
+      (now - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24)
     );
     return diff;
   }
