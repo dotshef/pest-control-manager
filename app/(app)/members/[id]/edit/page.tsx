@@ -11,7 +11,7 @@ export default function EditMemberPage() {
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [form, setForm] = useState({ name: "", phone: "" });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", password: "" });
 
   useEffect(() => {
     let ignore = false;
@@ -25,7 +25,7 @@ export default function EditMemberPage() {
         return;
       }
       if (!ignore) {
-        setForm({ name: member.name, phone: member.phone || "" });
+        setForm({ name: member.name, phone: member.phone || "", email: member.email || "", password: "" });
         setLoaded(true);
       }
     }
@@ -43,10 +43,13 @@ export default function EditMemberPage() {
     setSaving(true);
 
     try {
+      const payload: Record<string, string> = { name: form.name, phone: form.phone, email: form.email };
+      if (form.password) payload.password = form.password;
+
       const res = await fetch(`/api/members/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -91,6 +94,27 @@ export default function EditMemberPage() {
                 value={form.name}
                 onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
                 required
+              />
+            </FormField>
+
+            <FormField label="이메일">
+              <input
+                type="email"
+                className="w-full"
+                value={form.email}
+                onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+                required
+              />
+            </FormField>
+
+            <FormField label="비밀번호">
+              <input
+                type="password"
+                placeholder="변경 시에만 입력"
+                className="w-full"
+                value={form.password}
+                onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
+                minLength={8}
               />
             </FormField>
 

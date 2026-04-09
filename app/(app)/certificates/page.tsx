@@ -52,9 +52,6 @@ export default function CertificatesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">증명서</h2>
-      </div>
 
       <div className="bg-base-100 rounded-lg border border-base-300 overflow-x-auto">
         <table className="data-table">

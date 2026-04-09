@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase/server";
 import { getSession } from "@/lib/auth/jwt";
 import { updateMemberSchema } from "@/lib/validations/member";
+import { hashPassword } from "@/lib/auth/password";
 
 // 멤버 수정
 export async function PATCH(
@@ -27,6 +28,8 @@ export async function PATCH(
   const updateData: Record<string, unknown> = { updated_at: now };
   if (parsed.data.name !== undefined) updateData.name = parsed.data.name;
   if (parsed.data.phone !== undefined) updateData.phone = parsed.data.phone;
+  if (parsed.data.email !== undefined) updateData.email = parsed.data.email;
+  if (parsed.data.password) updateData.password_hash = await hashPassword(parsed.data.password);
 
   const { error } = await supabase
     .from("users")

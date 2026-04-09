@@ -66,7 +66,7 @@ export default function MembersPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">기사 관리</h2>
+        <h2 className="text-2xl font-bold"></h2>
         <Link href="/members/new" className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-content transition-colors cursor-pointer">
           <Plus size={16} />
           기사 등록
