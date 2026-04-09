@@ -65,17 +65,8 @@ export default function ClientsPage() {
 
   return (
     <div>
-      {/* 상단 헤더 */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold"></h2>
-        <Link href="/clients/new" className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-content transition-colors cursor-pointer">
-          <Plus size={16} />
-          고객 등록
-        </Link>
-      </div>
-
-      {/* 검색 + 필터 */}
-      <div className="flex flex-wrap gap-3 mb-4">
+      {/* 검색 + 필터 + 고객 등록 */}
+      <div className="flex flex-wrap items-center gap-3 mb-4">
         <div className="flex">
           <div className="flex items-center px-3 bg-base-200 border border-r-0 border-base-300 rounded-l-lg">
             <Search size={16} className="text-base-content/40" />
@@ -107,6 +98,10 @@ export default function ClientsPage() {
             </option>
           ))}
         </select>
+        <Link href="/clients/new" className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-content transition-colors cursor-pointer ml-auto">
+          <Plus size={16} />
+          고객 등록
+        </Link>
       </div>
 
       {/* 테이블 */}

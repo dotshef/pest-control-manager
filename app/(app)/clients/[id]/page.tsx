@@ -169,14 +169,11 @@ export default function ClientDetailPage() {
         </div>
 
         {/* 우측 */}
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           {/* 다음 방문 예정 */}
-          <div className="rounded-xl bg-base-100 border border-base-300">
-            <div className="py-4 px-6">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-base">다음 방문 예정</h3>
-                <span className={`${badgeBase} bg-primary/10 text-primary`}>방문 예정</span>
-              </div>
+          <div className="rounded-xl bg-base-100 border border-base-300 flex-1">
+            <div className="h-full py-4 px-6 flex flex-col justify-center">
+              <h3 className="font-semibold text-base">다음 방문 예정</h3>
               <p className="text-lg font-bold mt-1">
                 {activeSchedule
                   ? formatDate(activeSchedule.next_visit_date)
@@ -186,21 +183,21 @@ export default function ClientDetailPage() {
           </div>
 
           {/* 요약 통계 */}
-          <div className="grid grid-cols-3 gap-2">
-            <div className="rounded-xl bg-base-100 border border-base-300">
-              <div className="py-3 px-4 flex flex-col items-center text-center">
+          <div className="grid grid-cols-3 gap-2 flex-1">
+            <div className="rounded-xl bg-base-100 border border-base-300 h-full">
+              <div className="h-full py-3 px-4 flex flex-col items-center justify-center text-center">
                 <p className="text-2xl font-bold">{client.stats.totalVisits}</p>
                 <p className="text-base text-base-content/50">총 방문</p>
               </div>
             </div>
-            <div className="rounded-xl bg-base-100 border border-base-300">
-              <div className="py-3 px-4 flex flex-col items-center text-center">
+            <div className="rounded-xl bg-base-100 border border-base-300 h-full">
+              <div className="h-full py-3 px-4 flex flex-col items-center justify-center text-center">
                 <p className="text-2xl font-bold">{client.stats.completionRate}%</p>
                 <p className="text-base text-base-content/50">완료율</p>
               </div>
             </div>
-            <div className="rounded-xl bg-base-100 border border-base-300">
-              <div className="py-3 px-4 flex flex-col items-center text-center">
+            <div className="rounded-xl bg-base-100 border border-base-300 h-full">
+              <div className="h-full py-3 px-4 flex flex-col items-center justify-center text-center">
                 <p className="text-2xl font-bold">{client.stats.certificateCount}</p>
                 <p className="text-base text-base-content/50">증명서</p>
               </div>

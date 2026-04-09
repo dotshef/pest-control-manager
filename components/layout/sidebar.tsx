@@ -37,7 +37,7 @@ export function Sidebar({ role }: { role: "admin" | "member" }) {
   return (
     <aside className="hidden lg:flex flex-col w-72 bg-base-100 border-r border-base-300">
       {/* 로고 */}
-      <div className="px-6 py-5 border-b border-base-300">
+      <div className="px-6 py-5">
         <Link href="/dashboard" className="text-xl font-bold text-primary">
           방역매니저
         </Link>
