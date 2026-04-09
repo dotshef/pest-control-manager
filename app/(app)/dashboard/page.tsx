@@ -183,7 +183,7 @@ export default function DashboardPage() {
                           <td>
                             <Link
                               href={`/visits/${visit.id}`}
-                              className="text-primary hover:underline font-medium text-base"
+                              className="text-primary hover:underline font-medium !text-base"
                             >
                               {client?.name || "-"}
                             </Link>

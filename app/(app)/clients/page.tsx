@@ -141,7 +141,7 @@ export default function ClientsPage() {
                   <td className="!text-base">
                     <Link
                       href={`/clients/${client.id}`}
-                      className="font-medium text-primary hover:underline"
+                      className="font-medium text-primary hover:underline !text-base"
                     >
                       {client.name}
                     </Link>

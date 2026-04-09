@@ -96,7 +96,7 @@ export default function CertificatesPage() {
                       {client ? (
                         <Link
                           href={`/clients/${client.id}`}
-                          className="text-primary hover:underline text-base"
+                          className="text-primary hover:underline !text-base"
                         >
                           {client.name}
                         </Link>

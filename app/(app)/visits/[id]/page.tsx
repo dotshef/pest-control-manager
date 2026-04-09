@@ -211,7 +211,7 @@ export default function VisitDetailPage() {
             <div>
               <span className="text-base-content/50">시설명</span>
               <p className="font-medium">
-                <Link href={`/clients/${visit.clients?.id}`} className="text-primary hover:underline" style={{ fontSize: "1.125rem" }}>
+                <Link href={`/clients/${visit.clients?.id}`} className="text-primary hover:underline !text-lg">
                   {visit.clients?.name}
                 </Link>
               </p>
