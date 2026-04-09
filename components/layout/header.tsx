@@ -28,7 +28,7 @@ export function Header({ session }: { session: JwtPayload }) {
 
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-base-100 border-b border-base-300">
-      <h1 className="text-lg font-semibold">{title}</h1>
+      <h1 className="text-xl font-bold">{title}</h1>
 
       <div className="flex items-center gap-4">
         {session.role === "admin" && (
@@ -38,9 +38,9 @@ export function Header({ session }: { session: JwtPayload }) {
           <div
             tabIndex={0}
             role="button"
-            className="btn btn-ghost btn-sm gap-2"
+            className="btn btn-ghost btn-md gap-2"
           >
-            <span className="text-sm">{session.email}</span>
+            <span className="text-base">{session.email}</span>
           </div>
           <ul
             tabIndex={0}

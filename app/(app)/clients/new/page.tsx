@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FACILITY_TYPES } from "@/lib/constants/facility-types";
 import { getCycleMonths } from "@/lib/utils/cycle";
+import { FormField } from "@/components/ui/form-field";
 import type { FacilityTypeId } from "@/lib/constants/facility-types";
 
 export default function NewClientPage() {
@@ -66,7 +67,7 @@ export default function NewClientPage() {
       <h2 className="text-2xl font-bold mb-6">고객 등록</h2>
 
       {error && (
-        <div className="alert alert-error text-sm mb-4">
+        <div className="alert alert-error text-base mb-4">
           <span>{error}</span>
         </div>
       )}
@@ -76,28 +77,18 @@ export default function NewClientPage() {
           <div className="card-body space-y-4">
             <h3 className="font-semibold">시설 정보</h3>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  시설명 <span className="text-error">*</span>
-                </span>
-              </label>
+            <FormField label={<>시설명 <span className="text-error">*</span></>}>
               <input
                 type="text"
-                placeholder="예: 강남 그랜드 호텔"
+                placeholder=""
                 className="input input-bordered w-full"
                 value={form.name}
                 onChange={(e) => updateField("name", e.target.value)}
                 required
               />
-            </div>
+            </FormField>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  시설 유형 <span className="text-error">*</span>
-                </span>
-              </label>
+            <FormField label={<>시설 유형 <span className="text-error">*</span></>}>
               <select
                 className="select select-bordered w-full"
                 value={form.facilityType}
@@ -112,18 +103,13 @@ export default function NewClientPage() {
                 ))}
               </select>
               {selectedCycle && (
-                <label className="label">
-                  <span className="label-text-alt text-primary">
-                    법정 소독 주기: {selectedCycle}개월
-                  </span>
-                </label>
+                <p className="text-base text-primary mt-1">
+                  법정 소독 주기: {selectedCycle}개월
+                </p>
               )}
-            </div>
+            </FormField>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">주소</span>
-              </label>
+            <FormField label="주소">
               <input
                 type="text"
                 placeholder="시설 주소"
@@ -131,31 +117,25 @@ export default function NewClientPage() {
                 value={form.address}
                 onChange={(e) => updateField("address", e.target.value)}
               />
-            </div>
+            </FormField>
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">면적 (㎡)</span>
-                </label>
+              <FormField label="면적 (㎡)">
                 <input
                   type="number"
                   className="input input-bordered w-full"
                   value={form.area}
                   onChange={(e) => updateField("area", e.target.value)}
                 />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">면적 (평)</span>
-                </label>
+              </FormField>
+              <FormField label="면적 (평)">
                 <input
                   type="number"
                   className="input input-bordered w-full"
                   value={form.areaPyeong}
                   onChange={(e) => updateField("areaPyeong", e.target.value)}
                 />
-              </div>
+              </FormField>
             </div>
           </div>
         </div>
@@ -165,21 +145,15 @@ export default function NewClientPage() {
             <h3 className="font-semibold">담당자 정보</h3>
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">담당자명</span>
-                </label>
+              <FormField label="담당자명">
                 <input
                   type="text"
                   className="input input-bordered w-full"
                   value={form.contactName}
                   onChange={(e) => updateField("contactName", e.target.value)}
                 />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">연락처</span>
-                </label>
+              </FormField>
+              <FormField label="연락처">
                 <input
                   type="tel"
                   placeholder="010-0000-0000"
@@ -187,20 +161,17 @@ export default function NewClientPage() {
                   value={form.contactPhone}
                   onChange={(e) => updateField("contactPhone", e.target.value)}
                 />
-              </div>
+              </FormField>
             </div>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">메모</span>
-              </label>
+            <FormField label="메모">
               <textarea
                 className="textarea textarea-bordered w-full"
                 rows={3}
                 value={form.notes}
                 onChange={(e) => updateField("notes", e.target.value)}
               />
-            </div>
+            </FormField>
           </div>
         </div>
 
@@ -208,12 +179,7 @@ export default function NewClientPage() {
           <div className="card-body">
             <h3 className="font-semibold">방문 스케줄</h3>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  첫 방문 예정일 <span className="text-error">*</span>
-                </span>
-              </label>
+            <FormField label={<>첫 방문 예정일 <span className="text-error">*</span></>}>
               <input
                 type="date"
                 className="input input-bordered w-full"
@@ -221,7 +187,7 @@ export default function NewClientPage() {
                 onChange={(e) => updateField("firstVisitDate", e.target.value)}
                 required
               />
-            </div>
+            </FormField>
           </div>
         </div>
 

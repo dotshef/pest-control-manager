@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Upload } from "lucide-react";
 import Image from "next/image";
+import { FormField } from "@/components/ui/form-field";
 
 interface Tenant {
   name: string;
@@ -138,15 +139,14 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">설정</h2>
 
       {error && (
-        <div className="alert alert-error text-sm mb-4">
+        <div className="alert alert-error text-base mb-4">
           <span>{error}</span>
         </div>
       )}
       {success && (
-        <div className="alert alert-success text-sm mb-4">
+        <div className="alert alert-success text-base mb-4">
           <span>{success}</span>
         </div>
       )}
@@ -154,7 +154,7 @@ export default function SettingsPage() {
       {/* 로고 업로드 */}
       <div className="card bg-base-100 border border-base-300 mb-4">
         <div className="card-body">
-          <h3 className="font-semibold mb-3">업체 로고</h3>
+          <h3 className="text-base font-semibold mb-3">업체 로고</h3>
           <div className="flex items-center gap-6">
             <div className="w-24 h-24 border border-base-300 rounded-lg flex items-center justify-center overflow-hidden bg-base-200">
               {tenant?.logo_url ? (
@@ -166,7 +166,7 @@ export default function SettingsPage() {
                   className="object-contain"
                 />
               ) : (
-                <span className="text-base-content/30 text-xs">로고 없음</span>
+                <span className="text-base-content/30 text-base">로고 없음</span>
               )}
             </div>
             <div>
@@ -178,7 +178,7 @@ export default function SettingsPage() {
                 className="hidden"
               />
               <button
-                className="btn btn-outline btn-sm gap-2"
+                className="btn btn-outline btn-md gap-2"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
               >
@@ -190,7 +190,7 @@ export default function SettingsPage() {
                   </>
                 )}
               </button>
-              <p className="text-xs text-base-content/50 mt-1">
+              <p className="text-base text-base-content/50 mt-1">
                 증명서에 표시됩니다. PNG, JPG 권장.
               </p>
             </div>
@@ -202,12 +202,9 @@ export default function SettingsPage() {
       <form onSubmit={handleSave}>
         <div className="card bg-base-100 border border-base-300 mb-4">
           <div className="card-body space-y-4">
-            <h3 className="font-semibold">업체 정보</h3>
+            <h3 className="text-base font-semibold">업체 정보</h3>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">업체명</span>
-              </label>
+            <FormField label="업체명">
               <input
                 type="text"
                 className="input input-bordered w-full"
@@ -215,69 +212,44 @@ export default function SettingsPage() {
                 onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
                 required
               />
-            </div>
+            </FormField>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">사업자등록번호</span>
-              </label>
+            <FormField label="사업자등록번호">
               <input
                 type="text"
                 className="input input-bordered w-full"
                 value={form.businessNumber}
                 onChange={(e) => setForm((p) => ({ ...p, businessNumber: e.target.value }))}
               />
-            </div>
+            </FormField>
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">대표자명</span>
-                </label>
+              <FormField label="대표자명">
                 <input
                   type="text"
                   className="input input-bordered w-full"
                   value={form.ownerName}
                   onChange={(e) => setForm((p) => ({ ...p, ownerName: e.target.value }))}
                 />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">전화번호</span>
-                </label>
+              </FormField>
+              <FormField label="전화번호">
                 <input
                   type="tel"
                   className="input input-bordered w-full"
                   value={form.phone}
                   onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
                 />
-              </div>
+              </FormField>
             </div>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">주소</span>
-              </label>
+            <FormField label="주소">
               <input
                 type="text"
                 className="input input-bordered w-full"
                 value={form.address}
                 onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))}
               />
-            </div>
-          </div>
-        </div>
-
-        {/* 플랜 정보 */}
-        <div className="card bg-base-100 border border-base-300 mb-4">
-          <div className="card-body">
-            <h3 className="font-semibold">플랜 정보</h3>
-            <p className="text-sm mt-2">
-              현재 플랜:{" "}
-              <span className="badge badge-primary">
-                {tenant?.plan === "basic" ? "베이직" : tenant?.plan === "plus" ? "플러스" : "프로"}
-              </span>
-            </p>
+            </FormField>
           </div>
         </div>
 
@@ -288,8 +260,6 @@ export default function SettingsPage() {
         </div>
       </form>
 
-      {/* 비밀번호 변경 */}
-      <PasswordChangeSection />
     </div>
   );
 }
@@ -334,23 +304,20 @@ function PasswordChangeSection() {
     <form onSubmit={handleChangePassword} className="mt-4">
       <div className="card bg-base-100 border border-base-300 mb-4">
         <div className="card-body space-y-4">
-          <h3 className="font-semibold">비밀번호 변경</h3>
+          <h3 className="text-base font-semibold">비밀번호 변경</h3>
 
           {error && (
-            <div className="alert alert-error text-sm">
+            <div className="alert alert-error text-base">
               <span>{error}</span>
             </div>
           )}
           {success && (
-            <div className="alert alert-success text-sm">
+            <div className="alert alert-success text-base">
               <span>{success}</span>
             </div>
           )}
 
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-medium">현재 비밀번호</span>
-            </label>
+          <FormField label="현재 비밀번호">
             <input
               type="password"
               className="input input-bordered w-full"
@@ -358,12 +325,9 @@ function PasswordChangeSection() {
               onChange={(e) => setCurrentPassword(e.target.value)}
               required
             />
-          </div>
+          </FormField>
 
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-medium">새 비밀번호</span>
-            </label>
+          <FormField label="새 비밀번호">
             <input
               type="password"
               placeholder="8자 이상"
@@ -373,7 +337,7 @@ function PasswordChangeSection() {
               required
               minLength={8}
             />
-          </div>
+          </FormField>
         </div>
       </div>
 

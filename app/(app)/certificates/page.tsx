@@ -56,7 +56,7 @@ export default function CertificatesPage() {
       </div>
 
       <div className="bg-base-100 rounded-lg border border-base-300 overflow-x-auto">
-        <table className="table table-sm">
+        <table className="table table-md">
           <thead>
             <tr>
               <th>증명서 번호</th>
@@ -89,14 +89,14 @@ export default function CertificatesPage() {
                     <td>
                       <div className="flex items-center gap-2">
                         <FileText size={14} className="text-primary" />
-                        <span className="font-mono text-sm">{cert.certificate_number}</span>
+                        <span className="font-mono text-base">{cert.certificate_number}</span>
                       </div>
                     </td>
                     <td>
                       {client ? (
                         <Link
                           href={`/clients/${client.id}`}
-                          className="text-primary hover:underline text-sm"
+                          className="text-primary hover:underline text-base"
                         >
                           {client.name}
                         </Link>
@@ -104,11 +104,11 @@ export default function CertificatesPage() {
                         "-"
                       )}
                     </td>
-                    <td className="text-sm">
+                    <td className="text-base">
                       {client ? getFacilityLabel(client.facility_type) : "-"}
                     </td>
-                    <td className="text-sm">{visit?.scheduled_date || "-"}</td>
-                    <td className="text-sm">
+                    <td className="text-base">{visit?.scheduled_date || "-"}</td>
+                    <td className="text-base">
                       {new Date(cert.created_at).toLocaleDateString("ko-KR")}
                     </td>
                     <td>
@@ -117,7 +117,7 @@ export default function CertificatesPage() {
                           href={cert.pdf_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="btn btn-ghost btn-xs gap-1"
+                          className="btn btn-ghost btn-md gap-1"
                         >
                           <Download size={12} /> PDF
                         </a>

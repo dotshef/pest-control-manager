@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { FACILITY_TYPES } from "@/lib/constants/facility-types";
+import { FormField } from "@/components/ui/form-field";
 
 export default function EditClientPage() {
   const { id } = useParams<{ id: string }>();
@@ -101,7 +102,7 @@ export default function EditClientPage() {
       <h2 className="text-2xl font-bold mb-6">고객 정보 수정</h2>
 
       {error && (
-        <div className="alert alert-error text-sm mb-4">
+        <div className="alert alert-error text-base mb-4">
           <span>{error}</span>
         </div>
       )}
@@ -111,12 +112,7 @@ export default function EditClientPage() {
           <div className="card-body space-y-4">
             <h3 className="font-semibold">시설 정보</h3>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  시설명 <span className="text-error">*</span>
-                </span>
-              </label>
+            <FormField label={<>시설명 <span className="text-error">*</span></>}>
               <input
                 type="text"
                 className="input input-bordered w-full"
@@ -124,12 +120,9 @@ export default function EditClientPage() {
                 onChange={(e) => updateField("name", e.target.value)}
                 required
               />
-            </div>
+            </FormField>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">시설 유형</span>
-              </label>
+            <FormField label="시설 유형">
               <select
                 className="select select-bordered w-full"
                 value={form.facilityType}
@@ -142,43 +135,34 @@ export default function EditClientPage() {
                   </option>
                 ))}
               </select>
-            </div>
+            </FormField>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">주소</span>
-              </label>
+            <FormField label="주소">
               <input
                 type="text"
                 className="input input-bordered w-full"
                 value={form.address}
                 onChange={(e) => updateField("address", e.target.value)}
               />
-            </div>
+            </FormField>
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">면적 (㎡)</span>
-                </label>
+              <FormField label="면적 (㎡)">
                 <input
                   type="number"
                   className="input input-bordered w-full"
                   value={form.area}
                   onChange={(e) => updateField("area", e.target.value)}
                 />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">면적 (평)</span>
-                </label>
+              </FormField>
+              <FormField label="면적 (평)">
                 <input
                   type="number"
                   className="input input-bordered w-full"
                   value={form.areaPyeong}
                   onChange={(e) => updateField("areaPyeong", e.target.value)}
                 />
-              </div>
+              </FormField>
             </div>
           </div>
         </div>
@@ -188,41 +172,32 @@ export default function EditClientPage() {
             <h3 className="font-semibold">담당자 정보</h3>
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">담당자명</span>
-                </label>
+              <FormField label="담당자명">
                 <input
                   type="text"
                   className="input input-bordered w-full"
                   value={form.contactName}
                   onChange={(e) => updateField("contactName", e.target.value)}
                 />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">연락처</span>
-                </label>
+              </FormField>
+              <FormField label="연락처">
                 <input
                   type="tel"
                   className="input input-bordered w-full"
                   value={form.contactPhone}
                   onChange={(e) => updateField("contactPhone", e.target.value)}
                 />
-              </div>
+              </FormField>
             </div>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">메모</span>
-              </label>
+            <FormField label="메모">
               <textarea
                 className="textarea textarea-bordered w-full"
                 rows={3}
                 value={form.notes}
                 onChange={(e) => updateField("notes", e.target.value)}
               />
-            </div>
+            </FormField>
           </div>
         </div>
 

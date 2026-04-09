@@ -69,11 +69,11 @@ export default function DashboardPage() {
   function getStatusBadge(status: string) {
     switch (status) {
       case "completed":
-        return <span className="badge badge-success badge-xs">완료</span>;
+        return <span className="badge badge-success badge-md">완료</span>;
       case "missed":
-        return <span className="badge badge-error badge-xs">미완료</span>;
+        return <span className="badge badge-error badge-md">미완료</span>;
       default:
-        return <span className="badge badge-primary badge-xs">예정</span>;
+        return <span className="badge badge-primary badge-md">예정</span>;
     }
   }
 
@@ -104,7 +104,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold">{data.todayCount}건</p>
-                <p className="text-xs text-base-content/50">오늘 방문 예정</p>
+                <p className="text-base text-base-content/50">오늘 방문 예정</p>
               </div>
             </div>
           </div>
@@ -118,7 +118,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold">{data.weekCount}건</p>
-                <p className="text-xs text-base-content/50">이번 주 예정</p>
+                <p className="text-base text-base-content/50">이번 주 예정</p>
               </div>
             </div>
           </div>
@@ -132,7 +132,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold text-error">{data.missedCount}건</p>
-                <p className="text-xs text-base-content/50">미완료 건</p>
+                <p className="text-base text-base-content/50">미완료 건</p>
               </div>
             </div>
           </div>
@@ -146,7 +146,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold">{data.monthCompleted}건</p>
-                <p className="text-xs text-base-content/50">이번 달 완료</p>
+                <p className="text-base text-base-content/50">이번 달 완료</p>
               </div>
             </div>
           </div>
@@ -160,12 +160,12 @@ export default function DashboardPage() {
           <div className="card-body">
             <h3 className="card-title text-base mb-3">오늘 방문 예정</h3>
             {data.todayVisits.length === 0 ? (
-              <p className="text-sm text-base-content/40 py-4 text-center">
+              <p className="text-base text-base-content/40 py-4 text-center">
                 오늘 예정된 방문이 없습니다
               </p>
             ) : (
               <div className="overflow-x-auto">
-                <table className="table table-sm">
+                <table className="table table-md">
                   <thead>
                     <tr>
                       <th>고객명</th>
@@ -183,15 +183,15 @@ export default function DashboardPage() {
                           <td>
                             <Link
                               href={`/visits/${visit.id}`}
-                              className="text-primary hover:underline font-medium text-sm"
+                              className="text-primary hover:underline font-medium text-base"
                             >
                               {client?.name || "-"}
                             </Link>
                           </td>
-                          <td className="text-sm">
+                          <td className="text-base">
                             {client ? getFacilityLabel(client.facility_type) : "-"}
                           </td>
-                          <td className="text-sm">{user?.name || "-"}</td>
+                          <td className="text-base">{user?.name || "-"}</td>
                           <td>{getStatusBadge(visit.status)}</td>
                         </tr>
                       );
@@ -210,7 +210,7 @@ export default function DashboardPage() {
             <div className="card-body">
               <h3 className="card-title text-base mb-3">미완료 건</h3>
               {data.missedVisits.length === 0 ? (
-                <p className="text-sm text-base-content/40 py-2 text-center">
+                <p className="text-base text-base-content/40 py-2 text-center">
                   미완료 건이 없습니다
                 </p>
               ) : (
@@ -225,12 +225,12 @@ export default function DashboardPage() {
                         className="flex items-center justify-between p-2 rounded-lg hover:bg-base-200 transition-colors"
                       >
                         <div>
-                          <p className="text-sm font-medium">{client?.name || "-"}</p>
-                          <p className="text-xs text-base-content/50">
+                          <p className="text-base font-medium">{client?.name || "-"}</p>
+                          <p className="text-base text-base-content/50">
                             {visit.scheduled_date}
                           </p>
                         </div>
-                        <span className="text-xs text-error font-medium">
+                        <span className="text-base text-error font-medium">
                           {daysAgo}일 경과
                         </span>
                       </Link>
@@ -251,7 +251,7 @@ export default function DashboardPage() {
                   const height = total > 0 ? (total / maxChartValue) * 100 : 4;
                   return (
                     <div key={day.label} className="flex-1 flex flex-col items-center gap-1">
-                      <span className="text-xs font-medium">{total}</span>
+                      <span className="text-base font-medium">{total}</span>
                       <div className="w-full flex flex-col-reverse rounded-t overflow-hidden" style={{ height: `${height}%` }}>
                         {day.completed > 0 && (
                           <div
@@ -273,19 +273,19 @@ export default function DashboardPage() {
                         )}
                         {total === 0 && <div className="bg-base-300 h-full" />}
                       </div>
-                      <span className="text-[10px] text-base-content/50">{day.label}</span>
+                      <span className="text-base text-base-content/50">{day.label}</span>
                     </div>
                   );
                 })}
               </div>
               <div className="flex gap-4 mt-3 justify-center">
-                <div className="flex items-center gap-1 text-[10px]">
+                <div className="flex items-center gap-1 text-base">
                   <span className="w-2 h-2 rounded-sm bg-primary" /> 예정
                 </div>
-                <div className="flex items-center gap-1 text-[10px]">
+                <div className="flex items-center gap-1 text-base">
                   <span className="w-2 h-2 rounded-sm bg-success" /> 완료
                 </div>
-                <div className="flex items-center gap-1 text-[10px]">
+                <div className="flex items-center gap-1 text-base">
                   <span className="w-2 h-2 rounded-sm bg-error" /> 미완료
                 </div>
               </div>

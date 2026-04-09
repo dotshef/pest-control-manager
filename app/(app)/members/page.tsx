@@ -64,14 +64,14 @@ export default function MembersPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">기사 관리</h2>
-        <Link href="/members/new" className="btn btn-primary btn-sm gap-2">
+        <Link href="/members/new" className="btn btn-primary btn-md gap-2">
           <Plus size={16} />
           기사 등록
         </Link>
       </div>
 
       <div className="bg-base-100 rounded-lg border border-base-300 overflow-x-auto">
-        <table className="table table-sm">
+        <table className="table table-md">
           <thead>
             <tr>
               <th>이름</th>
@@ -100,11 +100,11 @@ export default function MembersPage() {
               members?.map((member) => (
                 <tr key={member.id} className="hover">
                   <td className="font-medium">{member.name}</td>
-                  <td className="text-sm">{member.email}</td>
-                  <td className="text-sm">{member.phone || "-"}</td>
+                  <td className="text-base">{member.email}</td>
+                  <td className="text-base">{member.phone || "-"}</td>
                   <td>
                     <span
-                      className={`badge badge-sm ${
+                      className={`badge badge-md ${
                         member.role === "admin" ? "badge-primary" : "badge-ghost"
                       }`}
                     >
@@ -113,14 +113,14 @@ export default function MembersPage() {
                   </td>
                   <td>
                     <span
-                      className={`badge badge-sm ${
+                      className={`badge badge-md ${
                         member.is_active ? "badge-success" : "badge-error"
                       }`}
                     >
                       {member.is_active ? "활성" : "비활성"}
                     </span>
                   </td>
-                  <td className="text-sm">
+                  <td className="text-base">
                     {new Date(member.created_at).toLocaleDateString("ko-KR")}
                   </td>
                   <td>
@@ -128,13 +128,13 @@ export default function MembersPage() {
                       <div className="flex gap-1">
                         <Link
                           href={`/members/${member.id}/edit`}
-                          className="btn btn-ghost btn-xs"
+                          className="btn btn-ghost btn-md"
                         >
                           수정
                         </Link>
                         <button
                           onClick={() => handleToggleActive(member)}
-                          className={`btn btn-ghost btn-xs ${
+                          className={`btn btn-ghost btn-md ${
                             member.is_active ? "text-error" : "text-success"
                           }`}
                         >

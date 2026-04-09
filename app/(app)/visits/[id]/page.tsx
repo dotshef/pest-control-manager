@@ -6,6 +6,7 @@ import { ArrowLeft, CheckCircle, XCircle, FileText, Download, Link as LinkIcon }
 import Link from "next/link";
 import { FACILITY_TYPES } from "@/lib/constants/facility-types";
 import { DISINFECTION_METHODS, COMMON_CHEMICALS } from "@/lib/constants/methods";
+import { FormField } from "@/components/ui/form-field";
 
 interface VisitDetail {
   id: string;
@@ -179,7 +180,7 @@ export default function VisitDetailPage() {
     <div className="max-w-3xl mx-auto">
       {/* 상단 */}
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => router.back()} className="btn btn-ghost btn-sm btn-square">
+        <button onClick={() => router.back()} className="btn btn-ghost btn-md btn-square">
           <ArrowLeft size={18} />
         </button>
         <h2 className="text-2xl font-bold flex-1">방문 상세</h2>
@@ -197,7 +198,7 @@ export default function VisitDetailPage() {
       </div>
 
       {error && (
-        <div className="alert alert-error text-sm mb-4">
+        <div className="alert alert-error text-base mb-4">
           <span>{error}</span>
         </div>
       )}
@@ -206,11 +207,11 @@ export default function VisitDetailPage() {
       <div className="card bg-base-100 border border-base-300 mb-4">
         <div className="card-body">
           <h3 className="card-title text-base">고객 정보</h3>
-          <div className="grid grid-cols-2 gap-y-2 gap-x-6 text-sm mt-2">
+          <div className="grid grid-cols-2 gap-y-2 gap-x-6 text-base mt-2">
             <div>
               <span className="text-base-content/50">시설명</span>
               <p className="font-medium">
-                <Link href={`/clients/${visit.clients?.id}`} className="text-primary hover:underline">
+                <Link href={`/clients/${visit.clients?.id}`} className="text-primary hover:underline" style={{ fontSize: "1.125rem" }}>
                   {visit.clients?.name}
                 </Link>
               </p>
@@ -247,16 +248,13 @@ export default function VisitDetailPage() {
           <h3 className="card-title text-base">소독 정보</h3>
 
           {/* 소독 방법 */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-medium">소독 방법</span>
-            </label>
+          <FormField label="소독 방법">
             <div className="flex flex-wrap gap-2">
               {DISINFECTION_METHODS.map((m) => (
                 <button
                   key={m}
                   type="button"
-                  className={`btn btn-sm ${method === m ? "btn-primary" : "btn-outline"}`}
+                  className={`btn btn-md ${method === m ? "btn-primary" : "btn-outline"}`}
                   onClick={() => setMethod(m)}
                   disabled={isCompleted}
                 >
@@ -268,25 +266,22 @@ export default function VisitDetailPage() {
               <input
                 type="text"
                 placeholder="소독 방법 직접 입력"
-                className="input input-bordered input-sm mt-2 w-full"
+                className="input input-bordered input-md mt-2 w-full"
                 value={customMethod}
                 onChange={(e) => setCustomMethod(e.target.value)}
                 disabled={isCompleted}
               />
             )}
-          </div>
+          </FormField>
 
           {/* 사용 약제 */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-medium">사용 약제</span>
-            </label>
+          <FormField label="사용 약제">
             <div className="flex flex-wrap gap-2">
               {COMMON_CHEMICALS.map((c) => (
                 <button
                   key={c}
                   type="button"
-                  className={`btn btn-sm ${
+                  className={`btn btn-md ${
                     selectedChemicals.includes(c) ? "btn-primary" : "btn-outline"
                   }`}
                   onClick={() => toggleChemical(c)}
@@ -301,14 +296,14 @@ export default function VisitDetailPage() {
                 <input
                   type="text"
                   placeholder="약제 직접 입력"
-                  className="input input-bordered input-sm flex-1"
+                  className="input input-bordered input-md flex-1"
                   value={customChemical}
                   onChange={(e) => setCustomChemical(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCustomChemical())}
                 />
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline"
+                  className="btn btn-md btn-outline"
                   onClick={addCustomChemical}
                 >
                   추가
@@ -318,10 +313,10 @@ export default function VisitDetailPage() {
             {selectedChemicals.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {selectedChemicals.map((c) => (
-                  <span key={c} className="badge badge-sm gap-1">
+                  <span key={c} className="badge badge-md gap-1">
                     {c}
                     {!isCompleted && (
-                      <button onClick={() => toggleChemical(c)} className="text-xs">
+                      <button onClick={() => toggleChemical(c)} className="text-base">
                         ✕
                       </button>
                     )}
@@ -329,13 +324,10 @@ export default function VisitDetailPage() {
                 ))}
               </div>
             )}
-          </div>
+          </FormField>
 
           {/* 메모 */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-medium">메모</span>
-            </label>
+          <FormField label="메모">
             <textarea
               className="textarea textarea-bordered w-full"
               rows={3}
@@ -343,7 +335,7 @@ export default function VisitDetailPage() {
               onChange={(e) => setNotes(e.target.value)}
               disabled={isCompleted}
             />
-          </div>
+          </FormField>
         </div>
       </div>
 
@@ -353,7 +345,7 @@ export default function VisitDetailPage() {
           <div className="card-body py-3">
             <div className="flex items-center gap-2 text-success">
               <CheckCircle size={18} />
-              <span className="font-medium text-sm">
+              <span className="font-medium text-base">
                 {new Date(visit.completed_at).toLocaleString("ko-KR")} 완료
               </span>
             </div>
@@ -366,13 +358,13 @@ export default function VisitDetailPage() {
         <div className="card bg-base-100 border border-base-300 mb-4">
           <div className="card-body py-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm flex items-center gap-2">
+              <h3 className="font-semibold text-base flex items-center gap-2">
                 <FileText size={16} />
                 소독증명서
               </h3>
               {visit.certificates ? (
                 <div className="flex gap-2">
-                  <span className="text-sm text-base-content/60">
+                  <span className="text-base text-base-content/60">
                     {visit.certificates.certificate_number}
                   </span>
                   {visit.certificates.pdf_url && (
@@ -381,12 +373,12 @@ export default function VisitDetailPage() {
                         href={visit.certificates.pdf_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn btn-ghost btn-xs gap-1"
+                        className="btn btn-ghost btn-md gap-1"
                       >
                         <Download size={12} /> 다운로드
                       </a>
                       <button
-                        className="btn btn-ghost btn-xs gap-1"
+                        className="btn btn-ghost btn-md gap-1"
                         onClick={() => {
                           navigator.clipboard.writeText(visit.certificates!.pdf_url!);
                         }}
@@ -396,7 +388,7 @@ export default function VisitDetailPage() {
                     </>
                   )}
                   <button
-                    className="btn btn-outline btn-xs"
+                    className="btn btn-outline btn-md"
                     disabled={generatingCert}
                     onClick={handleGenerateCert}
                   >
@@ -405,7 +397,7 @@ export default function VisitDetailPage() {
                 </div>
               ) : (
                 <button
-                  className="btn btn-primary btn-sm gap-1"
+                  className="btn btn-primary btn-md gap-1"
                   disabled={generatingCert}
                   onClick={handleGenerateCert}
                 >
@@ -442,7 +434,7 @@ export default function VisitDetailPage() {
           </button>
         ) : (
           <button
-            className="btn btn-outline btn-error btn-sm gap-1"
+            className="btn btn-outline btn-error btn-md gap-1"
             onClick={handleUncomplete}
           >
             <XCircle size={14} />

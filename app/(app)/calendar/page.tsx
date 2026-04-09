@@ -109,10 +109,10 @@ export default function CalendarPage() {
             {format(currentDate, "yyyy년 M월", { locale: ko })}
           </h2>
           <div className="flex gap-1">
-            <button onClick={handlePrev} className="btn btn-ghost btn-sm btn-square">
+            <button onClick={handlePrev} className="btn btn-ghost btn-md btn-square">
               <ChevronLeft size={16} />
             </button>
-            <button onClick={handleNext} className="btn btn-ghost btn-sm btn-square">
+            <button onClick={handleNext} className="btn btn-ghost btn-md btn-square">
               <ChevronRight size={16} />
             </button>
           </div>
@@ -128,7 +128,7 @@ export default function CalendarPage() {
             {dayNames.map((day, i) => (
               <div
                 key={day}
-                className={`py-2 text-center text-xs font-medium ${
+                className={`py-2 text-center text-base font-medium ${
                   i === 0 ? "text-error" : i === 6 ? "text-primary" : "text-base-content/60"
                 }`}
               >
@@ -154,7 +154,7 @@ export default function CalendarPage() {
                   }`}
                 >
                   <span
-                    className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-sm ${getDayTextClass(day, isTodayDate, isCurrentMonth)}`}
+                    className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-base ${getDayTextClass(day, isTodayDate, isCurrentMonth)}`}
                   >
                     {day.getDate()}
                   </span>
@@ -164,13 +164,13 @@ export default function CalendarPage() {
                     {dayVisits.slice(0, 3).map((v) => (
                       <div
                         key={v.id}
-                        className={`text-[10px] px-1 py-0.5 rounded truncate text-white ${getStatusColor(v.status)}`}
+                        className={`text-base px-1 py-0.5 rounded truncate text-white ${getStatusColor(v.status)}`}
                       >
                         {v.clients?.name}
                       </div>
                     ))}
                     {dayVisits.length > 3 && (
-                      <div className="text-[10px] text-base-content/50 px-1">
+                      <div className="text-base text-base-content/50 px-1">
                         +{dayVisits.length - 3}건
                       </div>
                     )}
@@ -197,7 +197,7 @@ export default function CalendarPage() {
                 <span className="loading loading-spinner loading-sm" />
               </div>
             ) : selectedVisits.length === 0 ? (
-              <p className="text-sm text-base-content/40 py-4 text-center">
+              <p className="text-base text-base-content/40 py-4 text-center">
                 예정된 방문이 없습니다
               </p>
             ) : (
@@ -208,14 +208,14 @@ export default function CalendarPage() {
                     href={`/visits/${visit.id}`}
                     className="block p-3 rounded-lg border border-base-300 hover:bg-base-200 transition-colors"
                   >
-                    <div className="font-semibold text-sm">
+                    <div className="font-semibold text-base">
                       {visit.clients?.name}
                     </div>
-                    <div className="text-xs text-base-content/50 mt-0.5">
+                    <div className="text-base text-base-content/50 mt-0.5">
                       {visit.clients?.address || "주소 없음"}
                     </div>
                     <span
-                      className={`badge badge-xs mt-1.5 text-white ${getStatusColor(visit.status)}`}
+                      className={`badge badge-md mt-1.5 text-white ${getStatusColor(visit.status)}`}
                     >
                       {getStatusLabel(visit.status)}
                     </span>
@@ -227,15 +227,15 @@ export default function CalendarPage() {
             {/* 상태 범례 */}
             <div className="mt-6 pt-4 border-t border-base-300">
               <div className="space-y-1.5">
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-base">
                   <span className="w-2.5 h-2.5 rounded-sm bg-primary" />
                   예정
                 </div>
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-base">
                   <span className="w-2.5 h-2.5 rounded-sm bg-success" />
                   완료
                 </div>
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-base">
                   <span className="w-2.5 h-2.5 rounded-sm bg-error" />
                   미완료
                 </div>

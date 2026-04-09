@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { FormField } from "@/components/ui/form-field";
 
 export default function NewMemberPage() {
   const router = useRouter();
@@ -49,7 +50,7 @@ export default function NewMemberPage() {
       <h2 className="text-2xl font-bold mb-6">기사 등록</h2>
 
       {error && (
-        <div className="alert alert-error text-sm mb-4">
+        <div className="alert alert-error text-base mb-4">
           <span>{error}</span>
         </div>
       )}
@@ -57,12 +58,7 @@ export default function NewMemberPage() {
       <form onSubmit={handleSubmit}>
         <div className="card bg-base-100 border border-base-300">
           <div className="card-body space-y-4">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  이름 <span className="text-error">*</span>
-                </span>
-              </label>
+            <FormField label={<>이름 <span className="text-error">*</span></>}>
               <input
                 type="text"
                 className="input input-bordered w-full"
@@ -70,14 +66,9 @@ export default function NewMemberPage() {
                 onChange={(e) => updateField("name", e.target.value)}
                 required
               />
-            </div>
+            </FormField>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  이메일 <span className="text-error">*</span>
-                </span>
-              </label>
+            <FormField label={<>이메일 <span className="text-error">*</span></>}>
               <input
                 type="email"
                 placeholder="name@company.com"
@@ -86,14 +77,9 @@ export default function NewMemberPage() {
                 onChange={(e) => updateField("email", e.target.value)}
                 required
               />
-            </div>
+            </FormField>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  비밀번호 <span className="text-error">*</span>
-                </span>
-              </label>
+            <FormField label={<>비밀번호 <span className="text-error">*</span></>}>
               <input
                 type="password"
                 placeholder="8자 이상"
@@ -103,12 +89,9 @@ export default function NewMemberPage() {
                 required
                 minLength={8}
               />
-            </div>
+            </FormField>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">연락처</span>
-              </label>
+            <FormField label="연락처">
               <input
                 type="tel"
                 placeholder="010-0000-0000"
@@ -116,7 +99,7 @@ export default function NewMemberPage() {
                 value={form.phone}
                 onChange={(e) => updateField("phone", e.target.value)}
               />
-            </div>
+            </FormField>
           </div>
         </div>
 

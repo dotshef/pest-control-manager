@@ -107,14 +107,14 @@ export default function ClientDetailPage() {
     <div>
       {/* 상단 */}
       <div className="flex items-center gap-3 mb-6">
-        <Link href="/clients" className="btn btn-ghost btn-sm btn-square">
+        <Link href="/clients" className="btn btn-ghost btn-md btn-square">
           <ArrowLeft size={18} />
         </Link>
         <h2 className="text-2xl font-bold flex-1">{client.name}</h2>
-        <Link href={`/clients/${id}/edit`} className="btn btn-ghost btn-sm gap-1">
+        <Link href={`/clients/${id}/edit`} className="btn btn-ghost btn-md gap-1">
           <Pencil size={14} /> 수정
         </Link>
-        <button onClick={handleDelete} className="btn btn-ghost btn-sm text-error gap-1">
+        <button onClick={handleDelete} className="btn btn-ghost btn-md text-error gap-1">
           <Trash2 size={14} /> 비활성화
         </button>
       </div>
@@ -125,7 +125,7 @@ export default function ClientDetailPage() {
         <div className="lg:col-span-2 card bg-base-100 border border-base-300">
           <div className="card-body">
             <h3 className="card-title text-base">시설 정보</h3>
-            <div className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm mt-2">
+            <div className="grid grid-cols-2 gap-y-3 gap-x-6 text-base mt-2">
               <div>
                 <span className="text-base-content/50">시설 유형</span>
                 <p className="font-medium">{getFacilityLabel(client.facility_type)}</p>
@@ -171,8 +171,8 @@ export default function ClientDetailPage() {
           <div className="card bg-base-100 border border-base-300">
             <div className="card-body py-4">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-sm">다음 방문 예정</h3>
-                <span className="badge badge-primary badge-sm">방문 예정</span>
+                <h3 className="font-semibold text-base">다음 방문 예정</h3>
+                <span className="badge badge-primary badge-md">방문 예정</span>
               </div>
               <p className="text-lg font-bold mt-1">
                 {activeSchedule
@@ -187,19 +187,19 @@ export default function ClientDetailPage() {
             <div className="card bg-base-100 border border-base-300">
               <div className="card-body py-3 px-4 items-center text-center">
                 <p className="text-2xl font-bold">{client.stats.totalVisits}</p>
-                <p className="text-xs text-base-content/50">총 방문</p>
+                <p className="text-base text-base-content/50">총 방문</p>
               </div>
             </div>
             <div className="card bg-base-100 border border-base-300">
               <div className="card-body py-3 px-4 items-center text-center">
                 <p className="text-2xl font-bold">{client.stats.completionRate}%</p>
-                <p className="text-xs text-base-content/50">완료율</p>
+                <p className="text-base text-base-content/50">완료율</p>
               </div>
             </div>
             <div className="card bg-base-100 border border-base-300">
               <div className="card-body py-3 px-4 items-center text-center">
                 <p className="text-2xl font-bold">{client.stats.certificateCount}</p>
-                <p className="text-xs text-base-content/50">증명서</p>
+                <p className="text-base text-base-content/50">증명서</p>
               </div>
             </div>
           </div>
@@ -211,7 +211,7 @@ export default function ClientDetailPage() {
         <div className="card-body">
           <h3 className="card-title text-base mb-3">방문 이력</h3>
           <div className="overflow-x-auto">
-            <table className="table table-sm">
+            <table className="table table-md">
               <thead>
                 <tr>
                   <th>날짜</th>
@@ -232,14 +232,14 @@ export default function ClientDetailPage() {
                 ) : (
                   sortedVisits.map((visit) => (
                     <tr key={visit.id}>
-                      <td className="text-sm">{visit.scheduled_date}</td>
-                      <td className="text-sm">{visit.method || "-"}</td>
-                      <td className="text-sm">
+                      <td className="text-base">{visit.scheduled_date}</td>
+                      <td className="text-base">{visit.method || "-"}</td>
+                      <td className="text-base">
                         {visit.chemicals_used?.join(", ") || "-"}
                       </td>
                       <td>
                         <span
-                          className={`badge badge-sm ${
+                          className={`badge badge-md ${
                             visit.status === "completed"
                               ? "badge-success"
                               : visit.status === "missed"
@@ -254,7 +254,7 @@ export default function ClientDetailPage() {
                             : "예정"}
                         </span>
                       </td>
-                      <td className="text-sm">
+                      <td className="text-base">
                         {visit.certificates?.certificate_number || "-"}
                       </td>
                       <td>
@@ -263,7 +263,7 @@ export default function ClientDetailPage() {
                             href={visit.certificates.pdf_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn btn-ghost btn-xs"
+                            className="btn btn-ghost btn-md"
                           >
                             <FileText size={14} />
                             PDF

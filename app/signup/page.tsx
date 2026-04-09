@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { FormField } from "@/components/ui/form-field";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -57,7 +58,7 @@ export default function SignupPage() {
         <h1 className="text-4xl font-bold mb-4">방역매니저</h1>
         <p className="text-lg opacity-90 mb-2">소독 방역업체를 위한</p>
         <p className="text-lg opacity-90 mb-8">올인원 관리 플랫폼</p>
-        <p className="text-sm opacity-70">
+        <p className="text-base opacity-70">
           스케줄 관리 · 증명서 발급 · 고객 이력
         </p>
       </div>
@@ -72,23 +73,18 @@ export default function SignupPage() {
             </p>
 
             {error && (
-              <div className="alert alert-error text-sm">
+              <div className="alert alert-error text-base">
                 <span>{error}</span>
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* 업체 정보 */}
-              <div className="divider text-xs text-base-content/40">
+              <div className="divider text-base text-base-content/40">
                 업체 정보
               </div>
 
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">
-                    업체명 <span className="text-error">*</span>
-                  </span>
-                </label>
+              <FormField label={<>업체명 <span className="text-error">*</span></>}>
                 <input
                   type="text"
                   placeholder="예: 그린방역"
@@ -97,12 +93,9 @@ export default function SignupPage() {
                   onChange={(e) => updateField("companyName", e.target.value)}
                   required
                 />
-              </div>
+              </FormField>
 
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">사업자등록번호</span>
-                </label>
+              <FormField label="사업자등록번호">
                 <input
                   type="text"
                   placeholder="000-00-00000"
@@ -112,24 +105,18 @@ export default function SignupPage() {
                     updateField("businessNumber", e.target.value)
                   }
                 />
-              </div>
+              </FormField>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-medium">대표자명</span>
-                  </label>
+                <FormField label="대표자명">
                   <input
                     type="text"
                     className="input input-bordered w-full"
                     value={form.ownerName}
                     onChange={(e) => updateField("ownerName", e.target.value)}
                   />
-                </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-medium">전화번호</span>
-                  </label>
+                </FormField>
+                <FormField label="전화번호">
                   <input
                     type="tel"
                     placeholder="02-0000-0000"
@@ -137,20 +124,15 @@ export default function SignupPage() {
                     value={form.phone}
                     onChange={(e) => updateField("phone", e.target.value)}
                   />
-                </div>
+                </FormField>
               </div>
 
               {/* 관리자 계정 */}
-              <div className="divider text-xs text-base-content/40">
+              <div className="divider text-base text-base-content/40">
                 관리자 계정
               </div>
 
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">
-                    이름 <span className="text-error">*</span>
-                  </span>
-                </label>
+              <FormField label={<>이름 <span className="text-error">*</span></>}>
                 <input
                   type="text"
                   placeholder="관리자 이름"
@@ -159,14 +141,9 @@ export default function SignupPage() {
                   onChange={(e) => updateField("name", e.target.value)}
                   required
                 />
-              </div>
+              </FormField>
 
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">
-                    이메일 <span className="text-error">*</span>
-                  </span>
-                </label>
+              <FormField label={<>이메일 <span className="text-error">*</span></>}>
                 <input
                   type="email"
                   placeholder="name@company.com"
@@ -175,14 +152,9 @@ export default function SignupPage() {
                   onChange={(e) => updateField("email", e.target.value)}
                   required
                 />
-              </div>
+              </FormField>
 
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">
-                    비밀번호 <span className="text-error">*</span>
-                  </span>
-                </label>
+              <FormField label={<>비밀번호 <span className="text-error">*</span></>}>
                 <input
                   type="password"
                   placeholder="8자 이상"
@@ -192,7 +164,7 @@ export default function SignupPage() {
                   required
                   minLength={8}
                 />
-              </div>
+              </FormField>
 
               <button
                 type="submit"
@@ -208,12 +180,12 @@ export default function SignupPage() {
             </form>
 
             <div className="text-center mt-4">
-              <span className="text-sm text-base-content/60">
+              <span className="text-base text-base-content/60">
                 이미 계정이 있으신가요?{" "}
               </span>
               <Link
                 href="/login"
-                className="text-sm text-primary font-medium hover:underline"
+                className="text-base text-primary font-medium hover:underline"
               >
                 로그인
               </Link>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CalendarCheck, FileText, ClipboardList } from "lucide-react";
+import { FormField } from "@/components/ui/form-field";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -52,19 +53,19 @@ export default function LoginPage() {
             <div className="w-10 h-10 rounded-lg bg-primary-content/15 flex items-center justify-center">
               <CalendarCheck size={20} />
             </div>
-            <span className="text-sm opacity-80">스케줄 자동 관리</span>
+            <span className="text-base opacity-80">스케줄 자동 관리</span>
           </div>
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-primary-content/15 flex items-center justify-center">
               <FileText size={20} />
             </div>
-            <span className="text-sm opacity-80">증명서 원클릭 발급</span>
+            <span className="text-base opacity-80">증명서 원클릭 발급</span>
           </div>
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-primary-content/15 flex items-center justify-center">
               <ClipboardList size={20} />
             </div>
-            <span className="text-sm opacity-80">고객 이력 한눈에</span>
+            <span className="text-base opacity-80">고객 이력 한눈에</span>
           </div>
         </div>
         </div>
@@ -80,16 +81,13 @@ export default function LoginPage() {
             </p>
 
             {error && (
-              <div className="alert alert-error text-sm">
+              <div className="alert alert-error text-base">
                 <span>{error}</span>
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">이메일</span>
-                </label>
+              <FormField label="이메일">
                 <input
                   type="email"
                   placeholder="name@company.com"
@@ -98,12 +96,9 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-              </div>
+              </FormField>
 
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-medium">비밀번호</span>
-                </label>
+              <FormField label="비밀번호">
                 <input
                   type="password"
                   placeholder="••••••••"
@@ -112,7 +107,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-              </div>
+              </FormField>
 
               <div className="flex items-center justify-between">
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -122,11 +117,11 @@ export default function LoginPage() {
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
                   />
-                  <span className="text-sm">로그인 상태 유지</span>
+                  <span className="text-base">로그인 상태 유지</span>
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="text-sm text-primary hover:underline"
+                  className="text-base text-primary hover:underline"
                 >
                   비밀번호 찾기
                 </Link>
@@ -146,12 +141,12 @@ export default function LoginPage() {
             </form>
 
             <div className="text-center mt-4">
-              <span className="text-sm text-base-content/60">
+              <span className="text-base text-base-content/60">
                 계정이 없으신가요?{" "}
               </span>
               <Link
                 href="/signup"
-                className="text-sm text-primary font-medium hover:underline"
+                className="text-base text-primary font-medium hover:underline"
               >
                 회원가입
               </Link>

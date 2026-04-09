@@ -82,7 +82,7 @@ export default function ClientsPage() {
           <input
             type="text"
             placeholder="시설명, 담당자명 검색"
-            className="input input-bordered input-sm join-item w-64"
+            className="input input-bordered input-md w-64"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -92,7 +92,7 @@ export default function ClientsPage() {
           />
         </div>
         <select
-          className="select select-bordered select-sm"
+          className="select select-bordered select-md"
           value={facilityType}
           onChange={(e) => {
             setFacilityType(e.target.value);
@@ -111,7 +111,7 @@ export default function ClientsPage() {
 
       {/* 테이블 */}
       <div className="bg-base-100 rounded-lg border border-base-300 overflow-x-auto">
-        <table className="table table-sm">
+        <table className="table table-md">
           <thead>
             <tr>
               <th>시설명</th>
@@ -146,11 +146,11 @@ export default function ClientsPage() {
                       {client.name}
                     </Link>
                   </td>
-                  <td className="text-sm">{getFacilityLabel(client.facility_type)}</td>
-                  <td className="text-sm">{client.address || "-"}</td>
-                  <td className="text-sm">{client.contact_name || "-"}</td>
-                  <td className="text-sm">{client.contact_phone || "-"}</td>
-                  <td className="text-sm">{getNextVisitDate(client)}</td>
+                  <td className="text-base">{getFacilityLabel(client.facility_type)}</td>
+                  <td className="text-base">{client.address || "-"}</td>
+                  <td className="text-base">{client.contact_name || "-"}</td>
+                  <td className="text-base">{client.contact_phone || "-"}</td>
+                  <td className="text-base">{getNextVisitDate(client)}</td>
                 </tr>
               ))
             )}
@@ -163,17 +163,17 @@ export default function ClientsPage() {
         <div className="flex justify-center mt-4">
           <div className="join">
             <button
-              className="join-item btn btn-sm"
+              className="join-item btn btn-md"
               disabled={page <= 1}
               onClick={() => { setPage(page - 1); setData(null); }}
             >
               <ChevronLeft size={16} />
             </button>
-            <button className="join-item btn btn-sm btn-disabled">
+            <button className="join-item btn btn-md btn-disabled">
               {page} / {data.totalPages}
             </button>
             <button
-              className="join-item btn btn-sm"
+              className="join-item btn btn-md"
               disabled={page >= data.totalPages}
               onClick={() => { setPage(page + 1); setData(null); }}
             >
