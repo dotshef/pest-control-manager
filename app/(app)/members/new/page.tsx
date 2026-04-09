@@ -107,14 +107,14 @@ export default function NewMemberPage() {
         <div className="flex gap-3 justify-end mt-4">
           <button
             type="button"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium hover:bg-base-200 transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium hover:bg-base-200 transition-colors cursor-pointer"
             onClick={() => router.back()}
           >
             취소
           </button>
           <button
             type="submit"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-content transition-colors disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-content transition-colors disabled:opacity-50 cursor-pointer"
             disabled={loading}
           >
             {loading ? <Spinner size="sm" /> : "등록"}

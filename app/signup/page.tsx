@@ -173,7 +173,7 @@ export default function SignupPage() {
 
               <button
                 type="submit"
-                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-content transition-colors disabled:opacity-50 mt-2"
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-content transition-colors disabled:opacity-50 mt-2 cursor-pointer"
                 disabled={loading}
               >
                 {loading ? <Spinner size="sm" /> : "회원가입"}
