@@ -101,7 +101,7 @@ export default function CalendarPage() {
   const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
 
   return (
-    <div className="h-full">
+    <div className="">
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -149,7 +149,7 @@ export default function CalendarPage() {
                 <button
                   key={day.toISOString()}
                   onClick={() => setSelectedDate(day)}
-                  className={`relative min-h-30 p-1.5 border-b border-r border-base-300 text-left transition-colors hover:bg-base-200 flex flex-col items-start ${
+                  className={`relative min-h-35 p-1.5 border-b border-r border-base-300 text-left transition-colors hover:bg-base-200 flex flex-col items-start ${
                     isSelected ? "bg-base-200" : ""
                   }`}
                 >
@@ -185,10 +185,10 @@ export default function CalendarPage() {
       <div className="hidden lg:block w-72 shrink-0">
         <div className="card bg-base-100 border border-base-300 sticky top-0">
           <div className="card-body">
-            <h3 className="font-bold">
+            <h3 className="font-bold text-lg">
               {format(selectedDate, "M월 d일 (EEE)", { locale: ko })}
             </h3>
-            <p className="text-sm text-base-content/50 mb-3">
+            <p className="text-base mb-3">
               방문 일정 {selectedVisits.length}건
             </p>
 
@@ -226,19 +226,16 @@ export default function CalendarPage() {
 
             {/* 상태 범례 */}
             <div className="mt-6 pt-4 border-t border-base-300">
-              <p className="text-xs font-medium text-base-content/50 mb-2">
-                상태 범례
-              </p>
               <div className="space-y-1.5">
-                <div className="flex items-center gap-2 text-xs">
+                <div className="flex items-center gap-2 text-sm">
                   <span className="w-2.5 h-2.5 rounded-sm bg-primary" />
                   예정
                 </div>
-                <div className="flex items-center gap-2 text-xs">
+                <div className="flex items-center gap-2 text-sm">
                   <span className="w-2.5 h-2.5 rounded-sm bg-success" />
                   완료
                 </div>
-                <div className="flex items-center gap-2 text-xs">
+                <div className="flex items-center gap-2 text-sm">
                   <span className="w-2.5 h-2.5 rounded-sm bg-error" />
                   미완료
                 </div>

@@ -32,7 +32,7 @@ export function Header({ session }: { session: JwtPayload }) {
 
       <div className="flex items-center gap-4">
         {session.role === "admin" && (
-          <span className="badge badge-primary badge-sm">관리자</span>
+          <span className="badge badge-primary badge-base">관리자</span>
         )}
         <div className="dropdown dropdown-end">
           <div
