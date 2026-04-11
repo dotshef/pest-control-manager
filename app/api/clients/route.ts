@@ -3,6 +3,7 @@ import { getSupabase } from "@/lib/supabase/server";
 import { getSession } from "@/lib/auth/jwt";
 import { createClientSchema } from "@/lib/validations/client";
 import { getCycleMonths } from "@/lib/utils/cycle";
+import { generateVisitCode } from "@/lib/utils/visit-code";
 import type { FacilityTypeId } from "@/lib/constants/facility-types";
 
 // 고객 목록 조회
@@ -107,6 +108,7 @@ export async function POST(request: Request) {
     }
 
     // 3. 첫 visit 생성
+    const visitCode = await generateVisitCode(session.tenantId, firstVisitDate);
     const { error: visitError } = await supabase
       .from("visits")
       .insert({
@@ -114,6 +116,7 @@ export async function POST(request: Request) {
         tenant_id: session.tenantId,
         scheduled_date: firstVisitDate,
         status: "scheduled",
+        visit_code: visitCode,
         created_at: now,
       });
 

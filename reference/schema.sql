@@ -3,7 +3,6 @@ create table tenants (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   business_number text,
-  logo_url text,
   owner_name text,
   phone text,
   address text,
@@ -70,7 +69,9 @@ create table visits (
   method text,
   chemicals_used text[],
   notes text,
-  created_at timestamptz not null
+  visit_code text,
+  created_at timestamptz not null,
+  unique (tenant_id, visit_code)
 );
 
 -- 6. certificates (소독증명서)

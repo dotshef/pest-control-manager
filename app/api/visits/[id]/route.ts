@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase/server";
 import { getSession } from "@/lib/auth/jwt";
 import { getCycleMonths } from "@/lib/utils/cycle";
+import { generateVisitCode } from "@/lib/utils/visit-code";
 import type { FacilityTypeId } from "@/lib/constants/facility-types";
 import { addMonths } from "date-fns";
 
@@ -87,6 +88,7 @@ export async function PATCH(
           .eq("tenant_id", session.tenantId);
 
         // 다음 visit 생성
+        const nextVisitCode = await generateVisitCode(session.tenantId, nextDateStr);
         await supabase
           .from("visits")
           .insert({
@@ -96,6 +98,7 @@ export async function PATCH(
             user_id: visit.user_id,
             scheduled_date: nextDateStr,
             status: "scheduled",
+            visit_code: nextVisitCode,
             created_at: now,
           });
       }

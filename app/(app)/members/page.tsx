@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, UserCheck, UserX } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 
 interface Member {
@@ -55,7 +55,7 @@ export default function MembersPage() {
       await fetch(`/api/members/${member.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ is_active: true }),
       });
     }
     fetchMembers();
@@ -106,11 +106,7 @@ export default function MembersPage() {
                   <td className="text-base">{member.email}</td>
                   <td className="text-base">{member.phone || "-"}</td>
                   <td>
-                    <span
-                      className={`${badgeBase} ${
-                        member.role === "admin" ? "bg-primary/10 text-primary" : "bg-base-200 text-base-content"
-                      }`}
-                    >
+                    <span className={`${badgeBase} bg-base-200 text-base-content`}>
                       {member.role === "admin" ? "관리자" : "직원"}
                     </span>
                   </td>
@@ -131,21 +127,17 @@ export default function MembersPage() {
                       <div className="flex gap-1">
                         <Link
                           href={`/members/${member.id}/edit`}
-                          className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium hover:bg-base-200 transition-colors cursor-pointer"
+                          className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium text-primary hover:bg-primary/10 transition-colors cursor-pointer"
                         >
                           수정
                         </Link>
                         <button
                           onClick={() => handleToggleActive(member)}
-                          className={`inline-flex items-center justify-center p-2 rounded-lg hover:bg-base-200 transition-colors cursor-pointer ${
-                            member.is_active ? "text-error" : "text-success"
+                          className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium transition-colors cursor-pointer ${
+                            member.is_active ? "text-error hover:bg-error/10" : "text-success hover:bg-success/10"
                           }`}
                         >
-                          {member.is_active ? (
-                            <UserX size={14} />
-                          ) : (
-                            <UserCheck size={14} />
-                          )}
+                          {member.is_active ? "비활성화" : "활성화"}
                         </button>
                       </div>
                     )}

@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+import { jwtVerify, SignJWT } from "jose";
+import type { JwtPayload } from "@/lib/auth/jwt";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
+const COOKIE_NAME = "session";
+const TOKEN_MAX_AGE = 60 * 60 * 24; // 1일
 
 const PUBLIC_PATHS = ["/login", "/signup", "/api/auth/login", "/api/auth/signup"];
 
@@ -10,7 +13,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
-  const token = request.cookies.get("session")?.value;
+  const token = request.cookies.get(COOKIE_NAME)?.value;
 
   // 공개 경로 — 로그인 상태면 대시보드로
   if (isPublic) {
@@ -33,11 +36,33 @@ export async function proxy(request: NextRequest) {
   }
 
   try {
-    await jwtVerify(token, JWT_SECRET);
-    return NextResponse.next();
+    const { payload } = await jwtVerify<JwtPayload>(token, JWT_SECRET);
+
+    // Sliding session — 활동이 있을 때마다 토큰 재발급
+    const newPayload: JwtPayload = {
+      userId: payload.userId,
+      tenantId: payload.tenantId,
+      role: payload.role,
+      email: payload.email,
+    };
+    const newToken = await new SignJWT(newPayload as unknown as Record<string, unknown>)
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime("1d")
+      .sign(JWT_SECRET);
+
+    const response = NextResponse.next();
+    response.cookies.set(COOKIE_NAME, newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: TOKEN_MAX_AGE,
+    });
+    return response;
   } catch {
     const response = NextResponse.redirect(new URL("/login", request.url));
-    response.cookies.delete("session");
+    response.cookies.delete(COOKIE_NAME);
     return response;
   }
 }

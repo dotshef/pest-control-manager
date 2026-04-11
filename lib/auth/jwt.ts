@@ -15,7 +15,7 @@ export async function createToken(payload: JwtPayload): Promise<string> {
   return new SignJWT(payload as unknown as Record<string, unknown>)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("7d")
+    .setExpirationTime("1d")
     .sign(JWT_SECRET);
 }
 
@@ -28,10 +28,7 @@ export async function verifyToken(token: string): Promise<JwtPayload | null> {
   }
 }
 
-export async function setSessionCookie(
-  payload: JwtPayload,
-  rememberMe = false
-) {
+export async function setSessionCookie(payload: JwtPayload) {
   const token = await createToken(payload);
   const cookieStore = await cookies();
 
@@ -40,7 +37,7 @@ export async function setSessionCookie(
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: rememberMe ? 60 * 60 * 24 * 30 : undefined, // 30일 or 세션
+    maxAge: 60 * 60 * 24, // 1일
   });
 }
 

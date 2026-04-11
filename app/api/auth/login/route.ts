@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { email, password, rememberMe } = parsed.data;
+    const { email, password } = parsed.data;
 
     const { data: user } = await getSupabase()
       .from("users")
@@ -46,15 +46,12 @@ export async function POST(request: Request) {
       );
     }
 
-    await setSessionCookie(
-      {
-        userId: user.id,
-        tenantId: user.tenant_id,
-        role: user.role,
-        email: user.email,
-      },
-      rememberMe
-    );
+    await setSessionCookie({
+      userId: user.id,
+      tenantId: user.tenant_id,
+      role: user.role,
+      email: user.email,
+    });
 
     return NextResponse.json({ success: true });
   } catch {

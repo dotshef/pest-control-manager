@@ -11,7 +11,6 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -24,7 +23,7 @@ export default function LoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, rememberMe }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
@@ -110,16 +109,7 @@ export default function LoginPage() {
                 />
               </FormField>
 
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 accent-primary"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                  />
-                  <span className="text-base">로그인 상태 유지</span>
-                </label>
+              <div className="flex justify-end">
                 <Link
                   href="/forgot-password"
                   className="text-base text-primary hover:underline"
@@ -130,7 +120,7 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-content transition-colors disabled:opacity-50 cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-base font-medium bg-primary text-primary-content transition-colors disabled:opacity-50 cursor-pointer"
                 disabled={loading}
               >
                 {loading ? <Spinner size="sm" /> : "로그인"}

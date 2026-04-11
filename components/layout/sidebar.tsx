@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Calendar,
+  ClipboardList,
   Building2,
   FileText,
   Users,
@@ -21,6 +22,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { href: "/dashboard", label: "대시보드", icon: <LayoutDashboard size={22} /> },
   { href: "/calendar", label: "캘린더", icon: <Calendar size={22} /> },
+  { href: "/visits", label: "방문 관리", icon: <ClipboardList size={22} /> },
   { href: "/clients", label: "고객 관리", icon: <Building2 size={22} /> },
   { href: "/certificates", label: "증명서", icon: <FileText size={22} /> },
   { href: "/members", label: "직원 관리", icon: <Users size={22} />, adminOnly: true },

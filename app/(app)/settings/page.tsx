@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { Upload } from "lucide-react";
-import Image from "next/image";
+import { useEffect, useState } from "react";
 import { FormField } from "@/components/ui/form-field";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -12,17 +10,14 @@ interface Tenant {
   owner_name: string | null;
   phone: string | null;
   address: string | null;
-  logo_url: string | null;
   plan: string;
 }
 
 export default function SettingsPage() {
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -100,36 +95,6 @@ export default function SettingsPage() {
     }
   }
 
-  async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    setError("");
-
-    const formData = new FormData();
-    formData.append("logo", file);
-
-    try {
-      const res = await fetch("/api/settings/logo", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (res.ok) {
-        fetchTenant();
-        setSuccess("로고가 업로드되었습니다");
-      } else {
-        const data = await res.json();
-        setError(data.error);
-      }
-    } catch {
-      setError("업로드에 실패했습니다");
-    } finally {
-      setUploading(false);
-    }
-  }
-
   if (loading) {
     return (
       <div className="flex justify-center py-20">
@@ -151,53 +116,6 @@ export default function SettingsPage() {
           <span>{success}</span>
         </div>
       )}
-
-      {/* 로고 업로드 */}
-      <div className="rounded-xl bg-base-100 border border-base-300 mb-4">
-        <div className="p-6">
-          <h3 className="text-base font-semibold mb-3">업체 로고</h3>
-          <div className="flex items-center gap-6">
-            <div className="w-24 h-24 border border-base-300 rounded-lg flex items-center justify-center overflow-hidden bg-base-200">
-              {tenant?.logo_url ? (
-                <Image
-                  src={tenant.logo_url}
-                  alt="업체 로고"
-                  width={96}
-                  height={96}
-                  className="object-contain"
-                />
-              ) : (
-                <span className="text-base-content/30 text-base">로고 없음</span>
-              )}
-            </div>
-            <div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleLogoUpload}
-                className="hidden"
-              />
-              <button
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium border border-base-300 hover:bg-base-200 transition-colors disabled:opacity-50 cursor-pointer"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-              >
-                {uploading ? (
-                  <Spinner size="sm" />
-                ) : (
-                  <>
-                    <Upload size={14} /> 로고 업로드
-                  </>
-                )}
-              </button>
-              <p className="text-base text-base-content/50 mt-1">
-                증명서에 표시됩니다. PNG, JPG 권장.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* 업체 정보 */}
       <form onSubmit={handleSave}>

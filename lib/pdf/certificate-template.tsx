@@ -5,7 +5,6 @@ import {
   View,
   StyleSheet,
   Font,
-  Image,
 } from "@react-pdf/renderer";
 
 Font.register({
@@ -25,14 +24,9 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     alignItems: "center",
     marginBottom: 30,
-  },
-  logo: {
-    width: 80,
-    height: 80,
-    objectFit: "contain",
   },
   title: {
     fontSize: 24,
@@ -126,7 +120,6 @@ export interface CertificateData {
   certificateNumber: string;
   companyName: string;
   ownerName: string;
-  logoUrl?: string | null;
   facilityName: string;
   facilityAddress: string;
   facilityType: string;
@@ -142,13 +135,6 @@ export function CertificateTemplate({ data }: { data: CertificateData }) {
       <Page size="A4" style={styles.page}>
         {/* 헤더 */}
         <View style={styles.header}>
-          <View>
-            {data.logoUrl ? (
-              <Image src={data.logoUrl} style={styles.logo} />
-            ) : (
-              <Text style={{ fontSize: 14, fontWeight: 700 }}>{data.companyName}</Text>
-            )}
-          </View>
           <Text style={styles.certNumber}>No. {data.certificateNumber}</Text>
         </View>
 

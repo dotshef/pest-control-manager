@@ -30,6 +30,7 @@ export async function PATCH(
   if (parsed.data.phone !== undefined) updateData.phone = parsed.data.phone;
   if (parsed.data.email !== undefined) updateData.email = parsed.data.email;
   if (parsed.data.password) updateData.password_hash = await hashPassword(parsed.data.password);
+  if (parsed.data.is_active !== undefined) updateData.is_active = parsed.data.is_active;
 
   const { error } = await supabase
     .from("users")

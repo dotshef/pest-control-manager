@@ -59,6 +59,7 @@ export default function DashboardPage() {
   }
 
   const [now] = useState(() => Date.now());
+  const [todayStr] = useState(() => new Date().toISOString().split("T")[0]);
 
   function getDaysAgo(dateStr: string) {
     const diff = Math.floor(
@@ -160,7 +161,15 @@ export default function DashboardPage() {
         {/* 좌측: 오늘 방문 예정 */}
         <div className="lg:col-span-2 rounded-xl bg-base-100 border border-base-300">
           <div className="p-6">
-            <h3 className="text-base font-semibold mb-3">오늘 방문 예정</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-base font-semibold">오늘 방문 예정</h3>
+              <Link
+                href={`/visits?date_from=${todayStr}&date_to=${todayStr}`}
+                className="text-base text-primary hover:underline"
+              >
+                전체 보기 →
+              </Link>
+            </div>
             {data.todayVisits.length === 0 ? (
               <p className="text-base text-base-content/40 py-4 text-center">
                 오늘 예정된 방문이 없습니다
@@ -210,7 +219,15 @@ export default function DashboardPage() {
           {/* 미완료 건 */}
           <div className="rounded-xl bg-base-100 border border-base-300">
             <div className="p-6">
-              <h3 className="text-base font-semibold mb-3">미완료 건</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-base font-semibold">미완료 건</h3>
+                <Link
+                  href="/visits?status=missed"
+                  className="text-base text-primary hover:underline"
+                >
+                  전체 보기 →
+                </Link>
+              </div>
               {data.missedVisits.length === 0 ? (
                 <p className="text-base text-base-content/40 py-2 text-center">
                   미완료 건이 없습니다

@@ -11,7 +11,8 @@ export default function EditMemberPage() {
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [form, setForm] = useState({ name: "", phone: "", email: "", password: "" });
+  const [changePassword, setChangePassword] = useState(false);
+  const [form, setForm] = useState({ name: "", phone: "", email: "", password: "", passwordConfirm: "" });
 
   useEffect(() => {
     let ignore = false;
@@ -25,7 +26,7 @@ export default function EditMemberPage() {
         return;
       }
       if (!ignore) {
-        setForm({ name: member.name, phone: member.phone || "", email: member.email || "", password: "" });
+        setForm({ name: member.name, phone: member.phone || "", email: member.email || "", password: "", passwordConfirm: "" });
         setLoaded(true);
       }
     }
@@ -40,11 +41,23 @@ export default function EditMemberPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
+
+    if (changePassword) {
+      if (!form.password || !form.passwordConfirm) {
+        setError("비밀번호를 입력해주세요");
+        return;
+      }
+      if (form.password !== form.passwordConfirm) {
+        setError("비밀번호가 일치하지 않습니다");
+        return;
+      }
+    }
+
     setSaving(true);
 
     try {
       const payload: Record<string, string> = { name: form.name, phone: form.phone, email: form.email };
-      if (form.password) payload.password = form.password;
+      if (changePassword && form.password) payload.password = form.password;
 
       const res = await fetch(`/api/members/${id}`, {
         method: "PATCH",
@@ -107,16 +120,53 @@ export default function EditMemberPage() {
               />
             </FormField>
 
-            <FormField label="비밀번호">
-              <input
-                type="password"
-                placeholder="변경 시에만 입력"
-                className="w-full"
-                value={form.password}
-                onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
-                minLength={8}
-              />
-            </FormField>
+            <div>
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-sm"
+                  checked={changePassword}
+                  onChange={(e) => {
+                    setChangePassword(e.target.checked);
+                    if (!e.target.checked) {
+                      setForm((p) => ({ ...p, password: "", passwordConfirm: "" }));
+                    }
+                  }}
+                />
+                <span className="text-base font-medium">비밀번호 변경</span>
+              </label>
+            </div>
+
+            {changePassword && (
+              <>
+                <FormField label="새 비밀번호">
+                  <input
+                    type="password"
+                    placeholder="8자 이상 입력"
+                    className="w-full"
+                    value={form.password}
+                    onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
+                    minLength={8}
+                    required
+                  />
+                </FormField>
+
+                <FormField label="새 비밀번호 확인">
+                  <input
+                    type="password"
+                    placeholder="비밀번호를 다시 입력"
+                    className="w-full"
+                    value={form.passwordConfirm}
+                    onChange={(e) => setForm((p) => ({ ...p, passwordConfirm: e.target.value }))}
+                    minLength={8}
+                    required
+                  />
+                  {form.passwordConfirm && form.password !== form.passwordConfirm && (
+                    <p className="text-sm text-error mt-1">비밀번호가 일치하지 않습니다</p>
+                  )}
+                </FormField>
+              </>
+            )}
 
             <FormField label="연락처">
               <input

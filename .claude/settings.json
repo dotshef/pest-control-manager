@@ -11,7 +11,14 @@
       "Bash(grep -o '`[^`]*`')",
       "Read(//c/D/pest-control/**)",
       "Read(//c/D/pest-control/=== form-control /**)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "WebFetch(domain:www.yangju.go.kr)",
+      "WebFetch(domain:www.law.go.kr)",
+      "WebFetch(domain:sreport.cesco.co.kr)",
+      "WebFetch(domain:ecochild.pusan.ac.kr)",
+      "Bash(rm app/api/settings/logo/route.ts)",
+      "Bash(rmdir app/api/settings/logo)",
+      "Bash(echo \"exit=$?\")"
     ],
     "additionalDirectories": [
       "c:\\D\\pest-control\\.claude"

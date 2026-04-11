@@ -7,6 +7,7 @@ import type { JwtPayload } from "@/lib/auth/jwt";
 const pageTitles: Record<string, string> = {
   "/dashboard": "대시보드",
   "/calendar": "캘린더",
+  "/visits": "방문 관리",
   "/clients": "고객 관리",
   "/certificates": "증명서",
   "/members": "직원 관리",

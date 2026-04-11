@@ -5,7 +5,6 @@
 - `id` (uuid, PK)
 - `name` (업체명)
 - `business_number` (사업자등록번호)
-- `logo_url` (증명서용 로고 이미지)
 - `owner_name` (대표자명)
 - `phone`
 - `address`
@@ -85,7 +84,9 @@
 - `method` (소독 방법 — 분무/연막/훈증 등)
 - `chemicals_used` (사용 약제, text[])
 - `notes`
+- `visit_code` (사람이 읽는 방문 코드 — 서버 채번, nullable for legacy rows)
 - `created_at`
+- UNIQUE `(tenant_id, visit_code)`
 
 ---
 
@@ -120,3 +121,17 @@ visits    1 → 1 certificates`
 `CERT-YYYYMMDD-00001` 형식. 서버에서 직접 채번.
 
 예시: `CERT-20260408-00001`
+
+---
+
+## 방문 코드 채번 규칙
+
+`VYYYYMMDD-NNN` 형식. 서버에서 직접 채번.
+
+- 날짜: 방문 **예정일**(`scheduled_date`) 기준
+- 시퀀스: 같은 `tenant_id` + 같은 날짜 prefix 내에서 001부터 증가
+- 3자리 zero-pad (일일 최대 999건)
+
+예시: `V20260411-001`, `V20260411-002`
+
+레거시 행(visit_code = null)은 UI에서 `-`로 표시되며 목록에서 상세 페이지로 이동 불가. 필요 시 `UPDATE visits SET visit_code = ... WHERE id = ...` 로 수동 백필.

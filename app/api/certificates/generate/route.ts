@@ -41,7 +41,7 @@ export async function POST(request: Request) {
   // 업체 정보 조회
   const { data: tenant } = await supabase
     .from("tenants")
-    .select("name, owner_name, logo_url")
+    .select("name, owner_name")
     .eq("id", session.tenantId)
     .single();
 
@@ -79,7 +79,6 @@ export async function POST(request: Request) {
     certificateNumber,
     companyName: tenant.name,
     ownerName: tenant.owner_name || "",
-    logoUrl: tenant.logo_url,
     facilityName: client?.name || "",
     facilityAddress: client?.address || "",
     facilityType,
