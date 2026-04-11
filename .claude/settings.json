@@ -19,7 +19,8 @@
       "Bash(rm app/api/settings/logo/route.ts)",
       "Bash(rmdir app/api/settings/logo)",
       "Bash(echo \"exit=$?\")",
-      "Bash(echo \"EXIT: $?\")"
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(npx shadcn@latest init --help)"
     ],
     "additionalDirectories": [
       "c:\\D\\pest-control\\.claude"
