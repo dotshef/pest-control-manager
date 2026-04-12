@@ -28,7 +28,7 @@ interface ClientDetail {
   address: string | null;
   contact_name: string | null;
   contact_phone: string | null;
-  notes: string | null;
+  is_active: boolean;
   visits: Visit[];
   stats: {
     totalVisits: number;
@@ -66,10 +66,25 @@ export default function ClientDetailPage() {
     };
   }, [id, router]);
 
-  async function handleDelete() {
-    if (!confirm("이 고객을 비활성화하시겠습니까?")) return;
-    await fetch(`/api/clients/${id}`, { method: "DELETE" });
-    router.push("/clients");
+  async function handleToggleActive() {
+    const action = client?.is_active ? "비활성화" : "활성화";
+    if (!confirm(`이 고객을 ${action}하시겠습니까?`)) return;
+
+    if (client?.is_active) {
+      await fetch(`/api/clients/${id}`, { method: "DELETE" });
+    } else {
+      await fetch(`/api/clients/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: true }),
+      });
+    }
+
+    const res = await fetch(`/api/clients/${id}`);
+    if (res.ok) {
+      const data = await res.json();
+      setClient(data);
+    }
   }
 
   function getFacilityLabel(typeId: string) {
@@ -100,12 +115,23 @@ export default function ClientDetailPage() {
         <Link href="/clients" className="inline-flex items-center justify-center p-2 rounded-lg hover:bg-muted transition-colors cursor-pointer">
           <ArrowLeft size={18} />
         </Link>
-        <h2 className="text-2xl font-bold flex-1">{client.name}</h2>
+        <h2 className="text-2xl font-bold flex-1">
+          {client.name}
+          <span className={`ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-base font-medium align-middle ${
+            client.is_active
+              ? "bg-success/10 text-success"
+              : "bg-muted text-muted-foreground"
+          }`}>
+            {client.is_active ? "활성" : "비활성"}
+          </span>
+        </h2>
         <Link href={`/clients/${id}/edit`} className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium hover:bg-muted transition-colors cursor-pointer">
           <Pencil size={14} /> 수정
         </Link>
-        <button onClick={handleDelete} className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium hover:bg-muted transition-colors text-destructive cursor-pointer">
-          <Trash2 size={14} /> 비활성화
+        <button onClick={handleToggleActive} className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium hover:bg-muted transition-colors cursor-pointer ${
+          client.is_active ? "text-destructive" : "text-success"
+        }`}>
+          <Trash2 size={14} /> {client.is_active ? "비활성화" : "활성화"}
         </button>
       </div>
 
@@ -138,19 +164,14 @@ export default function ClientDetailPage() {
                 </p>
               </div>
               <div>
-                <span className="text-muted-foreground">담당자</span>
+                <span className="text-muted-foreground">시설 담당자</span>
                 <p className="font-medium">{client.contact_name || "-"}</p>
               </div>
               <div>
                 <span className="text-muted-foreground">연락처</span>
                 <p className="font-medium">{client.contact_phone || "-"}</p>
               </div>
-              {client.notes && (
-                <div className="col-span-2">
-                  <span className="text-muted-foreground">메모</span>
-                  <p className="font-medium">{client.notes}</p>
-                </div>
-              )}
+
             </div>
           </div>
         </div>
@@ -186,12 +207,12 @@ export default function ClientDetailPage() {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>날짜</th>
-                  <th>소독 방법</th>
-                  <th>사용 약제</th>
-                  <th>상태</th>
-                  <th>증명서</th>
-                  <th></th>
+                  <th style={{ width: "15%" }}>날짜</th>
+                  <th style={{ width: "18%" }}>소독 방법</th>
+                  <th style={{ width: "27%" }}>사용 약제</th>
+                  <th style={{ width: "12%" }}>상태</th>
+                  <th style={{ width: "13%" }}>증명서</th>
+                  <th style={{ width: "15%" }}></th>
                 </tr>
               </thead>
               <tbody>

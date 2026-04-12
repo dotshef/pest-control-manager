@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, CheckCircle, XCircle, FileText, Download, Link as LinkIcon } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, FileText, Download, Link as LinkIcon, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { FACILITY_TYPES } from "@/lib/constants/facility-types";
 import { DISINFECTION_METHODS, COMMON_CHEMICALS } from "@/lib/constants/methods";
 import { FormField } from "@/components/ui/form-field";
 import { Spinner } from "@/components/ui/spinner";
+import { useSession } from "@/components/providers/session-provider";
 
 interface VisitDetail {
   id: string;
@@ -36,6 +37,7 @@ interface VisitDetail {
 export default function VisitDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const { role } = useSession();
   const [visit, setVisit] = useState<VisitDetail | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -145,6 +147,18 @@ export default function VisitDetailPage() {
       setError("증명서 생성에 실패했습니다");
     } finally {
       setGeneratingCert(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!confirm("이 방문 기록을 삭제하시겠습니까? 관련 증명서도 함께 삭제됩니다.")) return;
+
+    const res = await fetch(`/api/visits/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      router.push("/visits");
+    } else {
+      const data = await res.json();
+      setError(data.error || "삭제에 실패했습니다");
     }
   }
 
@@ -424,6 +438,15 @@ export default function VisitDetailPage() {
 
       {/* 액션 버튼 */}
       <div className="flex gap-3 justify-end">
+        {role === "admin" && (
+          <button
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium border border-destructive text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
+            onClick={handleDelete}
+          >
+            <Trash2 size={14} />
+            삭제
+          </button>
+        )}
         {!isCompleted ? (
           <button
             className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-foreground transition-colors disabled:opacity-50 cursor-pointer"

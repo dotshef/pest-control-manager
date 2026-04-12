@@ -13,9 +13,10 @@ interface FilterSelectProps {
   onChange: (value: string) => void;
   options: FilterOption[];
   className?: string;
+  disabled?: boolean;
 }
 
-export function FilterSelect({ value, onChange, options, className }: FilterSelectProps) {
+export function FilterSelect({ value, onChange, options, className, disabled }: FilterSelectProps) {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const ref = useRef<HTMLDivElement>(null);
@@ -89,11 +90,13 @@ export function FilterSelect({ value, onChange, options, className }: FilterSele
         role="combobox"
         aria-expanded={open}
         aria-haspopup="listbox"
+        disabled={disabled}
         onClick={() => {
+          if (disabled) return;
           setOpen(!open);
           if (!open) setActiveIndex(options.findIndex((o) => o.value === value));
         }}
-        className="flex items-center justify-between gap-2 w-full h-10 px-3 rounded-lg border border-input bg-card text-base transition-colors hover:bg-muted cursor-pointer"
+        className={`flex items-center justify-between gap-2 w-full h-10 px-3 rounded-lg border border-input bg-card text-base transition-colors ${disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-muted cursor-pointer"}`}
       >
         <span className="truncate">{selectedLabel}</span>
         <ChevronDown size={16} className={`shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />

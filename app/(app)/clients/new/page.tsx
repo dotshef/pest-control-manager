@@ -23,7 +23,6 @@ export default function NewClientPage() {
     address: "",
     contactName: "",
     contactPhone: "",
-    notes: "",
   });
 
   function updateField(field: string, value: string) {
@@ -143,7 +142,7 @@ export default function NewClientPage() {
 
         <div className="rounded-xl bg-card border border-border">
           <div className="p-6 space-y-4">
-            <h3 className="font-semibold">담당자 정보</h3>
+            <h3 className="font-semibold">시설 담당자 정보</h3>
 
             <div className="grid grid-cols-2 gap-3">
               <FormField label="담당자명">
@@ -165,14 +164,6 @@ export default function NewClientPage() {
               </FormField>
             </div>
 
-            <FormField label="메모">
-              <textarea
-                className="w-full"
-                rows={3}
-                value={form.notes}
-                onChange={(e) => updateField("notes", e.target.value)}
-              />
-            </FormField>
           </div>
         </div>
 

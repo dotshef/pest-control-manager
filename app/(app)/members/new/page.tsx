@@ -3,7 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FormField } from "@/components/ui/form-field";
+import { FilterSelect } from "@/components/ui/filter-select";
 import { Spinner } from "@/components/ui/spinner";
+import { HelpPopover } from "@/components/ui/help-popover";
+
+const ROLE_OPTIONS = [
+  { value: "member", label: "직원" },
+  { value: "admin", label: "관리자" },
+];
 
 export default function NewMemberPage() {
   const router = useRouter();
@@ -14,6 +21,7 @@ export default function NewMemberPage() {
     email: "",
     password: "",
     phone: "",
+    role: "member" as "admin" | "member",
   });
 
   function updateField(field: string, value: string) {
@@ -89,6 +97,14 @@ export default function NewMemberPage() {
                 onChange={(e) => updateField("password", e.target.value)}
                 required
                 minLength={8}
+              />
+            </FormField>
+
+            <FormField label={<>역할 <span className="text-destructive">*</span>{" "}<HelpPopover><p><strong>관리자</strong>: 고객 관리, 직원 관리에 접근할 수 있고, 모든 방문 데이터를 볼 수 있습니다.</p><p><strong>멤버</strong>: 고객 관리, 직원 관리에 접근할 수 없습니다. 자신에게 속한 방문 데이터만 볼 수 있습니다.</p></HelpPopover></>}>
+              <FilterSelect
+                value={form.role}
+                onChange={(v) => updateField("role", v)}
+                options={ROLE_OPTIONS}
               />
             </FormField>
 

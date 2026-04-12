@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { FACILITY_TYPES } from "@/lib/constants/facility-types";
-import { Spinner } from "@/components/ui/spinner";
 import { FilterSelect } from "@/components/ui/filter-select";
 
 interface Client {
@@ -14,6 +13,7 @@ interface Client {
   address: string | null;
   contact_name: string | null;
   contact_phone: string | null;
+  is_active: boolean;
 }
 
 interface ClientsResponse {
@@ -98,23 +98,24 @@ export default function ClientsPage() {
         <table className="data-table">
           <thead>
             <tr>
-              <th>시설명</th>
-              <th>시설 유형</th>
-              <th>주소</th>
-              <th>담당자</th>
-              <th>연락처</th>
+              <th style={{ width: "13%" }}>시설명</th>
+              <th style={{ width: "22%" }}>시설 유형</th>
+              <th style={{ width: "28%" }}>주소</th>
+              <th style={{ width: "13%" }}>시설 담당자</th>
+              <th style={{ width: "14%" }}>연락처</th>
+              <th style={{ width: "10%" }}>상태</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="text-center py-8">
-                  <Spinner size="md" />
-                </td>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <td key={i}><div className="h-4 bg-muted rounded animate-pulse" /></td>
+                ))}
               </tr>
             ) : data?.clients.length === 0 ? (
               <tr>
-                <td colSpan={5} className="text-center py-8 text-muted-foreground">
+                <td colSpan={6} className="text-center py-8 text-muted-foreground">
                   등록된 고객이 없습니다
                 </td>
               </tr>
@@ -133,6 +134,15 @@ export default function ClientsPage() {
                   <td className="text-base">{client.address || "-"}</td>
                   <td className="text-base">{client.contact_name || "-"}</td>
                   <td className="text-base">{client.contact_phone || "-"}</td>
+                  <td>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-base font-medium ${
+                      client.is_active
+                        ? "bg-success/10 text-success"
+                        : "bg-muted text-muted-foreground"
+                    }`}>
+                      {client.is_active ? "활성" : "비활성"}
+                    </span>
+                  </td>
                 </tr>
               ))
             )}

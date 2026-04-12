@@ -10,6 +10,9 @@ export async function GET(
 ) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (session.role !== "admin") {
+    return NextResponse.json({ error: "관리자만 조회할 수 있습니다" }, { status: 403 });
+  }
 
   const { id } = await params;
   const supabase = getSupabase();
@@ -76,7 +79,7 @@ export async function PATCH(
   if (parsed.data.address !== undefined) updateData.address = parsed.data.address;
   if (parsed.data.contactName !== undefined) updateData.contact_name = parsed.data.contactName;
   if (parsed.data.contactPhone !== undefined) updateData.contact_phone = parsed.data.contactPhone;
-  if (parsed.data.notes !== undefined) updateData.notes = parsed.data.notes;
+  if (parsed.data.isActive !== undefined) updateData.is_active = parsed.data.isActive;
 
   const { error } = await supabase
     .from("clients")

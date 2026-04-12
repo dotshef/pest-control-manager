@@ -71,6 +71,11 @@ export async function GET(request: Request) {
       query = query.eq("status", status);
     }
 
+    // 역할별 강제 필터: member는 본인 담당 건만
+    if (session.role === "member") {
+      query = query.eq("user_id", session.userId);
+    }
+
     const { data, error } = await query;
 
     if (error) {

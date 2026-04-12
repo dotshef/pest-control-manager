@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { FACILITY_TYPES } from "@/lib/constants/facility-types";
-import { Spinner } from "@/components/ui/spinner";
 import { VisitCreateModal } from "@/components/visits/visit-create-modal";
 import { FilterSelect } from "@/components/ui/filter-select";
 import { useSession } from "@/components/providers/session-provider";
@@ -231,25 +230,25 @@ export default function VisitsPage() {
         <table className="data-table">
           <thead>
             <tr>
-              <th>코드</th>
-              <th>시설명</th>
-              <th>시설 유형</th>
-              <th>담당자</th>
-              <th>상태</th>
-              <th>날짜</th>
+              <th style={{ width: "12%" }}>코드</th>
+              <th style={{ width: "18%" }}>시설명</th>
+              <th style={{ width: "27%" }}>시설 유형</th>
+              <th style={{ width: "15%" }}>담당자</th>
+              <th style={{ width: "13%" }}>상태</th>
+              <th style={{ width: "15%" }}>날짜</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="text-center py-8">
-                  <Spinner size="md" />
-                </td>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <td key={i}><div className="h-4 bg-muted rounded animate-pulse" /></td>
+                ))}
               </tr>
             ) : data?.visits.length === 0 ? (
               <tr>
                 <td colSpan={6} className="text-center py-8 text-muted-foreground">
-                  방문 이력이 없습니다
+                  조건에 해당하는 방문 일정이 없습니다
                 </td>
               </tr>
             ) : (

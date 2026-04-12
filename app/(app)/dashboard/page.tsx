@@ -179,10 +179,10 @@ export default function DashboardPage() {
                 <table className="data-table">
                   <thead>
                     <tr>
-                      <th>고객명</th>
-                      <th>시설 유형</th>
-                      <th>담당 직원</th>
-                      <th>상태</th>
+                      <th style={{ width: "30%" }}>고객명</th>
+                      <th style={{ width: "25%" }}>시설 유형</th>
+                      <th style={{ width: "25%" }}>담당 직원</th>
+                      <th style={{ width: "20%" }}>상태</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -264,13 +264,14 @@ export default function DashboardPage() {
           <div className="rounded-xl bg-card border border-border">
             <div className="p-6">
               <h3 className="text-base font-semibold mb-3">이번 주 요약</h3>
-              <div className="flex items-end gap-2 h-32">
+              <div className="flex gap-2 h-32">
                 {data.weeklyChart.map((day) => {
                   const total = day.completed + day.scheduled + day.missed;
                   const height = total > 0 ? (total / maxChartValue) * 100 : 4;
                   return (
                     <div key={day.label} className="flex-1 flex flex-col items-center gap-1">
                       <span className="text-base font-medium">{total}</span>
+                      <div className="w-full flex-1 flex flex-col justify-end">
                       <div className="w-full flex flex-col-reverse rounded-t overflow-hidden" style={{ height: `${height}%` }}>
                         {day.completed > 0 && (
                           <div
@@ -291,6 +292,7 @@ export default function DashboardPage() {
                           />
                         )}
                         {total === 0 && <div className="bg-border h-full" />}
+                      </div>
                       </div>
                       <span className="text-base text-muted-foreground">{day.label}</span>
                     </div>

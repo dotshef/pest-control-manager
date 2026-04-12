@@ -7,6 +7,9 @@ import { createClientSchema } from "@/lib/validations/client";
 export async function GET(request: Request) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (session.role !== "admin") {
+    return NextResponse.json({ error: "관리자만 조회할 수 있습니다" }, { status: 403 });
+  }
 
   const { searchParams } = new URL(request.url);
   const search = searchParams.get("search") || "";
@@ -20,7 +23,7 @@ export async function GET(request: Request) {
     .from("clients")
     .select("*", { count: "exact" })
     .eq("tenant_id", session.tenantId)
-    .eq("is_active", true)
+    .order("is_active", { ascending: false })
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
@@ -59,7 +62,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
   }
 
-  const { name, facilityType, area, areaPyeong, address, contactName, contactPhone, notes } = parsed.data;
+  const { name, facilityType, area, areaPyeong, address, contactName, contactPhone } = parsed.data;
   const now = new Date().toISOString();
   const supabase = getSupabase();
 
@@ -74,7 +77,6 @@ export async function POST(request: Request) {
       address: address || null,
       contact_name: contactName || null,
       contact_phone: contactPhone || null,
-      notes: notes || null,
       created_at: now,
       updated_at: now,
     })

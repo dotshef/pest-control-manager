@@ -8,6 +8,7 @@ const COOKIE_NAME = "session";
 const TOKEN_MAX_AGE = 60 * 60 * 24; // 1일
 
 const PUBLIC_PATHS = ["/login", "/signup", "/api/auth/login", "/api/auth/signup"];
+const ADMIN_ONLY_PATHS = ["/clients"];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -37,6 +38,12 @@ export async function proxy(request: NextRequest) {
 
   try {
     const { payload } = await jwtVerify<JwtPayload>(token, JWT_SECRET);
+
+    // 관리자 전용 경로 — member 접근 차단
+    const isAdminOnly = ADMIN_ONLY_PATHS.some((path) => pathname.startsWith(path));
+    if (isAdminOnly && payload.role !== "admin") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
 
     // Sliding session — 활동이 있을 때마다 토큰 재발급
     const newPayload: JwtPayload = {

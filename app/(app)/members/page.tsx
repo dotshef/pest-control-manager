@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { Spinner } from "@/components/ui/spinner";
+import { useSession } from "@/components/providers/session-provider";
 
 interface Member {
   id: string;
@@ -16,6 +16,7 @@ interface Member {
 }
 
 export default function MembersPage() {
+  const { userId } = useSession();
   const [members, setMembers] = useState<Member[] | null>(null);
 
   const loading = !members;
@@ -45,7 +46,7 @@ export default function MembersPage() {
   }, []);
 
   async function handleToggleActive(member: Member) {
-    if (member.role === "admin") return;
+    if (member.id === userId) return;
     const action = member.is_active ? "비활성화" : "활성화";
     if (!confirm(`${member.name}님을 ${action}하시겠습니까?`)) return;
 
@@ -77,21 +78,21 @@ export default function MembersPage() {
         <table className="data-table">
           <thead>
             <tr>
-              <th>이름</th>
-              <th>이메일</th>
-              <th>연락처</th>
-              <th>역할</th>
-              <th>상태</th>
-              <th>등록일</th>
-              <th></th>
+              <th style={{ width: "12%" }}>이름</th>
+              <th style={{ width: "22%" }}>이메일</th>
+              <th style={{ width: "15%" }}>연락처</th>
+              <th style={{ width: "10%" }}>역할</th>
+              <th style={{ width: "10%" }}>상태</th>
+              <th style={{ width: "13%" }}>등록일</th>
+              <th style={{ width: "18%" }}></th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={7} className="text-center py-8">
-                  <Spinner size="md" />
-                </td>
+                {Array.from({ length: 7 }).map((_, i) => (
+                  <td key={i}><div className="h-4 bg-muted rounded animate-pulse" /></td>
+                ))}
               </tr>
             ) : members?.length === 0 ? (
               <tr>
@@ -123,14 +124,14 @@ export default function MembersPage() {
                     {new Date(member.created_at).toLocaleDateString("ko-KR")}
                   </td>
                   <td>
-                    {member.role !== "admin" && (
-                      <div className="flex gap-1">
-                        <Link
-                          href={`/members/${member.id}/edit`}
-                          className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium text-primary hover:bg-primary/10 transition-colors cursor-pointer"
-                        >
-                          수정
-                        </Link>
+                    <div className="flex gap-1">
+                      <Link
+                        href={`/members/${member.id}/edit`}
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+                      >
+                        수정
+                      </Link>
+                      {member.id !== userId && (
                         <button
                           onClick={() => handleToggleActive(member)}
                           className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium transition-colors cursor-pointer ${
@@ -139,8 +140,8 @@ export default function MembersPage() {
                         >
                           {member.is_active ? "비활성화" : "활성화"}
                         </button>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))

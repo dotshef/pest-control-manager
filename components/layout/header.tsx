@@ -9,7 +9,7 @@ const pageTitles: Record<string, string> = {
   "/calendar": "캘린더",
   "/visits": "방문 관리",
   "/clients": "고객 관리",
-  "/certificates": "증명서",
+
   "/members": "직원 관리",
   "/settings": "설정",
 };

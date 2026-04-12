@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { FormField } from "@/components/ui/form-field";
 import { Spinner } from "@/components/ui/spinner";
+import { useSession } from "@/components/providers/session-provider";
 
 interface Tenant {
   name: string;
@@ -14,6 +15,8 @@ interface Tenant {
 }
 
 export default function SettingsPage() {
+  const { role } = useSession();
+  const isAdmin = role === "admin";
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -130,6 +133,7 @@ export default function SettingsPage() {
                 value={form.name}
                 onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
                 required
+                disabled={!isAdmin}
               />
             </FormField>
 
@@ -139,6 +143,7 @@ export default function SettingsPage() {
                 className="w-full"
                 value={form.businessNumber}
                 onChange={(e) => setForm((p) => ({ ...p, businessNumber: e.target.value }))}
+                disabled={!isAdmin}
               />
             </FormField>
 
@@ -149,6 +154,7 @@ export default function SettingsPage() {
                   className="w-full"
                   value={form.ownerName}
                   onChange={(e) => setForm((p) => ({ ...p, ownerName: e.target.value }))}
+                  disabled={!isAdmin}
                 />
               </FormField>
               <FormField label="전화번호">
@@ -157,6 +163,7 @@ export default function SettingsPage() {
                   className="w-full"
                   value={form.phone}
                   onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
+                  disabled={!isAdmin}
                 />
               </FormField>
             </div>
@@ -167,20 +174,23 @@ export default function SettingsPage() {
                 className="w-full"
                 value={form.address}
                 onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))}
+                disabled={!isAdmin}
               />
             </FormField>
           </div>
         </div>
 
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-foreground transition-colors disabled:opacity-50 cursor-pointer"
-            disabled={saving}
-          >
-            {saving ? <Spinner size="sm" /> : "저장"}
-          </button>
-        </div>
+        {isAdmin && (
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-foreground transition-colors disabled:opacity-50 cursor-pointer"
+              disabled={saving}
+            >
+              {saving ? <Spinner size="sm" /> : "저장"}
+            </button>
+          </div>
+        )}
       </form>
 
     </div>

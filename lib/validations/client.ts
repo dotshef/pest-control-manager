@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { FACILITY_TYPE_IDS } from "@/lib/constants/facility-types";
+import { phoneSchema } from "./phone";
 
 export const createClientSchema = z.object({
   name: z.string().min(1, "시설명을 입력해주세요"),
@@ -10,13 +11,14 @@ export const createClientSchema = z.object({
   areaPyeong: z.number().nullable().optional(),
   address: z.string().optional(),
   contactName: z.string().optional(),
-  contactPhone: z.string().optional(),
-  notes: z.string().optional(),
+  contactPhone: phoneSchema,
 });
 
 export const updateClientSchema = createClientSchema
   .partial()
-  .extend({ name: z.string().min(1, "시설명을 입력해주세요") });
+  .extend({
+    isActive: z.boolean().optional(),
+  });
 
 export type CreateClientInput = z.infer<typeof createClientSchema>;
 export type UpdateClientInput = z.infer<typeof updateClientSchema>;

@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
   }
 
-  const { email, password, name, phone } = parsed.data;
+  const { email, password, name, phone, role } = parsed.data;
   const supabase = getSupabase();
 
   // 이메일 중복 확인
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       password_hash: passwordHash,
       name,
       phone: phone || null,
-      role: "member",
+      role,
       created_at: now,
       updated_at: now,
     })

@@ -3,16 +3,26 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { FormField } from "@/components/ui/form-field";
+import { FilterSelect } from "@/components/ui/filter-select";
 import { Spinner } from "@/components/ui/spinner";
+import { HelpPopover } from "@/components/ui/help-popover";
+import { useSession } from "@/components/providers/session-provider";
+
+const ROLE_OPTIONS = [
+  { value: "member", label: "직원" },
+  { value: "admin", label: "관리자" },
+];
 
 export default function EditMemberPage() {
   const { id } = useParams<{ id: string }>();
+  const session = useSession();
   const router = useRouter();
+  const isSelf = session.userId === id;
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [changePassword, setChangePassword] = useState(false);
-  const [form, setForm] = useState({ name: "", phone: "", email: "", password: "", passwordConfirm: "" });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", password: "", passwordConfirm: "", role: "member" as "admin" | "member" });
 
   useEffect(() => {
     let ignore = false;
@@ -26,7 +36,7 @@ export default function EditMemberPage() {
         return;
       }
       if (!ignore) {
-        setForm({ name: member.name, phone: member.phone || "", email: member.email || "", password: "", passwordConfirm: "" });
+        setForm({ name: member.name, phone: member.phone || "", email: member.email || "", password: "", passwordConfirm: "", role: member.role || "member" });
         setLoaded(true);
       }
     }
@@ -56,7 +66,7 @@ export default function EditMemberPage() {
     setSaving(true);
 
     try {
-      const payload: Record<string, string> = { name: form.name, phone: form.phone, email: form.email };
+      const payload: Record<string, string> = { name: form.name, phone: form.phone, email: form.email, role: form.role };
       if (changePassword && form.password) payload.password = form.password;
 
       const res = await fetch(`/api/members/${id}`, {
@@ -124,7 +134,7 @@ export default function EditMemberPage() {
               <label className="flex items-center gap-2 cursor-pointer select-none">
                 <input
                   type="checkbox"
-                  className="checkbox checkbox-sm"
+                  className="size-4 rounded border-border accent-primary"
                   checked={changePassword}
                   onChange={(e) => {
                     setChangePassword(e.target.checked);
@@ -167,6 +177,15 @@ export default function EditMemberPage() {
                 </FormField>
               </>
             )}
+
+            <FormField label={<>역할{" "}<HelpPopover><p><strong>관리자</strong>: 고객 관리, 직원 관리에 접근할 수 있고, 모든 방문 데이터를 볼 수 있습니다.</p><p><strong>멤버</strong>: 고객 관리, 직원 관리에 접근할 수 없습니다. 자신에게 속한 방문 데이터만 볼 수 있습니다.</p></HelpPopover></>}>
+              <FilterSelect
+                value={form.role}
+                onChange={(v) => setForm((p) => ({ ...p, role: v as "admin" | "member" }))}
+                options={ROLE_OPTIONS}
+                disabled={isSelf}
+              />
+            </FormField>
 
             <FormField label="연락처">
               <input

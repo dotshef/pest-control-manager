@@ -107,3 +107,31 @@ export async function PATCH(
 
   return NextResponse.json({ error: "잘못된 요청입니다" }, { status: 400 });
 }
+
+// 방문 삭제 (admin만)
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (session.role !== "admin") {
+    return NextResponse.json({ error: "관리자만 삭제할 수 있습니다" }, { status: 403 });
+  }
+
+  const { id } = await params;
+  const supabase = getSupabase();
+
+  const { error } = await supabase
+    .from("visits")
+    .delete()
+    .eq("id", id)
+    .eq("tenant_id", session.tenantId);
+
+  if (error) {
+    return NextResponse.json({ error: "삭제에 실패했습니다" }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
+}

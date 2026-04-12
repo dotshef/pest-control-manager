@@ -19,43 +19,54 @@ export async function GET() {
     .eq("status", "scheduled")
     .lt("scheduled_date", todayStr);
 
+  // 역할별 필터: member는 본인 담당 건만
+  const isMember = session.role === "member";
+
   // 오늘 방문 예정
-  const { data: todayVisits } = await supabase
+  let todayQuery = supabase
     .from("visits")
     .select("id, scheduled_date, status, clients(id, name, facility_type), users(id, name)")
     .eq("tenant_id", session.tenantId)
     .eq("scheduled_date", todayStr)
     .order("created_at", { ascending: true });
+  if (isMember) todayQuery = todayQuery.eq("user_id", session.userId);
+  const { data: todayVisits } = await todayQuery;
 
   // 이번 주 예정
   const weekStart = format(startOfWeek(now, { weekStartsOn: 1 }), "yyyy-MM-dd");
   const weekEnd = format(endOfWeek(now, { weekStartsOn: 1 }), "yyyy-MM-dd");
-  const { count: weekCount } = await supabase
+  let weekCountQuery = supabase
     .from("visits")
     .select("id", { count: "exact", head: true })
     .eq("tenant_id", session.tenantId)
     .gte("scheduled_date", weekStart)
     .lte("scheduled_date", weekEnd);
+  if (isMember) weekCountQuery = weekCountQuery.eq("user_id", session.userId);
+  const { count: weekCount } = await weekCountQuery;
 
   // 미완료 건
-  const { data: missedVisits } = await supabase
+  let missedQuery = supabase
     .from("visits")
     .select("id, scheduled_date, clients(id, name)")
     .eq("tenant_id", session.tenantId)
     .eq("status", "missed")
     .order("scheduled_date", { ascending: false })
     .limit(10);
+  if (isMember) missedQuery = missedQuery.eq("user_id", session.userId);
+  const { data: missedVisits } = await missedQuery;
 
   // 이번 달 완료
   const monthStart = format(startOfMonth(now), "yyyy-MM-dd");
   const monthEnd = format(endOfMonth(now), "yyyy-MM-dd");
-  const { count: monthCompleted } = await supabase
+  let monthQuery = supabase
     .from("visits")
     .select("id", { count: "exact", head: true })
     .eq("tenant_id", session.tenantId)
     .eq("status", "completed")
     .gte("scheduled_date", monthStart)
     .lte("scheduled_date", monthEnd);
+  if (isMember) monthQuery = monthQuery.eq("user_id", session.userId);
+  const { count: monthCompleted } = await monthQuery;
 
   // 이번 주 요일별 데이터 (차트용)
   const weekDays = eachDayOfInterval({
@@ -63,12 +74,14 @@ export async function GET() {
     end: endOfWeek(now, { weekStartsOn: 1 }),
   });
 
-  const { data: weekVisits } = await supabase
+  let weekVisitsQuery = supabase
     .from("visits")
     .select("scheduled_date, status")
     .eq("tenant_id", session.tenantId)
     .gte("scheduled_date", weekStart)
     .lte("scheduled_date", weekEnd);
+  if (isMember) weekVisitsQuery = weekVisitsQuery.eq("user_id", session.userId);
+  const { data: weekVisits } = await weekVisitsQuery;
 
   const dayLabels = ["월", "화", "수", "목", "금", "토", "일"];
   const weeklyChart = weekDays.map((day, i) => {

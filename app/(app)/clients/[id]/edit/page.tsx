@@ -23,7 +23,6 @@ export default function EditClientPage() {
     address: "",
     contactName: "",
     contactPhone: "",
-    notes: "",
   });
 
   useEffect(() => {
@@ -45,7 +44,6 @@ export default function EditClientPage() {
           address: data.address || "",
           contactName: data.contact_name || "",
           contactPhone: data.contact_phone || "",
-          notes: data.notes || "",
         });
         setLoaded(true);
       }
@@ -172,7 +170,7 @@ export default function EditClientPage() {
 
         <div className="rounded-xl bg-card border border-border">
           <div className="p-6 space-y-4">
-            <h3 className="font-semibold">담당자 정보</h3>
+            <h3 className="font-semibold">시설 담당자 정보</h3>
 
             <div className="grid grid-cols-2 gap-3">
               <FormField label="담당자명">
@@ -193,14 +191,6 @@ export default function EditClientPage() {
               </FormField>
             </div>
 
-            <FormField label="메모">
-              <textarea
-                className="w-full"
-                rows={3}
-                value={form.notes}
-                onChange={(e) => updateField("notes", e.target.value)}
-              />
-            </FormField>
           </div>
         </div>
 
