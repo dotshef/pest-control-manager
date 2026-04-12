@@ -428,7 +428,7 @@ export default function VisitDetailPage() {
                   >
                     <span className="flex items-center gap-2 text-base">
                       <FileText size={14} />
-                      {visit.certificates.certificate_number}.hwpx
+                      소독증명서_{visit.clients?.name || "미지정"}_{visit.completed_at?.slice(0, 10).replace(/-/g, "") || ""}.hwpx
                     </span>
                     <Download size={14} className="text-muted-foreground" />
                   </a>

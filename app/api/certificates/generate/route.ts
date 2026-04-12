@@ -48,7 +48,7 @@ export async function POST(request: Request) {
   // 기존 증명서 확인
   const { data: existingCert } = await supabase
     .from("certificates")
-    .select("id")
+    .select("id, file_url")
     .eq("visit_id", visitId)
     .single();
 
@@ -103,7 +103,7 @@ export async function POST(request: Request) {
     operatorCeo: tenant.owner_name || "",
   });
 
-  // Supabase Storage에 업로드
+  // Supabase Storage에 업로드 (스토리지는 영문 키)
   const filePath = `${session.tenantId}/${certificateNumber}.hwpx`;
   const { error: uploadError } = await supabase.storage
     .from("certificates")
@@ -119,8 +119,11 @@ export async function POST(request: Request) {
 
   const certNow = new Date().toISOString();
 
-  // certificates 테이블에 기록 (재발급 시 업데이트)
+  // certificates 테이블에 기록 (재발급 시 기존 파일 삭제 후 업데이트)
   if (existingCert) {
+    if (existingCert.file_url) {
+      await supabase.storage.from("certificates").remove([existingCert.file_url]);
+    }
     await supabase
       .from("certificates")
       .update({
