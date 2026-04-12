@@ -29,6 +29,10 @@ interface Visit {
     id: string;
     name: string;
   } | null;
+  certificates: {
+    id: string;
+    certificate_number: string;
+  } | null;
 }
 
 interface VisitsResponse {
@@ -230,24 +234,25 @@ export default function VisitsPage() {
         <table className="data-table">
           <thead>
             <tr>
-              <th style={{ width: "12%" }}>코드</th>
-              <th style={{ width: "18%" }}>시설명</th>
-              <th style={{ width: "27%" }}>시설 유형</th>
-              <th style={{ width: "15%" }}>담당자</th>
-              <th style={{ width: "13%" }}>상태</th>
-              <th style={{ width: "15%" }}>날짜</th>
+              <th style={{ width: "11%" }}>코드</th>
+              <th style={{ width: "16%" }}>시설명</th>
+              <th style={{ width: "22%" }}>시설 유형</th>
+              <th style={{ width: "12%" }}>담당자</th>
+              <th style={{ width: "10%" }}>상태</th>
+              <th style={{ width: "14%" }}>날짜</th>
+              <th style={{ width: "15%" }}>증명서</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                {Array.from({ length: 6 }).map((_, i) => (
+                {Array.from({ length: 7 }).map((_, i) => (
                   <td key={i}><div className="h-4 bg-muted rounded animate-pulse" /></td>
                 ))}
               </tr>
             ) : data?.visits.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-8 text-muted-foreground">
+                <td colSpan={7} className="text-center py-8 text-muted-foreground">
                   조건에 해당하는 방문 일정이 없습니다
                 </td>
               </tr>
@@ -284,6 +289,9 @@ export default function VisitsPage() {
                   <td className="text-base">{visit.users?.name || "-"}</td>
                   <td>{getStatusBadge(visit.status)}</td>
                   <td className="text-base">{visit.scheduled_date}</td>
+                  <td className="text-base">
+                    {visit.certificates ? visit.certificates.certificate_number : "-"}
+                  </td>
                 </tr>
               ))
             )}

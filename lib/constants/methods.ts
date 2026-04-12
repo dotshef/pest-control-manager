@@ -14,5 +14,4 @@ export const COMMON_CHEMICALS = [
   "이미다클로프리드",
   "피프로닐",
   "클로르피리포스",
-  "기타",
 ] as const;

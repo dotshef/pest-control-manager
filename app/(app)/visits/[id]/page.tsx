@@ -221,7 +221,7 @@ export default function VisitDetailPage() {
       {/* 고객 정보 */}
       <div className="rounded-xl bg-card border border-border mb-4">
         <div className="p-6">
-          <h3 className="text-base font-semibold">고객 정보</h3>
+          <h3 className="text-lg font-semibold">고객 정보</h3>
           <div className="grid grid-cols-2 gap-y-2 gap-x-6 text-base mt-2">
             <div>
               <span className="text-muted-foreground">시설명</span>
@@ -260,7 +260,7 @@ export default function VisitDetailPage() {
       {/* 소독 정보 입력 */}
       <div className="rounded-xl bg-card border border-border mb-4">
         <div className="p-6 space-y-4">
-          <h3 className="text-base font-semibold">소독 정보</h3>
+          <h3 className="text-lg font-semibold">소독 정보</h3>
 
           {/* 소독 방법 */}
           <FormField label="소독 방법">
@@ -348,9 +348,9 @@ export default function VisitDetailPage() {
           </FormField>
 
           {/* 메모 */}
-          <FormField label="메모">
+          <FormField label="특이사항">
             <textarea
-              className="w-full"
+              className="w-full resize-none"
               rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

@@ -97,7 +97,8 @@ export async function GET(request: Request) {
       `
       id, visit_code, scheduled_date, completed_at, status, method, chemicals_used, notes, user_id,
       clients!inner(id, name, facility_type, address),
-      users(id, name)
+      users(id, name),
+      certificates(id, certificate_number)
     `,
       { count: "exact" }
     )
