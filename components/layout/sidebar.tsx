@@ -1,15 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Calendar,
   ClipboardList,
   Building2,
-
   Users,
   Settings,
+  UserPen,
+  LogOut,
 } from "lucide-react";
 
 interface NavItem {
@@ -24,17 +25,22 @@ const navItems: NavItem[] = [
   { href: "/calendar", label: "캘린더", icon: <Calendar size={22} /> },
   { href: "/visits", label: "방문 관리", icon: <ClipboardList size={22} /> },
   { href: "/clients", label: "고객 관리", icon: <Building2 size={22} />, adminOnly: true },
-
   { href: "/members", label: "직원 관리", icon: <Users size={22} />, adminOnly: true },
-  { href: "/settings", label: "설정", icon: <Settings size={22} /> },
+  { href: "/settings", label: "업체 설정", icon: <Settings size={22} /> },
 ];
 
 export function Sidebar({ role }: { role: "admin" | "member" }) {
   const pathname = usePathname();
+  const router = useRouter();
 
   const filteredItems = navItems.filter(
     (item) => !item.adminOnly || role === "admin"
   );
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/login");
+  }
 
   return (
     <aside className="hidden lg:flex flex-col w-72 bg-card border-r border-border">
@@ -53,7 +59,7 @@ export function Sidebar({ role }: { role: "admin" | "member" }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg font-medium transition-colors ${
                 isActive
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-muted"
@@ -65,6 +71,28 @@ export function Sidebar({ role }: { role: "admin" | "member" }) {
           );
         })}
       </nav>
+
+      {/* 하단 메뉴 */}
+      <div className="px-3 py-4 border-t border-border space-y-1">
+        <Link
+          href="/my-info"
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg font-medium transition-colors ${
+            pathname.startsWith("/my-info")
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:bg-muted"
+          }`}
+        >
+          <UserPen size={22} />
+          내 정보 수정
+        </Link>
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-4 py-3 rounded-lg text-lg font-medium text-muted-foreground hover:bg-muted transition-colors cursor-pointer w-full"
+        >
+          <LogOut size={22} />
+          로그아웃
+        </button>
+      </div>
     </aside>
   );
 }

@@ -9,6 +9,7 @@ import { DISINFECTION_METHODS, COMMON_CHEMICALS } from "@/lib/constants/methods"
 import { FormField } from "@/components/ui/form-field";
 import { Spinner } from "@/components/ui/spinner";
 import { useSession } from "@/components/providers/session-provider";
+import { toast } from "sonner";
 
 interface VisitDetail {
   id: string;
@@ -144,9 +145,14 @@ export default function VisitDetailPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ visitId: id, issueNumber: issueNumber || undefined }),
       });
-      if (res.ok) fetchVisit();
+      if (res.ok) {
+        fetchVisit();
+        toast.success("증명서가 생성되었습니다");
+      } else {
+        toast.error("증명서 생성에 실패했습니다");
+      }
     } catch {
-      setError("증명서 생성에 실패했습니다");
+      toast.error("증명서 생성에 실패했습니다");
     } finally {
       setGeneratingCert(false);
     }
