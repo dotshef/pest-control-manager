@@ -24,7 +24,7 @@ export async function GET(
       *,
       visits(
         id, scheduled_date, completed_at, status, method, chemicals_used, user_id,
-        certificates(id, certificate_number, file_url)
+        certificates(id, certificate_number, hwpx_file_url, pdf_file_url)
       )
     `)
     .eq("id", id)

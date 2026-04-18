@@ -31,8 +31,10 @@ interface VisitDetail {
   certificates: {
     id: string;
     certificate_number: string;
-    file_url: string | null;
-    file_name: string | null;
+    hwpx_file_url: string | null;
+    hwpx_file_name: string | null;
+    pdf_file_url: string | null;
+    pdf_file_name: string | null;
   } | null;
 }
 
@@ -424,21 +426,35 @@ export default function VisitDetailPage() {
             </div>
 
             {/* 파일 */}
-            {visit.certificates?.file_url && (
+            {(visit.certificates?.hwpx_file_url || visit.certificates?.pdf_file_url) && (
               <>
                 <hr className="border-border" />
                 <div className="space-y-2">
                   <span className="text-muted-foreground text-base block mb-2">파일</span>
-                  <a
-                    href={`/api/certificates/${visit.certificates.id}/download`}
-                    className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted transition-colors cursor-pointer"
-                  >
-                    <span className="flex items-center gap-2 text-base">
-                      <FileText size={14} />
-                      {visit.certificates.file_name || `${visit.certificates.certificate_number}.hwpx`}
-                    </span>
-                    <Download size={14} className="text-muted-foreground" />
-                  </a>
+                  {visit.certificates.hwpx_file_url && (
+                    <a
+                      href={`/api/certificates/${visit.certificates.id}/hwpx`}
+                      className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted transition-colors cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2 text-base">
+                        <FileText size={14} />
+                        {visit.certificates.hwpx_file_name || `${visit.certificates.certificate_number}.hwpx`}
+                      </span>
+                      <Download size={14} className="text-muted-foreground" />
+                    </a>
+                  )}
+                  {visit.certificates.pdf_file_url && (
+                    <a
+                      href={`/api/certificates/${visit.certificates.id}/pdf`}
+                      className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted transition-colors cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2 text-base">
+                        <FileText size={14} />
+                        {visit.certificates.pdf_file_name || `${visit.certificates.certificate_number}.pdf`}
+                      </span>
+                      <Download size={14} className="text-muted-foreground" />
+                    </a>
+                  )}
                 </div>
               </>
             )}

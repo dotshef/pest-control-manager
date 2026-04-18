@@ -71,8 +71,10 @@ create table certificates (
   tenant_id uuid not null references tenants(id) on delete cascade,
   certificate_number text not null unique,
   issue_number text,
-  file_url text,
-  file_name text,
+  hwpx_file_url text,
+  hwpx_file_name text,
+  pdf_file_url text,
+  pdf_file_name text,
   sent_at timestamptz,
   sent_to text,
   created_at timestamptz not null

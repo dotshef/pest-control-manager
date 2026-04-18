@@ -16,7 +16,7 @@ interface Visit {
   method: string | null;
   chemicals_used: string[] | null;
   user_id: string | null;
-  certificates: { id: string; certificate_number: string; file_url: string | null } | null;
+  certificates: { id: string; certificate_number: string; hwpx_file_url: string | null; pdf_file_url: string | null } | null;
 }
 
 interface ClientDetail {
@@ -251,15 +251,26 @@ export default function ClientDetailPage() {
                         {visit.certificates?.certificate_number || "-"}
                       </td>
                       <td>
-                        {visit.certificates?.file_url && (
-                          <a
-                            href={`/api/certificates/${visit.certificates.id}/download`}
-                            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium hover:bg-muted transition-colors cursor-pointer"
-                          >
-                            <FileText size={14} />
-                            다운로드
-                          </a>
-                        )}
+                        <div className="flex gap-2">
+                          {visit.certificates?.hwpx_file_url && (
+                            <a
+                              href={`/api/certificates/${visit.certificates.id}/hwpx`}
+                              className="inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-base font-medium hover:bg-muted transition-colors cursor-pointer"
+                            >
+                              <FileText size={14} />
+                              HWPX
+                            </a>
+                          )}
+                          {visit.certificates?.pdf_file_url && (
+                            <a
+                              href={`/api/certificates/${visit.certificates.id}/pdf`}
+                              className="inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-base font-medium hover:bg-muted transition-colors cursor-pointer"
+                            >
+                              <FileText size={14} />
+                              PDF
+                            </a>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))

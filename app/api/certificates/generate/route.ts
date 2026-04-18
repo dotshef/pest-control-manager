@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase/server";
 import { getSession } from "@/lib/auth/jwt";
 import { generateCertificateHwpx } from "@/lib/hwpx/generate-certificate";
+import { generateCertificatePdf } from "@/lib/pdf/generate-certificate-pdf";
 import { format } from "date-fns";
 
 export async function POST(request: Request) {
@@ -48,7 +49,7 @@ export async function POST(request: Request) {
   // 기존 증명서 확인
   const { data: existingCert } = await supabase
     .from("certificates")
-    .select("id, file_url")
+    .select("id, hwpx_file_url, pdf_file_url")
     .eq("visit_id", visitId)
     .single();
 
@@ -82,8 +83,8 @@ export async function POST(request: Request) {
   // 발급일 (증명서 생성 시점)
   const now = new Date();
 
-  // HWPX 생성
-  const hwpxBuffer = await generateCertificateHwpx({
+  // CertificateInput 조립
+  const certInput = {
     issueNumber: issueNumber || "",
     businessName: client?.name || "",
     areaM2: client?.area?.toString() || "",
@@ -101,40 +102,64 @@ export async function POST(request: Request) {
     operatorName: tenant.name,
     operatorAddress: tenant.address || "",
     operatorCeo: tenant.owner_name || "",
-  });
+  };
+
+  // HWPX 생성
+  const hwpxBuffer = await generateCertificateHwpx(certInput);
+
+  // PDF 생성
+  const pdfBuffer = await generateCertificatePdf(certInput);
 
   // 파일명 생성
   const completedDateCompact = format(new Date(visit.completed_at!), "yyyyMMdd");
-  const fileName = `소독증명서_${client!.name}_${tenant.name}_${completedDateCompact}.hwpx`;
+  const baseFileName = `소독증명서_${client!.name}_${tenant.name}_${completedDateCompact}`;
+  const hwpxFileName = `${baseFileName}.hwpx`;
+  const pdfFileName = `${baseFileName}.pdf`;
 
-  // Supabase Storage에 업로드 (스토리지는 영문 키)
-  const filePath = `${session.tenantId}/${certificateNumber}.hwpx`;
-  const { error: uploadError } = await supabase.storage
-    .from("certificates")
-    .upload(filePath, hwpxBuffer, {
+  // Supabase Storage에 업로드
+  const hwpxFilePath = `${session.tenantId}/${certificateNumber}.hwpx`;
+  const pdfFilePath = `${session.tenantId}/${certificateNumber}.pdf`;
+
+  const [hwpxUpload, pdfUpload] = await Promise.all([
+    supabase.storage.from("certificates").upload(hwpxFilePath, hwpxBuffer, {
       contentType: "application/octet-stream",
       upsert: true,
-    });
+    }),
+    supabase.storage.from("certificates").upload(pdfFilePath, pdfBuffer, {
+      contentType: "application/pdf",
+      upsert: true,
+    }),
+  ]);
 
-  if (uploadError) {
-    console.error("HWPX upload failed:", uploadError);
-    return NextResponse.json({ error: "파일 업로드에 실패했습니다" }, { status: 500 });
+  if (hwpxUpload.error) {
+    console.error("HWPX upload failed:", hwpxUpload.error);
+    return NextResponse.json({ error: "HWPX 파일 업로드에 실패했습니다" }, { status: 500 });
+  }
+  if (pdfUpload.error) {
+    console.error("PDF upload failed:", pdfUpload.error);
+    return NextResponse.json({ error: "PDF 파일 업로드에 실패했습니다" }, { status: 500 });
   }
 
   const certNow = new Date().toISOString();
 
   // certificates 테이블에 기록 (재발급 시 기존 파일 삭제 후 업데이트)
   if (existingCert) {
-    if (existingCert.file_url) {
-      await supabase.storage.from("certificates").remove([existingCert.file_url]);
+    const removeTargets = [
+      existingCert.hwpx_file_url,
+      existingCert.pdf_file_url,
+    ].filter(Boolean) as string[];
+    if (removeTargets.length > 0) {
+      await supabase.storage.from("certificates").remove(removeTargets);
     }
     await supabase
       .from("certificates")
       .update({
         certificate_number: certificateNumber,
         issue_number: issueNumber || null,
-        file_url: filePath,
-        file_name: fileName,
+        hwpx_file_url: hwpxFilePath,
+        hwpx_file_name: hwpxFileName,
+        pdf_file_url: pdfFilePath,
+        pdf_file_name: pdfFileName,
         created_at: certNow,
       })
       .eq("id", existingCert.id);
@@ -146,8 +171,10 @@ export async function POST(request: Request) {
         tenant_id: session.tenantId,
         certificate_number: certificateNumber,
         issue_number: issueNumber || null,
-        file_url: filePath,
-        file_name: fileName,
+        hwpx_file_url: hwpxFilePath,
+        hwpx_file_name: hwpxFileName,
+        pdf_file_url: pdfFilePath,
+        pdf_file_name: pdfFileName,
         created_at: certNow,
       });
   }

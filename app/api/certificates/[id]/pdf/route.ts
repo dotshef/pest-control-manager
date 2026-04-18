@@ -14,18 +14,18 @@ export async function GET(
 
   const { data: cert } = await supabase
     .from("certificates")
-    .select("certificate_number, file_url, file_name")
+    .select("certificate_number, pdf_file_url, pdf_file_name")
     .eq("id", id)
     .eq("tenant_id", session.tenantId)
     .single();
 
-  if (!cert || !cert.file_url) {
-    return NextResponse.json({ error: "증명서를 찾을 수 없습니다" }, { status: 404 });
+  if (!cert || !cert.pdf_file_url) {
+    return NextResponse.json({ error: "PDF 증명서를 찾을 수 없습니다" }, { status: 404 });
   }
 
   const { data: fileData, error } = await supabase.storage
     .from("certificates")
-    .download(cert.file_url);
+    .download(cert.pdf_file_url);
 
   if (error || !fileData) {
     return NextResponse.json({ error: "파일 다운로드에 실패했습니다" }, { status: 500 });
@@ -33,12 +33,12 @@ export async function GET(
 
   const buffer = Buffer.from(await fileData.arrayBuffer());
 
-  const fileName = cert.file_name || `${cert.certificate_number}.hwpx`;
+  const fileName = cert.pdf_file_name || `${cert.certificate_number}.pdf`;
   const encodedFileName = encodeURIComponent(fileName);
 
   return new NextResponse(buffer, {
     headers: {
-      "Content-Type": "application/octet-stream",
+      "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename*=UTF-8''${encodedFileName}`,
     },
   });
