@@ -46,7 +46,7 @@ export async function GET(request: Request) {
     let query = supabase
       .from("visits")
       .select(`
-        id, visit_code, scheduled_date, completed_at, status, method, chemicals_used, notes, user_id,
+        id, visit_code, scheduled_date, completed_at, status, method, disinfectants_used, notes, user_id,
         clients(id, name, facility_type, address),
         certificates(id, certificate_number, hwpx_file_url, pdf_file_url)
       `)
@@ -95,10 +95,10 @@ export async function GET(request: Request) {
     .from("visits")
     .select(
       `
-      id, visit_code, scheduled_date, completed_at, status, method, chemicals_used, notes, user_id,
+      id, visit_code, scheduled_date, completed_at, status, method, disinfectants_used, notes, user_id,
       clients!inner(id, name, facility_type, address),
       users(id, name),
-      certificates(id, certificate_number)
+      certificates(id, certificate_number, pdf_file_url)
     `,
       { count: "exact" }
     )

@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   const { data: visit } = await supabase
     .from("visits")
     .select(`
-      id, scheduled_date, completed_at, method, chemicals_used,
+      id, scheduled_date, completed_at, method, disinfectants_used,
       clients(id, code, name, area, volume, address, contact_name, contact_position)
     `)
     .eq("id", visitId)
@@ -95,7 +95,9 @@ export async function POST(request: Request) {
     periodStart: completedDate,
     periodEnd: completedDate,
     disinfectionType: visit.method || "",
-    chemicals: visit.chemicals_used?.join(", ") || "",
+    chemicals: (visit.disinfectants_used as { name: string; quantity: string; unit: string }[] | null)
+      ?.map((d) => d.quantity ? `${d.name} ${d.quantity}${d.unit}` : d.name)
+      .join(", ") || "",
     year: String(now.getFullYear()),
     month: String(now.getMonth() + 1).padStart(2, "0"),
     day: String(now.getDate()).padStart(2, "0"),

@@ -14,7 +14,7 @@ interface Visit {
   completed_at: string | null;
   status: string;
   method: string | null;
-  chemicals_used: string[] | null;
+  disinfectants_used: { name: string; quantity: string; unit: string }[] | null;
   user_id: string | null;
   certificates: { id: string; certificate_number: string; hwpx_file_url: string | null; pdf_file_url: string | null } | null;
 }
@@ -228,7 +228,7 @@ export default function ClientDetailPage() {
                       <td className="text-base">{visit.scheduled_date}</td>
                       <td className="text-base">{visit.method || "-"}</td>
                       <td className="text-base">
-                        {visit.chemicals_used?.join(", ") || "-"}
+                        {visit.disinfectants_used?.map((d) => d.quantity ? `${d.name} ${d.quantity}${d.unit}` : d.name).join(", ") || "-"}
                       </td>
                       <td>
                         <span

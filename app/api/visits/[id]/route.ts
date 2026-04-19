@@ -46,7 +46,7 @@ export async function PATCH(
 
   // 방문 완료 처리
   if (body.action === "complete") {
-    const { method, chemicalsUsed, notes } = body;
+    const { method, disinfectantsUsed, notes } = body;
 
     const { error: updateError } = await supabase
       .from("visits")
@@ -54,7 +54,7 @@ export async function PATCH(
         status: "completed",
         completed_at: now,
         method: method || null,
-        chemicals_used: chemicalsUsed || null,
+        disinfectants_used: disinfectantsUsed || null,
         notes: notes || null,
       })
       .eq("id", id)
@@ -62,6 +62,28 @@ export async function PATCH(
 
     if (updateError) {
       return NextResponse.json({ error: "업데이트에 실패했습니다" }, { status: 500 });
+    }
+
+    // 최근 사용 문구 자동 등록
+    if (method) {
+      await supabase
+        .from("disinfection_methods")
+        .upsert(
+          { tenant_id: session.tenantId, name: method, is_active: true, created_at: now },
+          { onConflict: "tenant_id,name" }
+        );
+    }
+    if (disinfectantsUsed?.length) {
+      for (const d of disinfectantsUsed) {
+        if (d.name) {
+          await supabase
+            .from("disinfectants")
+            .upsert(
+              { tenant_id: session.tenantId, name: d.name, is_active: true, created_at: now },
+              { onConflict: "tenant_id,name" }
+            );
+        }
+      }
     }
 
     return NextResponse.json({ success: true });

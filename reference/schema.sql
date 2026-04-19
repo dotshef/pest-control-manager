@@ -57,14 +57,34 @@ create table visits (
   completed_at timestamptz,
   status text not null default 'scheduled' check (status in ('scheduled', 'completed', 'missed')),
   method text,
-  chemicals_used text[],
+  disinfectants_used jsonb,
   notes text,
   visit_code text,
   created_at timestamptz not null,
   unique (tenant_id, visit_code)
 );
 
--- 5. certificates (소독증명서)
+-- 5. disinfectants (최근 사용 약품)
+create table disinfectants (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references tenants(id) on delete cascade,
+  name text not null,
+  is_active boolean not null default true,
+  created_at timestamptz not null,
+  unique (tenant_id, name)
+);
+
+-- 6. disinfection_methods (최근 사용 소독 방법)
+create table disinfection_methods (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references tenants(id) on delete cascade,
+  name text not null,
+  is_active boolean not null default true,
+  created_at timestamptz not null,
+  unique (tenant_id, name)
+);
+
+-- 7. certificates (소독증명서)
 create table certificates (
   id uuid primary key default gen_random_uuid(),
   visit_id uuid not null unique references visits(id) on delete cascade,

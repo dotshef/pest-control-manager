@@ -79,6 +79,16 @@ function makeRun(doc: XNode, text: string, charPrIDRef: string): XNode {
   return run;
 }
 
+function removeLinesegarray(p: XNode): void {
+  const children = p.childNodes;
+  for (let i = children.length - 1; i >= 0; i--) {
+    const child = children.item(i);
+    if (child.localName === "linesegarray" && child.namespaceURI === HP_NS) {
+      p.removeChild(child);
+    }
+  }
+}
+
 function appendRunToPara(p: XNode, text: string, charPrIDRef: string): void {
   const doc = p.ownerDocument;
   const newRun = makeRun(doc, text, charPrIDRef);
@@ -126,15 +136,15 @@ export async function generateCertificateHwpx(input: CertificateInput): Promise<
   const paras4 = getCellParagraphs(cells[4]);
   const runs4 = getRuns(paras4[1]);
   runs4[0].setAttribute("charPrIDRef", "6");
-  setRunText(runs4[0], `            ${input.areaM2}  `);
+  setRunText(runs4[0], input.areaM2);
   if (input.areaM3) {
-    setRunText(runs4[2], `(    ${input.areaM3}  ㎥)`);
+    setRunText(runs4[2], `(${input.areaM3}㎥)`);
   }
 
   // --- cell[5]: 소재지 ---
   const paras5 = getCellParagraphs(cells[5]);
   const runs5 = getRuns(paras5[1]);
-  setRunText(runs5[0], "                         ");
+  setRunText(runs5[0], "");
   appendRunToPara(paras5[1], input.address, "6");
 
   // --- cell[7]: 직위 ---
@@ -153,12 +163,14 @@ export async function generateCertificateHwpx(input: CertificateInput): Promise<
   // --- cell[15]: 종류 ---
   const paras15 = getCellParagraphs(cells[15]);
   const runs15 = getRuns(paras15[1]);
-  setRunText(runs15[0], `                      ${input.disinfectionType}`);
+  setRunText(runs15[0], input.disinfectionType);
 
   // --- cell[16]: 약품 ---
   const paras16 = getCellParagraphs(cells[16]);
   const runs16 = getRuns(paras16[1]);
-  setRunText(runs16[0], `                      ${input.chemicals}`);
+  setRunText(runs16[0], input.chemicals);
+  // linesegarray 제거 → 한글이 열 때 줄바꿈 자동 재계산
+  removeLinesegarray(paras16[1]);
 
   // --- cell[17]: 날짜 ---
   const paras17 = getCellParagraphs(cells[17]);
@@ -169,7 +181,7 @@ export async function generateCertificateHwpx(input: CertificateInput): Promise<
   const paras19 = getCellParagraphs(cells[19]);
   setRunText(getRuns(paras19[0])[0], input.operatorName);
   setRunText(getRuns(paras19[1])[0], input.operatorAddress);
-  setRunText(getRuns(paras19[2])[0], `    ${input.operatorCeo}  `);
+  setRunText(getRuns(paras19[2])[0], input.operatorCeo);
 
   // 4. XML 직렬화
   const serializer = new XMLSerializer();

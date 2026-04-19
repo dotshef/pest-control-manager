@@ -23,7 +23,7 @@ export async function GET(
     .select(`
       *,
       visits(
-        id, scheduled_date, completed_at, status, method, chemicals_used, user_id,
+        id, scheduled_date, completed_at, status, method, disinfectants_used, user_id,
         certificates(id, certificate_number, hwpx_file_url, pdf_file_url)
       )
     `)

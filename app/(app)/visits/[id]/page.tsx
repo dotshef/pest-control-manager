@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, CheckCircle, XCircle, FileText, Download, Link as LinkIcon, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { FACILITY_TYPES } from "@/lib/constants/facility-types";
-import { DISINFECTION_METHODS, COMMON_CHEMICALS } from "@/lib/constants/methods";
 import { FormField } from "@/components/ui/form-field";
 import { Spinner } from "@/components/ui/spinner";
 import { useSession } from "@/components/providers/session-provider";
@@ -17,7 +16,7 @@ interface VisitDetail {
   completed_at: string | null;
   status: string;
   method: string | null;
-  chemicals_used: string[] | null;
+  disinfectants_used: { name: string; quantity: string; unit: string }[] | null;
   notes: string | null;
   user_id: string | null;
   clients: {
@@ -47,12 +46,13 @@ export default function VisitDetailPage() {
   const [error, setError] = useState("");
 
   const [method, setMethod] = useState("");
-  const [customMethod, setCustomMethod] = useState("");
-  const [selectedChemicals, setSelectedChemicals] = useState<string[]>([]);
-  const [customChemical, setCustomChemical] = useState("");
+  const [disinfectants, setDisinfectants] = useState<{ name: string; quantity: string; unit: string }[]>([]);
+  const [newDisinfectant, setNewDisinfectant] = useState("");
   const [notes, setNotes] = useState("");
   const [generatingCert, setGeneratingCert] = useState(false);
-  const [issueNumber, setIssueNumber] = useState("");
+  const [issueNumber, setIssueNumber] = useState("1");
+  const [recentMethods, setRecentMethods] = useState<{ id: string; name: string }[]>([]);
+  const [recentDisinfectants, setRecentDisinfectants] = useState<{ id: string; name: string }[]>([]);
 
   const loading = !visit;
 
@@ -65,7 +65,7 @@ export default function VisitDetailPage() {
     const data = await res.json();
     setVisit(data);
     setMethod(data.method || "");
-    setSelectedChemicals(data.chemicals_used || []);
+    setDisinfectants(data.disinfectants_used || []);
     setNotes(data.notes || "");
   }
 
@@ -73,17 +73,23 @@ export default function VisitDetailPage() {
     let ignore = false;
 
     async function load() {
-      const res = await fetch(`/api/visits/${id}`);
-      if (!res.ok) {
+      const [visitRes, methodsRes, disinfectantsRes] = await Promise.all([
+        fetch(`/api/visits/${id}`),
+        fetch("/api/methods"),
+        fetch("/api/disinfectants"),
+      ]);
+      if (!visitRes.ok) {
         router.push("/calendar");
         return;
       }
-      const data = await res.json();
+      const data = await visitRes.json();
       if (!ignore) {
         setVisit(data);
         setMethod(data.method || "");
-        setSelectedChemicals(data.chemicals_used || []);
+        setDisinfectants(data.disinfectants_used || []);
         setNotes(data.notes || "");
+        if (methodsRes.ok) setRecentMethods(await methodsRes.json());
+        if (disinfectantsRes.ok) setRecentDisinfectants(await disinfectantsRes.json());
       }
     }
 
@@ -94,17 +100,19 @@ export default function VisitDetailPage() {
     };
   }, [id, router]);
 
-  function toggleChemical(chem: string) {
-    setSelectedChemicals((prev) =>
-      prev.includes(chem) ? prev.filter((c) => c !== chem) : [...prev, chem]
-    );
+  function addDisinfectant(name: string) {
+    if (name.trim() && !disinfectants.some((d) => d.name === name.trim())) {
+      setDisinfectants((prev) => [...prev, { name: name.trim(), quantity: "", unit: "EA" }]);
+    }
+    setNewDisinfectant("");
   }
 
-  function addCustomChemical() {
-    if (customChemical.trim() && !selectedChemicals.includes(customChemical.trim())) {
-      setSelectedChemicals((prev) => [...prev, customChemical.trim()]);
-      setCustomChemical("");
-    }
+  function removeDisinfectant(index: number) {
+    setDisinfectants((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function updateDisinfectant(index: number, field: "name" | "quantity" | "unit", value: string) {
+    setDisinfectants((prev) => prev.map((d, i) => (i === index ? { ...d, [field]: value } : d)));
   }
 
   async function handleComplete() {
@@ -113,14 +121,14 @@ export default function VisitDetailPage() {
     setSaving(true);
 
     try {
-      const finalMethod = method === "기타" ? customMethod : method;
+      const finalMethod = method;
       const res = await fetch(`/api/visits/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "complete",
           method: finalMethod || null,
-          chemicalsUsed: selectedChemicals.length > 0 ? selectedChemicals : null,
+          disinfectantsUsed: disinfectants.length > 0 ? disinfectants : null,
           notes: notes || null,
         }),
       });
@@ -236,7 +244,7 @@ export default function VisitDetailPage() {
             <div>
               <span className="text-muted-foreground">시설명</span>
               <p className="font-medium">
-                <Link href={`/clients/${visit.clients?.id}`} className="text-primary hover:underline !text-lg">
+                <Link href={`/clients/${visit.clients?.id}`} className="text-primary hover:underline">
                   {visit.clients?.name}
                 </Link>
               </p>
@@ -274,91 +282,117 @@ export default function VisitDetailPage() {
 
           {/* 소독 방법 */}
           <FormField label="소독 방법">
-            <div className="flex flex-wrap gap-2">
-              {DISINFECTION_METHODS.map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  className={`inline-flex items-center justify-center px-4 py-2 rounded-lg text-base font-medium transition-colors cursor-pointer ${
-                    method === m
-                      ? "bg-primary text-primary-foreground"
-                      : "border border-border hover:bg-muted"
-                  }`}
-                  onClick={() => setMethod(m)}
-                  disabled={isCompleted}
-                >
-                  {m}
-                </button>
-              ))}
-            </div>
-            {method === "기타" && (
-              <input
-                type="text"
-                placeholder="소독 방법 직접 입력"
-                className="mt-2 w-full"
-                value={customMethod}
-                onChange={(e) => setCustomMethod(e.target.value)}
-                disabled={isCompleted}
-              />
+            <input
+              type="text"
+              placeholder="소독 방법 입력"
+              className="w-full"
+              value={method}
+              onChange={(e) => setMethod(e.target.value)}
+              disabled={isCompleted}
+            />
+            {!isCompleted && recentMethods.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                <span className="text-muted-foreground text-sm mr-1">최근:</span>
+                {recentMethods.map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    className="px-2.5 py-0.5 rounded-full text-sm bg-muted hover:bg-muted/80 transition-colors cursor-pointer"
+                    onClick={() => setMethod(m.name)}
+                  >
+                    {m.name}
+                  </button>
+                ))}
+              </div>
             )}
           </FormField>
 
-          {/* 사용 약제 */}
-          <FormField label="사용 약제">
-            <div className="flex flex-wrap gap-2">
-              {COMMON_CHEMICALS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  className={`inline-flex items-center justify-center px-4 py-2 rounded-lg text-base font-medium transition-colors cursor-pointer ${
-                    selectedChemicals.includes(c)
-                      ? "bg-primary text-primary-foreground"
-                      : "border border-border hover:bg-muted"
-                  }`}
-                  onClick={() => toggleChemical(c)}
-                  disabled={isCompleted}
-                >
-                  {c}
-                </button>
-              ))}
-            </div>
+          {/* 사용 약품 */}
+          <FormField label="사용 약품">
+            {disinfectants.length > 0 && (
+              <div className="space-y-2 mb-2">
+                {disinfectants.map((d, i) => (
+                  <div key={i} className="flex gap-2 items-center">
+                    <input
+                      type="text"
+                      className="flex-1 min-w-0"
+                      value={d.name}
+                      onChange={(e) => updateDisinfectant(i, "name", e.target.value)}
+                      disabled={isCompleted}
+                      placeholder="약품명"
+                    />
+                    <input
+                      type="text"
+                      className="w-20"
+                      value={d.quantity}
+                      onChange={(e) => updateDisinfectant(i, "quantity", e.target.value)}
+                      disabled={isCompleted}
+                      placeholder="사용량"
+                    />
+                    <select
+                      className="w-20 min-h-[44px] px-2 py-2 rounded-lg border border-border text-base"
+                      value={d.unit}
+                      onChange={(e) => updateDisinfectant(i, "unit", e.target.value)}
+                      disabled={isCompleted}
+                    >
+                      <option value="EA">EA</option>
+                      <option value="cc">cc</option>
+                      <option value="ml">ml</option>
+                      <option value="L">L</option>
+                      <option value="g">g</option>
+                      <option value="kg">kg</option>
+                    </select>
+                    {!isCompleted && (
+                      <button
+                        type="button"
+                        className="text-destructive hover:text-destructive/80 cursor-pointer p-1"
+                        onClick={() => removeDisinfectant(i)}
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
             {!isCompleted && (
-              <div className="flex gap-2 mt-2">
+              <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="약제 직접 입력"
+                  placeholder="약품명 입력 후 추가"
                   className="flex-1"
-                  value={customChemical}
-                  onChange={(e) => setCustomChemical(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCustomChemical())}
+                  value={newDisinfectant}
+                  onChange={(e) => setNewDisinfectant(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addDisinfectant(newDisinfectant))}
                 />
                 <button
                   type="button"
                   className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-base font-medium border border-border hover:bg-muted transition-colors cursor-pointer"
-                  onClick={addCustomChemical}
+                  onClick={() => addDisinfectant(newDisinfectant)}
                 >
                   추가
                 </button>
               </div>
             )}
-            {selectedChemicals.length > 0 && (
+            {!isCompleted && recentDisinfectants.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
-                {selectedChemicals.map((c) => (
-                  <span key={c} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-base font-medium bg-muted text-foreground">
-                    {c}
-                    {!isCompleted && (
-                      <button onClick={() => toggleChemical(c)} className="text-base cursor-pointer">
-                        ✕
-                      </button>
-                    )}
-                  </span>
+                <span className="text-muted-foreground text-sm mr-1">최근:</span>
+                {recentDisinfectants.map((d) => (
+                  <button
+                    key={d.id}
+                    type="button"
+                    className="px-2.5 py-0.5 rounded-full text-sm bg-muted hover:bg-muted/80 transition-colors cursor-pointer"
+                    onClick={() => addDisinfectant(d.name)}
+                  >
+                    {d.name}
+                  </button>
                 ))}
               </div>
             )}
           </FormField>
 
           {/* 메모 */}
-          <FormField label="특이사항">
+          <FormField label={<>방문 특이사항 <span className="text-muted-foreground font-normal text-sm">(소독증명서에 기재되지 않습니다)</span></>}>
             <textarea
               className="w-full resize-none"
               rows={3}
@@ -398,10 +432,14 @@ export default function VisitDetailPage() {
                   제
                   <input
                     type="number"
+                    min="1"
                     placeholder="0"
                     className="w-20 min-h-[44px] px-3 py-2 rounded-lg border border-border text-base text-center focus:outline-none focus:ring-2 focus:ring-primary/40"
                     value={issueNumber}
-                    onChange={(e) => setIssueNumber(e.target.value)}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v === "" || Number(v) >= 1) setIssueNumber(v);
+                    }}
                   />
                   호
                 </span>

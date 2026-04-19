@@ -16,7 +16,7 @@ interface Visit {
   completed_at: string | null;
   status: string;
   method: string | null;
-  chemicals_used: string[] | null;
+  disinfectants_used: { name: string; quantity: string; unit: string }[] | null;
   notes: string | null;
   user_id: string | null;
   clients: {
@@ -32,6 +32,7 @@ interface Visit {
   certificates: {
     id: string;
     certificate_number: string;
+    pdf_file_url: string | null;
   } | null;
 }
 
@@ -234,13 +235,13 @@ export default function VisitsPage() {
         <table className="data-table">
           <thead>
             <tr>
-              <th style={{ width: "11%" }}>코드</th>
-              <th style={{ width: "16%" }}>시설명</th>
-              <th style={{ width: "22%" }}>시설 유형</th>
-              <th style={{ width: "12%" }}>담당자</th>
+              <th style={{ width: "15%" }}>코드</th>
+              <th style={{ width: "15%" }}>시설명</th>
+              <th style={{ width: "19%" }}>시설 유형</th>
+              <th style={{ width: "8%" }}>담당자</th>
               <th style={{ width: "10%" }}>상태</th>
               <th style={{ width: "11%" }}>날짜</th>
-              <th style={{ width: "15%" }}>증명서</th>
+              <th style={{ width: "19%" }}>증명서</th>
             </tr>
           </thead>
           <tbody>
@@ -291,13 +292,24 @@ export default function VisitsPage() {
                   <td className="text-base">{visit.scheduled_date}</td>
                   <td>
                     {visit.certificates ? (
-                      <a
-                        href={`/api/certificates/${visit.certificates.id}/download`}
-                        className="inline-flex items-center justify-center gap-2 px-4 py-1 rounded-lg text-base font-medium border border-border hover:bg-muted transition-colors cursor-pointer"
-                        download
-                      >
-                        HWPX
-                      </a>
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={`/api/certificates/${visit.certificates.id}/hwpx`}
+                          className="inline-flex items-center justify-center gap-2 px-4 py-1 rounded-lg text-base font-medium border border-border hover:bg-muted transition-colors cursor-pointer"
+                          download
+                        >
+                          HWPX
+                        </a>
+                        {visit.certificates.pdf_file_url && (
+                          <a
+                            href={`/api/certificates/${visit.certificates.id}/pdf`}
+                            className="inline-flex items-center justify-center gap-2 px-4 py-1 rounded-lg text-base font-medium border border-border hover:bg-muted transition-colors cursor-pointer"
+                            download
+                          >
+                            PDF
+                          </a>
+                        )}
+                      </div>
                     ) : (
                       <span className="block text-center text-base text-muted-foreground">-</span>
                     )}
