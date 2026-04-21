@@ -107,8 +107,8 @@ export default function DashboardPage() {
                 <Calendar size={20} className="text-primary" />
               </div>
               <div>
+                <p className="text-base text-foreground">오늘 방문 예정</p>
                 <p className="text-2xl font-bold">{data.todayCount}건</p>
-                <p className="text-base text-muted-foreground">오늘 방문 예정</p>
               </div>
             </div>
           </div>
@@ -121,8 +121,8 @@ export default function DashboardPage() {
                 <CalendarCheck size={20} className="text-info" />
               </div>
               <div>
+                <p className="text-base text-foreground">이번 주 예정</p>
                 <p className="text-2xl font-bold">{data.weekCount}건</p>
-                <p className="text-base text-muted-foreground">이번 주 예정</p>
               </div>
             </div>
           </div>
@@ -135,8 +135,8 @@ export default function DashboardPage() {
                 <AlertTriangle size={20} className="text-destructive" />
               </div>
               <div>
+                <p className="text-base text-foreground">미완료 건</p>
                 <p className="text-2xl font-bold text-destructive">{data.missedCount}건</p>
-                <p className="text-base text-muted-foreground">미완료 건</p>
               </div>
             </div>
           </div>
@@ -149,8 +149,8 @@ export default function DashboardPage() {
                 <CheckCircle size={20} className="text-success" />
               </div>
               <div>
+                <p className="text-base text-foreground">이번 달 완료</p>
                 <p className="text-2xl font-bold">{data.monthCompleted}건</p>
-                <p className="text-base text-muted-foreground">이번 달 완료</p>
               </div>
             </div>
           </div>
