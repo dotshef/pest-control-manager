@@ -47,7 +47,7 @@ export function Sidebar({ role }: { role: "admin" | "member" }) {
       {/* 로고 */}
       <div className="px-6 py-5">
         <Link href="/dashboard" className="text-xl font-bold text-primary">
-          방역매니저
+          소독노트
         </Link>
       </div>
 

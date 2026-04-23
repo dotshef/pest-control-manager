@@ -36,7 +36,8 @@
       "Bash(mkdir -p \"c:/D/pest-control/pest-control-project/lib/fonts\")",
       "Bash(curl -sL -o NanumGothic-Regular.ttf \"https://github.com/google/fonts/raw/main/ofl/nanumgothic/NanumGothic-Regular.ttf\")",
       "Bash(curl -sL -o NanumGothic-Bold.ttf \"https://github.com/google/fonts/raw/main/ofl/nanumgothic/NanumGothic-Bold.ttf\")",
-      "Bash(node scripts/pdf-field-test.mjs)"
+      "Bash(node scripts/pdf-field-test.mjs)",
+      "Bash(identify \"c:/D/pest-control/pest-control-project/public/app_icon.png\")"
     ],
     "additionalDirectories": [
       "c:\\D\\pest-control\\.claude"

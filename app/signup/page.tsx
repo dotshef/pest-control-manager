@@ -56,7 +56,7 @@ export default function SignupPage() {
     <div className="flex min-h-screen">
       {/* 좌측 — 브랜드 소개 */}
       <div className="hidden lg:flex lg:w-1/2 bg-primary flex-col justify-center px-16 text-primary-foreground">
-        <h1 className="text-4xl font-bold mb-4">방역매니저</h1>
+        <h1 className="text-4xl font-bold mb-4">소독노트</h1>
         <p className="text-lg opacity-90 mb-2">소독 방역업체를 위한</p>
         <p className="text-lg opacity-90 mb-8">올인원 관리 플랫폼</p>
         <p className="text-base opacity-70">

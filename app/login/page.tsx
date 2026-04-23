@@ -46,7 +46,7 @@ export default function LoginPage() {
       {/* 좌측 — 브랜드 소개 */}
       <div className="hidden lg:flex lg:w-1/2 bg-primary flex-col items-center justify-center px-16 text-primary-foreground">
         <div className="w-full max-w-sm">
-        <h1 className="text-4xl font-bold mb-4">방역매니저</h1>
+        <h1 className="text-4xl font-bold mb-4">소독노트</h1>
         <p className="text-lg opacity-90 mb-10">소독/방역업체를 위한 올인원 관리 플랫폼</p>
         <div className="space-y-5">
           <div className="flex items-center gap-4">
@@ -75,10 +75,6 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-6 bg-background">
         <div className="rounded-xl bg-card w-full max-w-md">
           <div className="p-6">
-            <h2 className="text-2xl font-bold">로그인</h2>
-            <p className="text-muted-foreground mb-6">
-              방역매니저에 오신 것을 환영합니다
-            </p>
 
             {error && (
               <div className="flex items-center gap-3 rounded-lg p-4 bg-destructive/10 text-destructive border border-destructive/20 text-base mb-4">

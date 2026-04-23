@@ -1,4 +1,4 @@
-// 방역매니저 Service Worker - 푸시 알림 전용
+// 소독노트 Service Worker - 푸시 알림 전용
 // next-pwa가 Turbopack 빌드에서 동작하지 않으므로 정적 파일로 관리
 
 self.addEventListener("install", (event) => {
@@ -16,14 +16,14 @@ self.addEventListener("push", (event) => {
   try {
     payload = event.data.json();
   } catch (e) {
-    payload = { title: "방역매니저", body: event.data.text() };
+    payload = { title: "소독노트", body: event.data.text() };
   }
 
-  const title = payload.title || "방역매니저";
+  const title = payload.title || "소독노트";
   const options = {
     body: payload.body || "",
-    icon: payload.icon || "/icons/icon-192x192.png",
-    badge: payload.badge || "/icons/icon-192x192.png",
+    icon: payload.icon || "/icons/android-chrome-192x192.png",
+    badge: payload.badge || "/icons/android-chrome-192x192.png",
     tag: payload.tag,
     data: payload.data || {},
   };

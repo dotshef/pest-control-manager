@@ -1,11 +1,22 @@
 import type { Metadata, Viewport } from "next";
 import { Toaster } from "sonner";
+import { ServiceWorkerBootstrap } from "@/components/pwa/sw-bootstrap";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "방역매니저",
+  title: "소독노트",
   description: "소독 방역업체를 위한 올인원 관리 플랫폼",
   manifest: "/manifest.json",
+  icons: {
+    apple: [
+      { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "소독노트",
+  },
 };
 
 export const viewport: Viewport = {
@@ -20,6 +31,7 @@ export default function RootLayout({
   return (
     <html lang="ko" className="h-full">
       <body className="h-full">
+        <ServiceWorkerBootstrap />
         {children}
         <Toaster
           position="top-center"

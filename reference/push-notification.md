@@ -1,7 +1,7 @@
 # 푸시 알림 구현 계획
 
 > 작성일: 2026-04-21
-> 대상: 방역매니저 (Next.js 16 + PWA + Supabase)
+> 대상: 소독노트 (Next.js 16 + PWA + Supabase)
 
 Web Push (VAPID 기반)을 활용한 푸시 알림 구현. FCM/APN 직접 연동 없이 브라우저 표준만으로 Chrome/Firefox/Edge/Safari(PWA) 커버.
 
