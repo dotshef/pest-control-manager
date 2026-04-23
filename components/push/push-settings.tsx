@@ -165,11 +165,7 @@ export function PushSettings() {
               type="button"
               onClick={isSubscribed ? handleDisable : handleEnable}
               disabled={working}
-              className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-base font-medium disabled:opacity-50 cursor-pointer shrink-0 whitespace-nowrap ${
-                isSubscribed
-                  ? "border border-border hover:bg-muted"
-                  : "bg-primary text-primary-foreground"
-              }`}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-base font-medium disabled:opacity-50 cursor-pointer shrink-0 whitespace-nowrap bg-primary text-primary-foreground"
             >
               {working ? (
                 <Spinner size="sm" />
