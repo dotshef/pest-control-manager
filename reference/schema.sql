@@ -26,13 +26,15 @@ create table users (
 );
 
 -- 3. clients (고객 시설)
--- facility_type은 서버 상수로 관리 (lib/constants/facility-types.ts)
+-- facility_category: 'home' | 'business' | 'mandatory' (lib/constants/facility-category.ts)
+-- facility_type: 의무소독시설일 때만 값 존재 (lib/constants/facility-types.ts)
 create table clients (
   id uuid primary key default gen_random_uuid(),
   tenant_id uuid not null references tenants(id) on delete cascade,
   code text,
   name text not null,
-  facility_type text not null,
+  facility_category text not null check (facility_category in ('home','business','mandatory')),
+  facility_type text,
   area numeric,
   area_pyeong numeric,
   volume numeric,

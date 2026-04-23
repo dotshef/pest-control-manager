@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Calendar, CalendarCheck, AlertTriangle, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from "date-fns";
-import { FACILITY_TYPES } from "@/lib/constants/facility-types";
+import { getClientFacilityLabel } from "@/lib/utils/facility-display";
 import { Spinner } from "@/components/ui/spinner";
 import { InstallBanner } from "@/components/pwa/install-banner";
 
@@ -18,7 +18,7 @@ interface DashboardData {
     visit_code: string | null;
     scheduled_date: string;
     status: string;
-    clients: { id: string; name: string; facility_type: string } | null;
+    clients: { id: string; name: string; facility_category: string; facility_type: string | null } | null;
     users: { id: string; name: string } | null;
   }[];
   missedVisits: {
@@ -56,10 +56,6 @@ export default function DashboardPage() {
       ignore = true;
     };
   }, []);
-
-  function getFacilityLabel(typeId: string) {
-    return FACILITY_TYPES.find((ft) => ft.id === typeId)?.label || typeId;
-  }
 
   const [now] = useState(() => Date.now());
   const [todayStr] = useState(() => new Date().toISOString().split("T")[0]);
@@ -188,7 +184,7 @@ export default function DashboardPage() {
                   </thead>
                   <tbody>
                     {data.todayVisits.map((visit) => {
-                      const client = visit.clients as unknown as { id: string; name: string; facility_type: string } | null;
+                      const client = visit.clients as unknown as { id: string; name: string; facility_category: string; facility_type: string | null } | null;
                       const user = visit.users as unknown as { id: string; name: string } | null;
                       return (
                         <tr key={visit.id}>
@@ -211,7 +207,7 @@ export default function DashboardPage() {
                             ) : "-"}
                           </td>
                           <td className="text-base">
-                            {client ? getFacilityLabel(client.facility_type) : "-"}
+                            {getClientFacilityLabel(client)}
                           </td>
                           <td className="text-base">{user?.name || "-"}</td>
                           <td>{getStatusBadge(visit.status)}</td>

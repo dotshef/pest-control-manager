@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FACILITY_TYPES } from "@/lib/constants/facility-types";
+import { FACILITY_CATEGORIES } from "@/lib/constants/facility-category";
 import { getCycleMonths } from "@/lib/utils/cycle";
 import { FormField } from "@/components/ui/form-field";
 import type { FacilityTypeId } from "@/lib/constants/facility-types";
@@ -17,6 +18,7 @@ export default function NewClientPage() {
 
   const [form, setForm] = useState({
     name: "",
+    facilityCategory: "",
     facilityType: "",
     area: "",
     areaPyeong: "",
@@ -30,12 +32,19 @@ export default function NewClientPage() {
   function updateField(field: string, value: string) {
     if (field === "area" || field === "areaPyeong") {
       setForm((prev) => ({ ...prev, ...convertArea(field, value) }));
+    } else if (field === "facilityCategory") {
+      setForm((prev) => ({
+        ...prev,
+        facilityCategory: value,
+        facilityType: value === "mandatory" ? prev.facilityType : "",
+      }));
     } else {
       setForm((prev) => ({ ...prev, [field]: value }));
     }
   }
 
-  const selectedCycle = form.facilityType
+  const isMandatory = form.facilityCategory === "mandatory";
+  const selectedCycle = isMandatory && form.facilityType
     ? getCycleMonths(form.facilityType as FacilityTypeId)
     : null;
 
@@ -50,6 +59,7 @@ export default function NewClientPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          facilityType: form.facilityCategory === "mandatory" ? form.facilityType : null,
           area: form.area ? Number(form.area) : null,
           areaPyeong: form.areaPyeong ? Number(form.areaPyeong) : null,
           volume: form.volume ? Number(form.volume) : null,
@@ -96,21 +106,34 @@ export default function NewClientPage() {
               />
             </FormField>
 
-            <FormField label={<>시설 유형 <span className="text-destructive">*</span></>}>
+            <FormField label={<>시설 분류 <span className="text-destructive">*</span></>}>
               <FilterSelect
-                value={form.facilityType}
-                onChange={(v) => updateField("facilityType", v)}
+                value={form.facilityCategory}
+                onChange={(v) => updateField("facilityCategory", v)}
                 options={[
-                  { value: "", label: "시설 유형 선택" },
-                  ...FACILITY_TYPES.map((ft) => ({ value: ft.id, label: ft.label })),
+                  { value: "", label: "시설 분류 선택" },
+                  ...FACILITY_CATEGORIES.map((c) => ({ value: c.id, label: c.label })),
                 ]}
               />
-              {selectedCycle && (
-                <p className="text-base text-primary mt-1">
-                  법정 소독 주기: {selectedCycle}개월
-                </p>
-              )}
             </FormField>
+
+            {isMandatory && (
+              <FormField label={<>의무 시설 유형 <span className="text-destructive">*</span></>}>
+                <FilterSelect
+                  value={form.facilityType}
+                  onChange={(v) => updateField("facilityType", v)}
+                  options={[
+                    { value: "", label: "시설 유형 선택" },
+                    ...FACILITY_TYPES.map((ft) => ({ value: ft.id, label: ft.label })),
+                  ]}
+                />
+                {selectedCycle && (
+                  <p className="text-base text-primary mt-1">
+                    법정 소독 주기: {selectedCycle}개월
+                  </p>
+                )}
+              </FormField>
+            )}
 
             <FormField label="주소">
               <input

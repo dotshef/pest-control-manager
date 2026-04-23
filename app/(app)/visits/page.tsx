@@ -5,6 +5,8 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { FACILITY_TYPES } from "@/lib/constants/facility-types";
+import { FACILITY_CATEGORIES } from "@/lib/constants/facility-category";
+import { getClientFacilityLabel } from "@/lib/utils/facility-display";
 import { VisitCreateModal } from "@/components/visits/visit-create-modal";
 import { FilterSelect } from "@/components/ui/filter-select";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -23,7 +25,8 @@ interface Visit {
   clients: {
     id: string;
     name: string;
-    facility_type: string;
+    facility_category: string;
+    facility_type: string | null;
     address: string | null;
   } | null;
   users: {
@@ -63,6 +66,7 @@ export default function VisitsPage() {
   const [dateFrom, setDateFrom] = useState(searchParams.get("date_from") || "");
   const [dateTo, setDateTo] = useState(searchParams.get("date_to") || "");
   const [userIdFilter, setUserIdFilter] = useState(searchParams.get("user_id") || "");
+  const [facilityCategoryFilter, setFacilityCategoryFilter] = useState(searchParams.get("facility_category") || "");
   const [facilityTypeFilter, setFacilityTypeFilter] = useState(searchParams.get("facility_type") || "");
   const [page, setPage] = useState(1);
   const [createOpen, setCreateOpen] = useState(false);
@@ -108,7 +112,8 @@ export default function VisitsPage() {
       if (dateFrom) params.set("date_from", dateFrom);
       if (dateTo) params.set("date_to", dateTo);
       if (userIdFilter) params.set("user_id", userIdFilter);
-      if (facilityTypeFilter) params.set("facility_type", facilityTypeFilter);
+      if (facilityCategoryFilter) params.set("facility_category", facilityCategoryFilter);
+      if (facilityCategoryFilter === "mandatory" && facilityTypeFilter) params.set("facility_type", facilityTypeFilter);
       params.set("page", String(page));
 
       const res = await fetch(`/api/visits?${params}`);
@@ -122,12 +127,9 @@ export default function VisitsPage() {
     return () => {
       ignore = true;
     };
-  }, [debouncedSearch, statusFilter, dateFrom, dateTo, userIdFilter, facilityTypeFilter, page, refreshKey]);
+  }, [debouncedSearch, statusFilter, dateFrom, dateTo, userIdFilter, facilityCategoryFilter, facilityTypeFilter, page, refreshKey]);
 
-  function getFacilityLabel(typeId: string) {
-    return FACILITY_TYPES.find((ft) => ft.id === typeId)?.label || typeId;
-  }
-
+  const showTypeFilter = facilityCategoryFilter === "mandatory";
   const badgeBase = "inline-flex items-center px-2.5 py-0.5 rounded-full text-base font-medium";
 
   function getStatusBadge(status: string) {
@@ -176,14 +178,31 @@ export default function VisitsPage() {
         />
 
         <FilterSelect
-          value={facilityTypeFilter}
-          onChange={(v) => { setFacilityTypeFilter(v); setPage(1); setData(null); }}
+          value={facilityCategoryFilter}
+          onChange={(v) => {
+            setFacilityCategoryFilter(v);
+            if (v !== "mandatory") setFacilityTypeFilter("");
+            setPage(1);
+            setData(null);
+          }}
           options={[
-            { value: "", label: "전체 시설 유형" },
-            ...FACILITY_TYPES.map((ft) => ({ value: ft.id, label: ft.label })),
+            { value: "", label: "전체 시설 분류" },
+            ...FACILITY_CATEGORIES.map((c) => ({ value: c.id, label: c.label })),
           ]}
-          className="w-full md:w-56"
+          className="w-full md:w-40"
         />
+
+        {showTypeFilter && (
+          <FilterSelect
+            value={facilityTypeFilter}
+            onChange={(v) => { setFacilityTypeFilter(v); setPage(1); setData(null); }}
+            options={[
+              { value: "", label: "전체 의무 시설" },
+              ...FACILITY_TYPES.map((ft) => ({ value: ft.id, label: ft.label })),
+            ]}
+            className="w-full md:w-56"
+          />
+        )}
 
         <div className="contents md:flex md:items-center md:gap-2">
           <DatePicker
@@ -266,7 +285,7 @@ export default function VisitsPage() {
                 </div>
                 <div className="font-medium text-base mb-1">{visit.clients?.name || "-"}</div>
                 <div className="flex items-center gap-2 text-base text-muted-foreground">
-                  <span>{visit.clients ? getFacilityLabel(visit.clients.facility_type) : "-"}</span>
+                  <span>{getClientFacilityLabel(visit.clients)}</span>
                   <span>·</span>
                   <span>{visit.scheduled_date}</span>
                   {visit.users?.name && (
@@ -362,7 +381,7 @@ export default function VisitsPage() {
                     )}
                   </td>
                   <td className="text-base">
-                    {visit.clients ? getFacilityLabel(visit.clients.facility_type) : "-"}
+                    {getClientFacilityLabel(visit.clients)}
                   </td>
                   <td className="text-base">{visit.users?.name || "-"}</td>
                   <td>{getStatusBadge(visit.status)}</td>

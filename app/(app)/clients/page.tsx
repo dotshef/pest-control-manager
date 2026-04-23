@@ -4,12 +4,15 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { FACILITY_TYPES } from "@/lib/constants/facility-types";
+import { FACILITY_CATEGORIES } from "@/lib/constants/facility-category";
+import { getClientFacilityLabel } from "@/lib/utils/facility-display";
 import { FilterSelect } from "@/components/ui/filter-select";
 
 interface Client {
   id: string;
   name: string;
-  facility_type: string;
+  facility_category: string;
+  facility_type: string | null;
   address: string | null;
   contact_name: string | null;
   contact_phone: string | null;
@@ -26,10 +29,12 @@ interface ClientsResponse {
 export default function ClientsPage() {
   const [data, setData] = useState<ClientsResponse | null>(null);
   const [search, setSearch] = useState("");
+  const [facilityCategory, setFacilityCategory] = useState("");
   const [facilityType, setFacilityType] = useState("");
   const [page, setPage] = useState(1);
 
   const loading = !data;
+  const showTypeFilter = facilityCategory === "mandatory";
 
   useEffect(() => {
     let ignore = false;
@@ -37,7 +42,8 @@ export default function ClientsPage() {
     async function fetchClients() {
       const params = new URLSearchParams();
       if (search) params.set("search", search);
-      if (facilityType) params.set("facilityType", facilityType);
+      if (facilityCategory) params.set("facilityCategory", facilityCategory);
+      if (facilityCategory === "mandatory" && facilityType) params.set("facilityType", facilityType);
       params.set("page", String(page));
 
       const res = await fetch(`/api/clients?${params}`);
@@ -52,11 +58,7 @@ export default function ClientsPage() {
     return () => {
       ignore = true;
     };
-  }, [search, facilityType, page]);
-
-  function getFacilityLabel(id: string) {
-    return FACILITY_TYPES.find((ft) => ft.id === id)?.label || id;
-  }
+  }, [search, facilityCategory, facilityType, page]);
 
   return (
     <div>
@@ -79,14 +81,30 @@ export default function ClientsPage() {
           />
         </div>
         <FilterSelect
-          value={facilityType}
-          onChange={(v) => { setFacilityType(v); setPage(1); setData(null); }}
+          value={facilityCategory}
+          onChange={(v) => {
+            setFacilityCategory(v);
+            if (v !== "mandatory") setFacilityType("");
+            setPage(1);
+            setData(null);
+          }}
           options={[
-            { value: "", label: "전체 시설 유형" },
-            ...FACILITY_TYPES.map((ft) => ({ value: ft.id, label: ft.label })),
+            { value: "", label: "전체 시설 분류" },
+            ...FACILITY_CATEGORIES.map((c) => ({ value: c.id, label: c.label })),
           ]}
-          className="w-80"
+          className="w-40"
         />
+        {showTypeFilter && (
+          <FilterSelect
+            value={facilityType}
+            onChange={(v) => { setFacilityType(v); setPage(1); setData(null); }}
+            options={[
+              { value: "", label: "전체 의무 시설" },
+              ...FACILITY_TYPES.map((ft) => ({ value: ft.id, label: ft.label })),
+            ]}
+            className="w-80"
+          />
+        )}
         <Link href="/clients/new" className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-foreground transition-colors cursor-pointer ml-auto">
           <Plus size={16} />
           고객 등록
@@ -126,7 +144,7 @@ export default function ClientsPage() {
                 </span>
               </div>
               <div className="text-base text-muted-foreground mb-1">
-                {getFacilityLabel(client.facility_type)}
+                {getClientFacilityLabel(client)}
               </div>
               {client.address && (
                 <div className="text-base text-muted-foreground mb-1">{client.address}</div>
@@ -178,7 +196,7 @@ export default function ClientsPage() {
                       {client.name}
                     </Link>
                   </td>
-                  <td className="text-base">{getFacilityLabel(client.facility_type)}</td>
+                  <td className="text-base">{getClientFacilityLabel(client)}</td>
                   <td className="text-base">{client.address || "-"}</td>
                   <td className="text-base">{client.contact_name || "-"}</td>
                   <td className="text-base">{client.contact_phone || "-"}</td>

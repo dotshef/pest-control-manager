@@ -13,6 +13,7 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const search = searchParams.get("search") || "";
+  const facilityCategory = searchParams.get("facilityCategory") || "";
   const facilityType = searchParams.get("facilityType") || "";
   const page = parseInt(searchParams.get("page") || "1");
   const limit = 20;
@@ -29,6 +30,9 @@ export async function GET(request: Request) {
 
   if (search) {
     query = query.or(`name.ilike.%${search}%,contact_name.ilike.%${search}%`);
+  }
+  if (facilityCategory) {
+    query = query.eq("facility_category", facilityCategory);
   }
   if (facilityType) {
     query = query.eq("facility_type", facilityType);
@@ -62,7 +66,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
   }
 
-  const { name, facilityType, area, areaPyeong, volume, address, contactName, contactPhone, contactPosition } = parsed.data;
+  const { name, facilityCategory, facilityType, area, areaPyeong, volume, address, contactName, contactPhone, contactPosition } = parsed.data;
+  const finalFacilityType = facilityCategory === "mandatory" ? (facilityType ?? null) : null;
   const now = new Date().toISOString();
   const supabase = getSupabase();
 
@@ -87,7 +92,8 @@ export async function POST(request: Request) {
       tenant_id: session.tenantId,
       code: nextCode,
       name,
-      facility_type: facilityType,
+      facility_category: facilityCategory,
+      facility_type: finalFacilityType,
       area: area || null,
       area_pyeong: areaPyeong || null,
       volume: volume || null,

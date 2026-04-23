@@ -73,7 +73,16 @@ export async function PATCH(
 
   const updateData: Record<string, unknown> = { updated_at: now };
   if (parsed.data.name !== undefined) updateData.name = parsed.data.name;
-  if (parsed.data.facilityType !== undefined) updateData.facility_type = parsed.data.facilityType;
+  if (parsed.data.facilityCategory !== undefined) {
+    updateData.facility_category = parsed.data.facilityCategory;
+    if (parsed.data.facilityCategory !== "mandatory") {
+      updateData.facility_type = null;
+    } else if (parsed.data.facilityType !== undefined) {
+      updateData.facility_type = parsed.data.facilityType;
+    }
+  } else if (parsed.data.facilityType !== undefined) {
+    updateData.facility_type = parsed.data.facilityType;
+  }
   if (parsed.data.area !== undefined) updateData.area = parsed.data.area;
   if (parsed.data.areaPyeong !== undefined) updateData.area_pyeong = parsed.data.areaPyeong;
   if (parsed.data.volume !== undefined) updateData.volume = parsed.data.volume;

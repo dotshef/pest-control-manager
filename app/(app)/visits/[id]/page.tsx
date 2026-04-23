@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, CheckCircle, XCircle, FileText, Download, Link as LinkIcon, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { FACILITY_TYPES } from "@/lib/constants/facility-types";
+import { getClientFacilityLabel } from "@/lib/utils/facility-display";
 import { FormField } from "@/components/ui/form-field";
 import { Spinner } from "@/components/ui/spinner";
 import { useSession } from "@/components/providers/session-provider";
@@ -22,7 +22,8 @@ interface VisitDetail {
   clients: {
     id: string;
     name: string;
-    facility_type: string;
+    facility_category: string;
+    facility_type: string | null;
     address: string | null;
     contact_name: string | null;
     contact_phone: string | null;
@@ -192,10 +193,6 @@ export default function VisitDetailPage() {
     if (res.ok) fetchVisit();
   }
 
-  function getFacilityLabel(typeId: string) {
-    return FACILITY_TYPES.find((ft) => ft.id === typeId)?.label || typeId;
-  }
-
   if (loading) {
     return (
       <div className="flex justify-center py-20">
@@ -250,9 +247,11 @@ export default function VisitDetailPage() {
               </p>
             </div>
             <div>
-              <span className="text-muted-foreground">시설 유형</span>
+              <span className="text-muted-foreground">
+                시설 {visit.clients?.facility_category === "mandatory" ? "유형" : "분류"}
+              </span>
               <p className="font-medium">
-                {visit.clients ? getFacilityLabel(visit.clients.facility_type) : "-"}
+                {getClientFacilityLabel(visit.clients)}
               </p>
             </div>
             <div>

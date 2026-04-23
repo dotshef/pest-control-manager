@@ -10,7 +10,6 @@ import { DatePicker } from "@/components/ui/date-picker";
 interface ClientOption {
   id: string;
   name: string;
-  facility_type: string;
 }
 
 interface MemberOption {

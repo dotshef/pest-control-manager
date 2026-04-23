@@ -25,7 +25,8 @@ interface Visit {
   clients: {
     id: string;
     name: string;
-    facility_type: string;
+    facility_category: string;
+    facility_type: string | null;
     address: string | null;
   } | null;
 }

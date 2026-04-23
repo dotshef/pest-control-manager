@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Pencil, Trash2, FileText } from "lucide-react";
 import Link from "next/link";
-import { FACILITY_TYPES, type FacilityTypeId } from "@/lib/constants/facility-types";
+import { type FacilityTypeId } from "@/lib/constants/facility-types";
 import { getCycleMonths } from "@/lib/utils/cycle";
+import { getClientFacilityLabel } from "@/lib/utils/facility-display";
 import { Spinner } from "@/components/ui/spinner";
 
 interface Visit {
@@ -22,7 +23,8 @@ interface Visit {
 interface ClientDetail {
   id: string;
   name: string;
-  facility_type: string;
+  facility_category: string;
+  facility_type: string | null;
   area: number | null;
   area_pyeong: number | null;
   address: string | null;
@@ -87,10 +89,6 @@ export default function ClientDetailPage() {
     }
   }
 
-  function getFacilityLabel(typeId: string) {
-    return FACILITY_TYPES.find((ft) => ft.id === typeId)?.label || typeId;
-  }
-
   if (loading) {
     return (
       <div className="flex justify-center py-20">
@@ -101,7 +99,10 @@ export default function ClientDetailPage() {
 
   if (!client) return null;
 
-  const cycleMonths = getCycleMonths(client.facility_type as FacilityTypeId);
+  const isMandatory = client.facility_category === "mandatory";
+  const cycleMonths = isMandatory && client.facility_type
+    ? getCycleMonths(client.facility_type as FacilityTypeId)
+    : null;
   const sortedVisits = [...(client.visits || [])].sort(
     (a, b) => new Date(b.scheduled_date).getTime() - new Date(a.scheduled_date).getTime()
   );
@@ -143,8 +144,8 @@ export default function ClientDetailPage() {
             <h3 className="text-base font-semibold">시설 정보</h3>
             <div className="grid grid-cols-2 gap-y-3 gap-x-6 text-base mt-2">
               <div>
-                <span className="text-muted-foreground">시설 유형</span>
-                <p className="font-medium">{getFacilityLabel(client.facility_type)}</p>
+                <span className="text-muted-foreground">시설 {isMandatory ? "유형" : "분류"}</span>
+                <p className="font-medium">{getClientFacilityLabel(client)}</p>
               </div>
               <div>
                 <span className="text-muted-foreground">주소</span>
@@ -157,12 +158,14 @@ export default function ClientDetailPage() {
                   {client.area_pyeong ? ` (${client.area_pyeong}평)` : ""}
                 </p>
               </div>
-              <div>
-                <span className="text-muted-foreground">소독 주기</span>
-                <p className="font-medium">
-                  {cycleMonths ? `${cycleMonths}개월` : "-"}
-                </p>
-              </div>
+              {isMandatory && (
+                <div>
+                  <span className="text-muted-foreground">소독 주기</span>
+                  <p className="font-medium">
+                    {cycleMonths ? `${cycleMonths}개월` : "-"}
+                  </p>
+                </div>
+              )}
               <div>
                 <span className="text-muted-foreground">시설 담당자</span>
                 <p className="font-medium">{client.contact_name || "-"}</p>

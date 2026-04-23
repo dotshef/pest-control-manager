@@ -6,7 +6,7 @@ import { getFacilityType, type FacilityTypeId } from "@/lib/constants/facility-t
 export function getCycleMonths(
   facilityTypeId: FacilityTypeId,
   date: Date = new Date()
-): number | null {
+): number {
   const ft = getFacilityType(facilityTypeId);
   const month = date.getMonth() + 1; // 1~12
   const isSummer = month >= 4 && month <= 9;

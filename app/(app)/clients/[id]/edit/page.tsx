@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { FACILITY_TYPES } from "@/lib/constants/facility-types";
+import { FACILITY_CATEGORIES } from "@/lib/constants/facility-category";
 import { FormField } from "@/components/ui/form-field";
 import { Spinner } from "@/components/ui/spinner";
 import { convertArea } from "@/lib/utils/area";
@@ -17,6 +18,7 @@ export default function EditClientPage() {
 
   const [form, setForm] = useState({
     name: "",
+    facilityCategory: "",
     facilityType: "",
     area: "",
     areaPyeong: "",
@@ -41,6 +43,7 @@ export default function EditClientPage() {
       if (!ignore) {
         setForm({
           name: data.name || "",
+          facilityCategory: data.facility_category || "",
           facilityType: data.facility_type || "",
           area: data.area?.toString() || "",
           areaPyeong: data.area_pyeong?.toString() || "",
@@ -65,10 +68,18 @@ export default function EditClientPage() {
   function updateField(field: string, value: string) {
     if (field === "area" || field === "areaPyeong") {
       setForm((prev) => ({ ...prev, ...convertArea(field, value) }));
+    } else if (field === "facilityCategory") {
+      setForm((prev) => ({
+        ...prev,
+        facilityCategory: value,
+        facilityType: value === "mandatory" ? prev.facilityType : "",
+      }));
     } else {
       setForm((prev) => ({ ...prev, [field]: value }));
     }
   }
+
+  const isMandatory = form.facilityCategory === "mandatory";
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -81,6 +92,7 @@ export default function EditClientPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          facilityType: form.facilityCategory === "mandatory" ? form.facilityType : null,
           area: form.area ? Number(form.area) : null,
           areaPyeong: form.areaPyeong ? Number(form.areaPyeong) : null,
           volume: form.volume ? Number(form.volume) : null,
@@ -143,16 +155,29 @@ export default function EditClientPage() {
               />
             </FormField>
 
-            <FormField label="시설 유형">
+            <FormField label={<>시설 분류 <span className="text-destructive">*</span></>}>
               <FilterSelect
-                value={form.facilityType}
-                onChange={(v) => updateField("facilityType", v)}
+                value={form.facilityCategory}
+                onChange={(v) => updateField("facilityCategory", v)}
                 options={[
-                  { value: "", label: "시설 유형 선택" },
-                  ...FACILITY_TYPES.map((ft) => ({ value: ft.id, label: ft.label })),
+                  { value: "", label: "시설 분류 선택" },
+                  ...FACILITY_CATEGORIES.map((c) => ({ value: c.id, label: c.label })),
                 ]}
               />
             </FormField>
+
+            {isMandatory && (
+              <FormField label={<>의무 시설 유형 <span className="text-destructive">*</span></>}>
+                <FilterSelect
+                  value={form.facilityType}
+                  onChange={(v) => updateField("facilityType", v)}
+                  options={[
+                    { value: "", label: "시설 유형 선택" },
+                    ...FACILITY_TYPES.map((ft) => ({ value: ft.id, label: ft.label })),
+                  ]}
+                />
+              </FormField>
+            )}
 
             <FormField label="주소">
               <input

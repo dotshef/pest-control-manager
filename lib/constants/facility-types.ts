@@ -17,18 +17,17 @@ export type FacilityTypeId =
   | 'academy'
   | 'office'
   | 'childcare'
-  | 'apartment'
-  | 'etc';
+  | 'apartment';
 
 export interface FacilityType {
   id: FacilityTypeId;
-  /** 법정 코드 번호 (별표 7 기준). null이면 법정 분류 없음 */
-  code: string | null;
+  /** 법정 코드 번호 (별표 7 기준) */
+  code: string;
   label: string;
-  /** 하절기 주기 (월), 4~9월. null이면 법정 주기 없음 */
-  cycleSummer: number | null;
-  /** 동절기 주기 (월), 10~3월. null이면 법정 주기 없음 */
-  cycleWinter: number | null;
+  /** 하절기 주기 (월), 4~9월 */
+  cycleSummer: number;
+  /** 동절기 주기 (월), 10~3월 */
+  cycleWinter: number;
 }
 
 export const FACILITY_TYPES: readonly FacilityType[] = [
@@ -45,7 +44,6 @@ export const FACILITY_TYPES: readonly FacilityType[] = [
   { id: 'office',    code: '10',  label: '사무실용 건축물 (연면적 2,000㎡ 이상)',    cycleSummer: 2, cycleWinter: 3 },
   { id: 'childcare', code: '11',  label: '어린이집/유치원 (50인 이상)',              cycleSummer: 2, cycleWinter: 3 },
   { id: 'apartment', code: '12',  label: '공동주택 (300세대 이상)',                  cycleSummer: 3, cycleWinter: 6 },
-  { id: 'etc',       code: null,  label: '기타',                                    cycleSummer: null, cycleWinter: null },
 ] as const;
 
 export const FACILITY_TYPE_IDS = FACILITY_TYPES.map((ft) => ft.id);

@@ -25,6 +25,7 @@ export async function GET(request: Request) {
   const dateFrom = searchParams.get("date_from");
   const dateTo = searchParams.get("date_to");
   const userIdParam = searchParams.get("user_id");
+  const facilityCategory = searchParams.get("facility_category");
   const facilityType = searchParams.get("facility_type");
   const pageParam = searchParams.get("page");
   const limitParam = searchParams.get("limit");
@@ -49,7 +50,7 @@ export async function GET(request: Request) {
       .from("visits")
       .select(`
         id, visit_code, scheduled_date, completed_at, status, method, disinfectants_used, notes, user_id,
-        clients(id, name, facility_type, address),
+        clients(id, name, facility_category, facility_type, address),
         certificates(id, certificate_number, hwpx_file_url, pdf_file_url)
       `)
       .eq("tenant_id", session.tenantId)
@@ -98,7 +99,7 @@ export async function GET(request: Request) {
     .select(
       `
       id, visit_code, scheduled_date, completed_at, status, method, disinfectants_used, notes, user_id,
-      clients!inner(id, name, facility_type, address),
+      clients!inner(id, name, facility_category, facility_type, address),
       users(id, name),
       certificates(id, certificate_number, pdf_file_url)
     `,
@@ -112,6 +113,7 @@ export async function GET(request: Request) {
   if (dateFrom) query = query.gte("scheduled_date", dateFrom);
   if (dateTo) query = query.lte("scheduled_date", dateTo);
   if (search) query = query.ilike("clients.name", `%${search}%`);
+  if (facilityCategory) query = query.eq("clients.facility_category", facilityCategory);
   if (facilityType) query = query.eq("clients.facility_type", facilityType);
 
   // 역할별 강제 필터:
