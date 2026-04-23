@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -46,8 +47,15 @@ export function Sidebar({ role }: { role: "admin" | "member" }) {
     <aside className="hidden lg:flex flex-col w-72 bg-card border-r border-border">
       {/* 로고 */}
       <div className="px-6 py-5">
-        <Link href="/dashboard" className="text-xl font-bold text-primary">
-          소독노트
+        <Link href="/dashboard" className="inline-block">
+          <Image
+            src="/logo-banner.png"
+            alt="소독노트"
+            width={300}
+            height={200}
+            priority
+            className="h-10 w-auto"
+          />
         </Link>
       </div>
 
