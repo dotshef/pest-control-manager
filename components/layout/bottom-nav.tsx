@@ -58,7 +58,7 @@ export function BottomNav({ role }: { role: "admin" | "member" }) {
       {moreOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
-            className="absolute inset-0 bg-black/40"
+            className="absolute inset-x-0 top-0 bottom-16 bg-black/40"
             onClick={() => setMoreOpen(false)}
           />
           <div className="absolute bottom-16 left-0 right-0 bg-card border-t border-border rounded-t-2xl p-4 space-y-1">

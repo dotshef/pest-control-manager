@@ -103,58 +103,42 @@ export default function DashboardPage() {
       {/* 상단 요약 카드 4개 */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="rounded-xl bg-card border border-border">
-          <div className="py-4 px-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Calendar size={20} className="text-primary" />
-              </div>
-              <div>
-                <p className="text-base text-foreground">오늘 방문 예정</p>
-                <p className="text-2xl font-bold">{data.todayCount}건</p>
-              </div>
+          <div className="p-4 flex flex-col gap-2">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Calendar size={22} strokeWidth={2} className="text-primary" />
             </div>
+            <p className="text-base text-foreground">오늘 방문 예정</p>
+            <p className="text-2xl font-bold">{data.todayCount}건</p>
           </div>
         </div>
 
         <div className="rounded-xl bg-card border border-border">
-          <div className="py-4 px-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center">
-                <CalendarCheck size={20} className="text-info" />
-              </div>
-              <div>
-                <p className="text-base text-foreground">이번 주 예정</p>
-                <p className="text-2xl font-bold">{data.weekCount}건</p>
-              </div>
+          <div className="p-4 flex flex-col gap-2">
+            <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center">
+              <CalendarCheck size={22} strokeWidth={2} className="text-info" />
             </div>
+            <p className="text-base text-foreground">이번 주 예정</p>
+            <p className="text-2xl font-bold">{data.weekCount}건</p>
           </div>
         </div>
 
         <div className="rounded-xl bg-card border border-border">
-          <div className="py-4 px-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-destructive/10 flex items-center justify-center">
-                <AlertTriangle size={20} className="text-destructive" />
-              </div>
-              <div>
-                <p className="text-base text-foreground">미완료 건</p>
-                <p className="text-2xl font-bold text-destructive">{data.missedCount}건</p>
-              </div>
+          <div className="p-4 flex flex-col gap-2">
+            <div className="w-10 h-10 rounded-lg bg-destructive/10 flex items-center justify-center">
+              <AlertTriangle size={22} strokeWidth={2} className="text-destructive" />
             </div>
+            <p className="text-base text-foreground">미완료 건</p>
+            <p className="text-2xl font-bold text-destructive">{data.missedCount}건</p>
           </div>
         </div>
 
         <div className="rounded-xl bg-card border border-border">
-          <div className="py-4 px-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
-                <CheckCircle size={20} className="text-success" />
-              </div>
-              <div>
-                <p className="text-base text-foreground">이번 달 완료</p>
-                <p className="text-2xl font-bold">{data.monthCompleted}건</p>
-              </div>
+          <div className="p-4 flex flex-col gap-2">
+            <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
+              <CheckCircle size={22} strokeWidth={2} className="text-success" />
             </div>
+            <p className="text-base text-foreground">이번 달 완료</p>
+            <p className="text-2xl font-bold">{data.monthCompleted}건</p>
           </div>
         </div>
       </div>
