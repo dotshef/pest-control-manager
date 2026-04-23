@@ -56,12 +56,12 @@ export function BottomNav({ role }: { role: "admin" | "member" }) {
     <>
       {/* 더보기 오버레이 */}
       {moreOpen && (
-        <div className="fixed inset-0 z-40 lg:hidden">
+        <>
           <div
-            className="absolute inset-x-0 top-0 bottom-16 bg-black/40"
+            className="fixed inset-x-0 top-0 bottom-16 z-40 bg-black/40 lg:hidden"
             onClick={() => setMoreOpen(false)}
           />
-          <div className="absolute bottom-16 left-0 right-0 bg-card border-t border-border rounded-t-2xl p-4 space-y-1">
+          <div className="fixed bottom-16 left-0 right-0 z-40 bg-card border-t border-border rounded-t-2xl p-4 space-y-1 lg:hidden">
             {filteredMoreItems.map((item) => {
               const isActive = pathname.startsWith(item.href);
               return (
@@ -91,11 +91,11 @@ export function BottomNav({ role }: { role: "admin" | "member" }) {
               로그아웃
             </button>
           </div>
-        </div>
+        </>
       )}
 
       {/* 하단 탭 바 */}
-      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-card border-t border-border lg:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-card border-t border-border lg:hidden pb-[env(safe-area-inset-bottom)]">
         <div className="flex items-center justify-around">
           {mainTabs.map((tab) => {
             const isActive = pathname.startsWith(tab.href);

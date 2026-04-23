@@ -17,7 +17,7 @@ export default async function AppLayout({
         <Sidebar role={session.role} />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header session={session} />
-          <main className="flex-1 overflow-y-auto p-6 pb-20 lg:pb-6">{children}</main>
+          <main className="flex-1 overflow-y-auto p-6 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-6">{children}</main>
         </div>
         <BottomNav role={session.role} />
       </div>
