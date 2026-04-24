@@ -144,7 +144,7 @@ export function PushSettings() {
     );
   }
 
-  const isSubscribed = !!currentEndpoint;
+  const isSubscribed = !!currentEndpoint && devices.some((d) => d.endpoint === currentEndpoint);
 
   return (
     <div className="rounded-xl bg-card border border-border mb-4">
@@ -157,7 +157,7 @@ export function PushSettings() {
                 ? "브라우저에서 알림이 차단되었습니다. 설정에서 허용해주세요."
                 : isSubscribed
                   ? "이 기기에서 알림을 받고 있습니다"
-                  : "이 기기에서 알림을 받지 않고 있습니다"}
+                  : "이 기기에 알림을 허용할까요?"}
             </p>
           </div>
           {permission !== "denied" && (
