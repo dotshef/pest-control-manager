@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { RegisterFab } from "@/components/ui/register-fab";
 import { FACILITY_TYPES, FACILITY_TYPE_MAP, type FacilityTypeId } from "@/constants/facility-types";
 import { FACILITY_CATEGORIES, getFacilityCategoryLabel } from "@/constants/facility-category";
 import { FilterSelect } from "@/components/ui/filter-select";
@@ -104,14 +105,7 @@ export default function ClientsPage() {
             className="w-full md:w-80"
           />
         )}
-        <Link
-          href="/clients/new"
-          aria-label="고객 등록"
-          className="fixed z-40 right-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] size-14 rounded-full shadow-lg flex items-center justify-center bg-primary text-primary-foreground transition-colors cursor-pointer md:static md:ml-auto md:h-auto md:w-auto md:rounded-lg md:shadow-none md:px-4 md:py-2 md:gap-2"
-        >
-          <Plus className="w-6 h-6 md:w-4 md:h-4" />
-          <span className="hidden md:inline text-base font-medium">고객 등록</span>
-        </Link>
+        <RegisterFab label="고객 등록" href="/clients/new" />
       </div>
 
       {/* 모바일 카드 */}

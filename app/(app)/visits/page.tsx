@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { RegisterFab } from "@/components/ui/register-fab";
 import { VisitCreateModal } from "@/components/visits/visit-create-modal";
 import { FilterSelect } from "@/components/ui/filter-select";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -209,15 +210,7 @@ export default function VisitsPage() {
         )}
 
         {role === "admin" && (
-          <button
-            type="button"
-            onClick={() => setCreateOpen(true)}
-            aria-label="방문 일정 등록"
-            className="fixed z-40 right-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] size-14 rounded-full shadow-lg flex items-center justify-center bg-primary text-primary-foreground transition-colors cursor-pointer md:static md:ml-auto md:h-auto md:w-auto md:rounded-lg md:shadow-none md:px-4 md:py-2 md:gap-2"
-          >
-            <Plus className="w-6 h-6 md:w-4 md:h-4" />
-            <span className="hidden md:inline text-base font-medium">방문 일정 등록</span>
-          </button>
+          <RegisterFab label="방문 일정 등록" onClick={() => setCreateOpen(true)} />
         )}
       </div>
 

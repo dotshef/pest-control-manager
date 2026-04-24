@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus } from "lucide-react";
 import { useSession } from "@/components/providers/session-provider";
+import { RegisterFab } from "@/components/ui/register-fab";
 
 interface Member {
   id: string;
@@ -66,12 +66,8 @@ export default function MembersPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold"></h2>
-        <Link href="/members/new" className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-foreground transition-colors cursor-pointer">
-          <Plus size={16} />
-          직원 등록
-        </Link>
+      <div className="md:flex md:justify-end md:mb-4">
+        <RegisterFab label="직원 등록" href="/members/new" />
       </div>
 
       {/* 모바일 카드 */}

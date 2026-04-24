@@ -190,14 +190,13 @@ export default function NewClientPage() {
                   required
                 />
               </FormField>
-              <FormField label={<>직위 <span className="text-destructive">*</span></>}>
+              <FormField label="직위">
                 <input
                   type="text"
                   placeholder="예: 점장, 대표"
                   className="w-full"
                   value={form.contactPosition}
                   onChange={(e) => updateField("contactPosition", e.target.value)}
-                  required
                 />
               </FormField>
               <FormField label={<>연락처 <span className="text-destructive">*</span></>}>

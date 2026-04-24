@@ -20,7 +20,7 @@ export const createClientSchema = z
     address: z.string().min(1, "주소를 입력해주세요"),
     contactName: z.string().min(1, "담당자명을 입력해주세요"),
     contactPhone: requiredPhoneSchema,
-    contactPosition: z.string().min(1, "직위를 입력해주세요"),
+    contactPosition: z.string().optional(),
     contactEmail: z
       .string()
       .email("올바른 이메일 형식이 아닙니다")
@@ -53,7 +53,7 @@ export const updateClientSchema = z
     address: z.string().min(1, "주소를 입력해주세요").optional(),
     contactName: z.string().min(1, "담당자명을 입력해주세요").optional(),
     contactPhone: requiredPhoneSchema.optional(),
-    contactPosition: z.string().min(1, "직위를 입력해주세요").optional(),
+    contactPosition: z.string().optional(),
     contactEmail: z
       .string()
       .email("올바른 이메일 형식이 아닙니다")
