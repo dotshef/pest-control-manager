@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase/server";
 import { sendCodeSchema } from "@/lib/validations/auth";
-import { sendVerificationCodeEmail } from "@/lib/email/resend";
+import { renderPasswordResetEmail } from "@/lib/email/templates/password-reset";
+import { sendEmail } from "@/lib/email/resend";
 
 const CODE_TTL_MS = 10 * 60 * 1000;
 
@@ -58,11 +59,8 @@ export async function POST(request: Request) {
       );
     }
 
-    await sendVerificationCodeEmail({
-      to: email,
-      code,
-      purpose: "password_reset",
-    });
+    const { subject, html } = renderPasswordResetEmail({ code });
+    await sendEmail({ to: email, subject, html });
 
     return NextResponse.json({ success: true });
   } catch {

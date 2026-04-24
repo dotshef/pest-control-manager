@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
+import { format } from "date-fns";
 import { getSupabase } from "@/lib/supabase/server";
 import { getSession } from "@/lib/auth/jwt";
-import { sendCertificateEmail } from "@/lib/email/resend";
+import { renderCertificateEmail } from "@/lib/email/templates/certificate";
+import { sendEmail } from "@/lib/email/resend";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -27,7 +29,7 @@ export async function POST(
     .from("certificates")
     .select(`
       id, certificate_number, pdf_file_url, pdf_file_name,
-      visits(clients(id, name, contact_name)),
+      visits(completed_at, clients(id, name, contact_name)),
       tenants(name)
     `)
     .eq("id", id)
@@ -43,14 +45,17 @@ export async function POST(
   }
 
   const visit = cert.visits as unknown as {
+    completed_at: string | null;
     clients: { id: string; name: string; contact_name: string | null } | null;
   } | null;
   const client = visit?.clients ?? null;
   const tenant = cert.tenants as unknown as { name: string } | null;
 
-  if (!client || !tenant) {
+  if (!client || !tenant || !visit?.completed_at) {
     return NextResponse.json({ error: "발송에 필요한 정보가 부족합니다" }, { status: 500 });
   }
+
+  const completedDate = format(new Date(visit.completed_at), "yyyy.MM.dd");
 
   const { data: fileData, error: dlError } = await supabase.storage
     .from("certificates")
@@ -64,14 +69,15 @@ export async function POST(
   const pdfFileName = cert.pdf_file_name || `${cert.certificate_number}.pdf`;
 
   try {
-    await sendCertificateEmail({
-      to,
+    const { subject, html, attachments } = renderCertificateEmail({
       recipientName: client.contact_name,
       clientName: client.name,
       tenantName: tenant.name,
+      completedDate,
       pdfBuffer,
       pdfFileName,
     });
+    await sendEmail({ to, subject, html, attachments });
   } catch (e) {
     console.error("Certificate email send failed:", e);
     return NextResponse.json({ error: "이메일 발송에 실패했습니다" }, { status: 500 });
