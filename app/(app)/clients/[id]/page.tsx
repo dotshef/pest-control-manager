@@ -30,6 +30,7 @@ interface ClientDetail {
   address: string | null;
   contact_name: string | null;
   contact_phone: string | null;
+  contact_email: string | null;
   is_active: boolean;
   visits: Visit[];
   stats: {
@@ -173,6 +174,10 @@ export default function ClientDetailPage() {
               <div>
                 <span className="text-muted-foreground">연락처</span>
                 <p className="font-medium">{client.contact_phone || "-"}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">이메일</span>
+                <p className="font-medium break-all">{client.contact_email || "-"}</p>
               </div>
 
             </div>

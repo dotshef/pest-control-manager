@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, CheckCircle, XCircle, FileText, Download, Link as LinkIcon, Trash2 } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, FileText, Download, Link as LinkIcon, Trash2, Send } from "lucide-react";
 import Link from "next/link";
+import { format } from "date-fns";
 import { getClientFacilityLabel } from "@/lib/utils/facility-display";
 import { FormField } from "@/components/ui/form-field";
 import { Spinner } from "@/components/ui/spinner";
 import { useSession } from "@/components/providers/session-provider";
 import { toast } from "sonner";
+import { SendCertificateModal } from "@/components/certificates/send-certificate-modal";
 
 interface VisitDetail {
   id: string;
@@ -27,6 +29,7 @@ interface VisitDetail {
     address: string | null;
     contact_name: string | null;
     contact_phone: string | null;
+    contact_email: string | null;
   } | null;
   certificates: {
     id: string;
@@ -35,6 +38,8 @@ interface VisitDetail {
     hwpx_file_name: string | null;
     pdf_file_url: string | null;
     pdf_file_name: string | null;
+    sent_at: string | null;
+    sent_to: string | null;
   } | null;
 }
 
@@ -51,6 +56,7 @@ export default function VisitDetailPage() {
   const [newDisinfectant, setNewDisinfectant] = useState("");
   const [notes, setNotes] = useState("");
   const [generatingCert, setGeneratingCert] = useState(false);
+  const [sendModalOpen, setSendModalOpen] = useState(false);
   const [issueNumber, setIssueNumber] = useState("1");
   const [recentMethods, setRecentMethods] = useState<{ id: string; name: string }[]>([]);
   const [recentDisinfectants, setRecentDisinfectants] = useState<{ id: string; name: string }[]>([]);
@@ -146,6 +152,16 @@ export default function VisitDetailPage() {
     } finally {
       setSaving(false);
     }
+  }
+
+  function handleOpenSendModal() {
+    const clientEmail = visit?.clients?.contact_email;
+    if (!clientEmail) {
+      if (!confirm("시설 담당자 이메일이 등록되어 있지 않습니다. 지금 입력해서 발송하시겠습니까?")) {
+        return;
+      }
+    }
+    setSendModalOpen(true);
   }
 
   async function handleGenerateCert() {
@@ -520,8 +536,56 @@ export default function VisitDetailPage() {
                 </div>
               </>
             )}
+
+            {/* 이메일 발송 */}
+            {visit.certificates?.pdf_file_url && (
+              <>
+                <hr className="border-border" />
+                <div className="space-y-2">
+                  <span className="text-muted-foreground text-base block mb-2">이메일 발송</span>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-base text-muted-foreground flex-1 min-w-0">
+                      {visit.certificates.sent_at && visit.certificates.sent_to ? (
+                        <span className="break-all">
+                          {format(new Date(visit.certificates.sent_at), "yyyy.MM.dd HH:mm")}
+                          {" → "}
+                          {visit.certificates.sent_to}
+                          {" 발송됨"}
+                        </span>
+                      ) : (
+                        <span>아직 발송되지 않았습니다</span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      className={`inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[44px] rounded-lg text-base font-medium transition-colors cursor-pointer ${
+                        visit.certificates.sent_at
+                          ? "border border-border hover:bg-muted"
+                          : "bg-primary text-primary-foreground"
+                      }`}
+                      onClick={handleOpenSendModal}
+                    >
+                      <Send size={14} />
+                      {visit.certificates.sent_at ? "재발송" : "발송"}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
+      )}
+
+      {visit.certificates?.pdf_file_url && (
+        <SendCertificateModal
+          open={sendModalOpen}
+          certificateId={visit.certificates.id}
+          pdfFileName={visit.certificates.pdf_file_name || `${visit.certificates.certificate_number}.pdf`}
+          defaultEmail={visit.clients?.contact_email || ""}
+          clientHasEmail={Boolean(visit.clients?.contact_email)}
+          onClose={() => setSendModalOpen(false)}
+          onSent={() => fetchVisit()}
+        />
       )}
 
       {/* 액션 버튼 */}

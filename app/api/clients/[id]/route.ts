@@ -90,6 +90,7 @@ export async function PATCH(
   if (parsed.data.contactName !== undefined) updateData.contact_name = parsed.data.contactName;
   if (parsed.data.contactPhone !== undefined) updateData.contact_phone = parsed.data.contactPhone;
   if (parsed.data.contactPosition !== undefined) updateData.contact_position = parsed.data.contactPosition;
+  if (parsed.data.contactEmail !== undefined) updateData.contact_email = parsed.data.contactEmail || null;
   if (parsed.data.isActive !== undefined) updateData.is_active = parsed.data.isActive;
 
   const { error } = await supabase

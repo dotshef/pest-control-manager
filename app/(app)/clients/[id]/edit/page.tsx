@@ -27,6 +27,7 @@ export default function EditClientPage() {
     contactName: "",
     contactPhone: "",
     contactPosition: "",
+    contactEmail: "",
   });
   const [clientCode, setClientCode] = useState("");
 
@@ -52,6 +53,7 @@ export default function EditClientPage() {
           contactName: data.contact_name || "",
           contactPhone: data.contact_phone || "",
           contactPosition: data.contact_position || "",
+          contactEmail: data.contact_email || "",
         });
         setClientCode(data.code || "");
         setLoaded(true);
@@ -248,6 +250,16 @@ export default function EditClientPage() {
                 />
               </FormField>
             </div>
+
+            <FormField label="이메일">
+              <input
+                type="email"
+                placeholder="example@domain.com"
+                className="w-full"
+                value={form.contactEmail}
+                onChange={(e) => updateField("contactEmail", e.target.value)}
+              />
+            </FormField>
 
           </div>
         </div>

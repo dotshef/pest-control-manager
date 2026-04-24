@@ -42,6 +42,7 @@ create table clients (
   contact_name text,
   contact_phone text,
   contact_position text,
+  contact_email text,
   notes text,
   is_active boolean not null default true,
   created_at timestamptz not null,

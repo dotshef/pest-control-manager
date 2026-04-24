@@ -21,6 +21,11 @@ export const createClientSchema = z
     contactName: z.string().optional(),
     contactPhone: phoneSchema,
     contactPosition: z.string().optional(),
+    contactEmail: z
+      .string()
+      .email("올바른 이메일 형식이 아닙니다")
+      .optional()
+      .or(z.literal("")),
   })
   .superRefine((val, ctx) => {
     if (val.facilityCategory === "mandatory" && !val.facilityType) {
@@ -49,6 +54,11 @@ export const updateClientSchema = z
     contactName: z.string().optional(),
     contactPhone: phoneSchema,
     contactPosition: z.string().optional(),
+    contactEmail: z
+      .string()
+      .email("올바른 이메일 형식이 아닙니다")
+      .optional()
+      .or(z.literal("")),
     isActive: z.boolean().optional(),
   })
   .superRefine((val, ctx) => {

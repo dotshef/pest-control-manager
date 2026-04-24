@@ -19,8 +19,8 @@ export async function GET(
     .from("visits")
     .select(`
       *,
-      clients(id, name, facility_category, facility_type, address, contact_name, contact_phone),
-      certificates(id, certificate_number, hwpx_file_url, hwpx_file_name, pdf_file_url, pdf_file_name)
+      clients(id, name, facility_category, facility_type, address, contact_name, contact_phone, contact_email),
+      certificates(id, certificate_number, hwpx_file_url, hwpx_file_name, pdf_file_url, pdf_file_name, sent_at, sent_to)
     `)
     .eq("id", id)
     .eq("tenant_id", session.tenantId)

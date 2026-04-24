@@ -39,7 +39,8 @@
       "Bash(node scripts/pdf-field-test.mjs)",
       "Bash(identify \"c:/D/pest-control/pest-control-project/public/app_icon.png\")",
       "Bash(curl -s -o /tmp/test-logo.png -w \"HTTP:%{http_code} SIZE:%{size_download} TYPE:%{content_type}\\\\n\" http://localhost:3000/logo-banner.png)",
-      "Bash(node -e \"console.log\\(require\\('./package.json'\\).dependencies.resend || 'NOT INSTALLED'\\)\")"
+      "Bash(node -e \"console.log\\(require\\('./package.json'\\).dependencies.resend || 'NOT INSTALLED'\\)\")",
+      "Bash(echo \"EXIT=$?\")"
     ],
     "additionalDirectories": [
       "c:\\D\\pest-control\\.claude"

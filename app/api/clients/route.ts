@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
   }
 
-  const { name, facilityCategory, facilityType, area, areaPyeong, volume, address, contactName, contactPhone, contactPosition } = parsed.data;
+  const { name, facilityCategory, facilityType, area, areaPyeong, volume, address, contactName, contactPhone, contactPosition, contactEmail } = parsed.data;
   const finalFacilityType = facilityCategory === "mandatory" ? (facilityType ?? null) : null;
   const now = new Date().toISOString();
   const supabase = getSupabase();
@@ -101,6 +101,7 @@ export async function POST(request: Request) {
       contact_name: contactName || null,
       contact_phone: contactPhone || null,
       contact_position: contactPosition || null,
+      contact_email: contactEmail || null,
       created_at: now,
       updated_at: now,
     })

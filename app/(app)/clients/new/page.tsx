@@ -27,6 +27,7 @@ export default function NewClientPage() {
     contactName: "",
     contactPhone: "",
     contactPosition: "",
+    contactEmail: "",
   });
 
   function updateField(field: string, value: string) {
@@ -206,6 +207,16 @@ export default function NewClientPage() {
                 />
               </FormField>
             </div>
+
+            <FormField label="이메일">
+              <input
+                type="email"
+                placeholder="example@domain.com"
+                className="w-full"
+                value={form.contactEmail}
+                onChange={(e) => updateField("contactEmail", e.target.value)}
+              />
+            </FormField>
 
           </div>
         </div>

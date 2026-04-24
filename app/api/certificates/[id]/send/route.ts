@@ -1,0 +1,97 @@
+import { NextResponse } from "next/server";
+import { getSupabase } from "@/lib/supabase/server";
+import { getSession } from "@/lib/auth/jwt";
+import { sendCertificateEmail } from "@/lib/email/resend";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { id } = await params;
+  const body = await request.json().catch(() => ({}));
+  const to: string = typeof body.to === "string" ? body.to.trim() : "";
+  const updateClientEmail: boolean = Boolean(body.updateClientEmail);
+
+  if (!to || !EMAIL_REGEX.test(to)) {
+    return NextResponse.json({ error: "올바른 이메일을 입력해주세요" }, { status: 400 });
+  }
+
+  const supabase = getSupabase();
+
+  const { data: cert } = await supabase
+    .from("certificates")
+    .select(`
+      id, certificate_number, pdf_file_url, pdf_file_name,
+      visits(clients(id, name, contact_name)),
+      tenants(name)
+    `)
+    .eq("id", id)
+    .eq("tenant_id", session.tenantId)
+    .single();
+
+  if (!cert) {
+    return NextResponse.json({ error: "증명서를 찾을 수 없습니다" }, { status: 404 });
+  }
+
+  if (!cert.pdf_file_url) {
+    return NextResponse.json({ error: "PDF가 아직 생성되지 않았습니다" }, { status: 409 });
+  }
+
+  const visit = cert.visits as unknown as {
+    clients: { id: string; name: string; contact_name: string | null } | null;
+  } | null;
+  const client = visit?.clients ?? null;
+  const tenant = cert.tenants as unknown as { name: string } | null;
+
+  if (!client || !tenant) {
+    return NextResponse.json({ error: "발송에 필요한 정보가 부족합니다" }, { status: 500 });
+  }
+
+  const { data: fileData, error: dlError } = await supabase.storage
+    .from("certificates")
+    .download(cert.pdf_file_url);
+
+  if (dlError || !fileData) {
+    return NextResponse.json({ error: "PDF 다운로드에 실패했습니다" }, { status: 500 });
+  }
+
+  const pdfBuffer = Buffer.from(await fileData.arrayBuffer());
+  const pdfFileName = cert.pdf_file_name || `${cert.certificate_number}.pdf`;
+
+  try {
+    await sendCertificateEmail({
+      to,
+      recipientName: client.contact_name,
+      clientName: client.name,
+      tenantName: tenant.name,
+      pdfBuffer,
+      pdfFileName,
+    });
+  } catch (e) {
+    console.error("Certificate email send failed:", e);
+    return NextResponse.json({ error: "이메일 발송에 실패했습니다" }, { status: 500 });
+  }
+
+  const sentAt = new Date().toISOString();
+
+  await supabase
+    .from("certificates")
+    .update({ sent_at: sentAt, sent_to: to })
+    .eq("id", id)
+    .eq("tenant_id", session.tenantId);
+
+  if (updateClientEmail) {
+    await supabase
+      .from("clients")
+      .update({ contact_email: to, updated_at: sentAt })
+      .eq("id", client.id)
+      .eq("tenant_id", session.tenantId);
+  }
+
+  return NextResponse.json({ sentAt, sentTo: to });
+}
