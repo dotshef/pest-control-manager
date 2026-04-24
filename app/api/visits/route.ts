@@ -217,7 +217,7 @@ export async function POST(request: Request) {
       .single();
 
     if (clientInfo) {
-      sendPush(
+      await sendPush(
         userId,
         visitAssignedPayload({
           visitId: inserted.id,

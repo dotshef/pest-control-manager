@@ -9,8 +9,8 @@ export function visitAssignedPayload(args: {
   scheduledDate: string;
 }): PushPayload {
   return {
-    title: "새 방문 배정",
-    body: `${args.clientName} — ${args.scheduledDate}`,
+    title: "새 방문 일정",
+    body: `${args.scheduledDate} 에 ${args.clientName} 로 방문 배정되셨습니다`,
     icon: ICON,
     badge: BADGE,
     tag: `visit-assigned-${args.visitId}`,
@@ -31,8 +31,8 @@ export function visitTomorrowPayload(args: {
       ? `${args.firstClientName} 외 ${args.count - 1}곳`
       : args.firstClientName;
   return {
-    title: `내일 방문 ${args.count}건`,
-    body,
+    title: `내일 방문 ${args.count}건 예정`,
+    body: `내일 ${body} 에 방문 일정이 있습니다`,
     icon: ICON,
     badge: BADGE,
     tag: "visit-tomorrow",
