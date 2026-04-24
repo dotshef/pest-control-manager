@@ -219,6 +219,8 @@ export default function VisitDetailPage() {
   if (!visit) return null;
 
   const isCompleted = visit.status === "completed";
+  const today = format(new Date(), "yyyy-MM-dd");
+  const isBeforeScheduled = !isCompleted && visit.scheduled_date > today;
   const badgeBase = "inline-flex items-center px-2.5 py-0.5 rounded-full text-base font-medium";
 
   return (
@@ -323,9 +325,10 @@ export default function VisitDetailPage() {
                 <input
                   type="text"
                   placeholder="소독 방법 입력"
-                  className="w-full"
+                  className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
                   value={method}
                   onChange={(e) => setMethod(e.target.value)}
+                  disabled={isBeforeScheduled}
                 />
                 {recentMethods.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-2">
@@ -334,8 +337,9 @@ export default function VisitDetailPage() {
                       <button
                         key={m.id}
                         type="button"
-                        className="px-2.5 py-0.5 rounded-full text-sm bg-muted hover:bg-muted/80 transition-colors cursor-pointer"
+                        className="px-2.5 py-0.5 rounded-full text-sm bg-muted hover:bg-muted/80 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={() => setMethod(m.name)}
+                        disabled={isBeforeScheduled}
                       >
                         {m.name}
                       </button>
@@ -352,22 +356,25 @@ export default function VisitDetailPage() {
                       <div key={i} className="flex gap-2 items-center">
                         <input
                           type="text"
-                          className="flex-1 min-w-0"
+                          className="flex-1 min-w-0 disabled:opacity-50 disabled:cursor-not-allowed"
                           value={d.name}
                           onChange={(e) => updateDisinfectant(i, "name", e.target.value)}
                           placeholder="약품명"
+                          disabled={isBeforeScheduled}
                         />
                         <input
                           type="text"
-                          className="w-20"
+                          className="w-20 disabled:opacity-50 disabled:cursor-not-allowed"
                           value={d.quantity}
                           onChange={(e) => updateDisinfectant(i, "quantity", e.target.value)}
                           placeholder="사용량"
+                          disabled={isBeforeScheduled}
                         />
                         <select
-                          className="w-20 min-h-[44px] px-2 py-2 rounded-lg border border-border text-base"
+                          className="w-20 min-h-[44px] px-2 py-2 rounded-lg border border-border text-base disabled:opacity-50 disabled:cursor-not-allowed"
                           value={d.unit}
                           onChange={(e) => updateDisinfectant(i, "unit", e.target.value)}
+                          disabled={isBeforeScheduled}
                         >
                           <option value="EA">EA</option>
                           <option value="cc">cc</option>
@@ -378,8 +385,9 @@ export default function VisitDetailPage() {
                         </select>
                         <button
                           type="button"
-                          className="text-destructive hover:text-destructive/80 cursor-pointer p-1"
+                          className="text-destructive hover:text-destructive/80 cursor-pointer p-1 disabled:opacity-50 disabled:cursor-not-allowed"
                           onClick={() => removeDisinfectant(i)}
+                          disabled={isBeforeScheduled}
                         >
                           ✕
                         </button>
@@ -391,15 +399,17 @@ export default function VisitDetailPage() {
                   <input
                     type="text"
                     placeholder="약품명 입력 후 추가"
-                    className="flex-1"
+                    className="flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
                     value={newDisinfectant}
                     onChange={(e) => setNewDisinfectant(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addDisinfectant(newDisinfectant))}
+                    disabled={isBeforeScheduled}
                   />
                   <button
                     type="button"
-                    className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-base font-medium border border-border hover:bg-muted transition-colors cursor-pointer"
+                    className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-base font-medium border border-border hover:bg-muted transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={() => addDisinfectant(newDisinfectant)}
+                    disabled={isBeforeScheduled}
                   >
                     추가
                   </button>
@@ -411,8 +421,9 @@ export default function VisitDetailPage() {
                       <button
                         key={d.id}
                         type="button"
-                        className="px-2.5 py-0.5 rounded-full text-sm bg-muted hover:bg-muted/80 transition-colors cursor-pointer"
+                        className="px-2.5 py-0.5 rounded-full text-sm bg-muted hover:bg-muted/80 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={() => addDisinfectant(d.name)}
+                        disabled={isBeforeScheduled}
                       >
                         {d.name}
                       </button>
@@ -424,10 +435,11 @@ export default function VisitDetailPage() {
               {/* 메모 */}
               <FormField label={<>방문 특이사항 <span className="text-muted-foreground font-normal text-sm">(소독증명서에 기재되지 않습니다)</span></>}>
                 <textarea
-                  className="w-full resize-none"
+                  className="w-full resize-none disabled:opacity-50 disabled:cursor-not-allowed"
                   rows={3}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
+                  disabled={isBeforeScheduled}
                 />
               </FormField>
             </>
@@ -594,9 +606,10 @@ export default function VisitDetailPage() {
         )}
         {!isCompleted ? (
           <button
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-foreground transition-colors disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             onClick={handleComplete}
-            disabled={saving}
+            disabled={saving || isBeforeScheduled}
+            title={isBeforeScheduled ? `방문 예정일(${visit.scheduled_date}) 이후에 완료 처리할 수 있습니다` : undefined}
           >
             {saving ? (
               <Spinner size="sm" />

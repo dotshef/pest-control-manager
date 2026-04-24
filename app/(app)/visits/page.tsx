@@ -288,7 +288,7 @@ export default function VisitsPage() {
               <th style={{ width: "15%" }}>방문 코드</th>
               <th style={{ width: "13%" }}>시설명</th>
               <th style={{ width: "19%" }}>주소</th>
-              <th style={{ width: "10%" }}>담당자</th>
+              <th style={{ width: "10%" }}>방문 직원</th>
               <th style={{ width: "10%" }}>상태</th>
               <th style={{ width: "11%" }}>날짜</th>
               <th style={{ width: "19%" }}>증명서</th>
