@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { getSupabase } from "@/lib/supabase/server";
-import { verifyCodeSchema } from "@/lib/validations/auth";
+import { verifyCodeSchema } from "@/validations/auth";
 
 const RESET_TOKEN_TTL_MS = 10 * 60 * 1000;
 

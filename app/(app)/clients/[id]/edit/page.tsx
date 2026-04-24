@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { FACILITY_TYPES } from "@/lib/constants/facility-types";
-import { FACILITY_CATEGORIES } from "@/lib/constants/facility-category";
+import { FACILITY_TYPES } from "@/constants/facility-types";
+import { FACILITY_CATEGORIES } from "@/constants/facility-category";
 import { FormField } from "@/components/ui/form-field";
 import { Spinner } from "@/components/ui/spinner";
-import { convertArea } from "@/lib/utils/area";
+import { convertArea } from "@/utils/area";
 import { FilterSelect } from "@/components/ui/filter-select";
 
 export default function EditClientPage() {

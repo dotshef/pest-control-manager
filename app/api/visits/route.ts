@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase/server";
 import { getSession } from "@/lib/auth/jwt";
-import { createVisitSchema } from "@/lib/validations/visit";
-import { generateVisitCode } from "@/lib/utils/visit-code";
+import { createVisitSchema } from "@/validations/visit";
+import { generateVisitCode } from "@/utils/visit-code";
 import { sendPush } from "@/lib/push/send";
 import { visitAssignedPayload } from "@/lib/push/templates";
 

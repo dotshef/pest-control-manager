@@ -1,4 +1,4 @@
-import { getFacilityType, type FacilityTypeId } from "@/lib/constants/facility-types";
+import { getFacilityType, type FacilityTypeId } from "@/constants/facility-types";
 
 /**
  * 현재 월 기준으로 하절기(4~9)/동절기(10~3) 판별 후 주기 반환

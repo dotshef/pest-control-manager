@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { FACILITY_TYPE_IDS } from "@/lib/constants/facility-types";
-import { FACILITY_CATEGORY_IDS } from "@/lib/constants/facility-category";
+import { FACILITY_TYPE_IDS } from "@/constants/facility-types";
+import { FACILITY_CATEGORY_IDS } from "@/constants/facility-category";
 import { phoneSchema } from "./phone";
 
 export const createClientSchema = z

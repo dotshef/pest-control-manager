@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Pencil, Trash2, FileText } from "lucide-react";
 import Link from "next/link";
-import { type FacilityTypeId } from "@/lib/constants/facility-types";
-import { getCycleMonths } from "@/lib/utils/cycle";
-import { getClientFacilityLabel } from "@/lib/utils/facility-display";
+import { type FacilityTypeId } from "@/constants/facility-types";
+import { getCycleMonths } from "@/utils/cycle";
+import { getClientFacilityLabel } from "@/utils/facility-display";
 import { Spinner } from "@/components/ui/spinner";
 
 interface Visit {

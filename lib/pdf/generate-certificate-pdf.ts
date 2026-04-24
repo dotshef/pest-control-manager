@@ -10,8 +10,8 @@ const COLOR = rgb(0, 0, 0);
 export async function generateCertificatePdf(input: CertificateInput): Promise<Buffer> {
   const root = process.cwd();
   const [templateBytes, fontBytes] = await Promise.all([
-    readFile(join(root, "lib/template/소독증명서_템플릿.pdf")),
-    readFile(join(root, "lib/fonts/NanumGothic-Regular.ttf")),
+    readFile(join(root, "assets/templates/소독증명서_템플릿.pdf")),
+    readFile(join(root, "assets/fonts/NanumGothic-Regular.ttf")),
   ]);
 
   const pdf = await PDFDocument.load(templateBytes);

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Calendar, CalendarCheck, AlertTriangle, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from "date-fns";
-import { getClientFacilityLabel } from "@/lib/utils/facility-display";
+import { getClientFacilityLabel } from "@/utils/facility-display";
 import { Spinner } from "@/components/ui/spinner";
 import { InstallBanner } from "@/components/pwa/install-banner";
 
@@ -115,7 +115,7 @@ export default function DashboardPage() {
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
               <Calendar size={22} strokeWidth={2} className="text-primary" />
             </div>
-            <p className="text-base text-foreground">오늘 방문 예정</p>
+            <p className="text-base text-foreground">오늘 방문 일정</p>
             <p className="text-2xl font-bold">{data.todayCount}건</p>
           </div>
         </Link>
@@ -128,7 +128,7 @@ export default function DashboardPage() {
             <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center">
               <CalendarCheck size={22} strokeWidth={2} className="text-info" />
             </div>
-            <p className="text-base text-foreground">이번 주 예정</p>
+            <p className="text-base text-foreground">이번 주 일정</p>
             <p className="text-2xl font-bold">{data.weekCount}건</p>
           </div>
         </Link>

@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Search, ChevronLeft, ChevronRight } from "lucide-react";
-import { FACILITY_TYPES } from "@/lib/constants/facility-types";
-import { FACILITY_CATEGORIES } from "@/lib/constants/facility-category";
-import { getClientFacilityLabel } from "@/lib/utils/facility-display";
+import { FACILITY_TYPES } from "@/constants/facility-types";
+import { FACILITY_CATEGORIES } from "@/constants/facility-category";
+import { getClientFacilityLabel } from "@/utils/facility-display";
 import { FilterSelect } from "@/components/ui/filter-select";
 
 interface Client {

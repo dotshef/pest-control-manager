@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, CheckCircle, XCircle, FileText, Download, Link as LinkIcon, Trash2, Send } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
-import { getClientFacilityLabel } from "@/lib/utils/facility-display";
+import { getClientFacilityLabel } from "@/utils/facility-display";
 import { FormField } from "@/components/ui/form-field";
 import { Spinner } from "@/components/ui/spinner";
 import { useSession } from "@/components/providers/session-provider";

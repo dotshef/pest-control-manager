@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase/server";
 import { hashPassword } from "@/lib/auth/password";
 import { setSessionCookie } from "@/lib/auth/jwt";
-import { signupSchema } from "@/lib/validations/auth";
+import { signupSchema } from "@/validations/auth";
 
 export async function POST(request: Request) {
   try {

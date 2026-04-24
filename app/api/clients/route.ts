@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase/server";
 import { getSession } from "@/lib/auth/jwt";
-import { createClientSchema } from "@/lib/validations/client";
+import { createClientSchema } from "@/validations/client";
 
 // 고객 목록 조회
 export async function GET(request: Request) {

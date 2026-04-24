@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FACILITY_TYPES } from "@/lib/constants/facility-types";
-import { FACILITY_CATEGORIES } from "@/lib/constants/facility-category";
-import { getCycleMonths } from "@/lib/utils/cycle";
+import { FACILITY_TYPES } from "@/constants/facility-types";
+import { FACILITY_CATEGORIES } from "@/constants/facility-category";
+import { getCycleMonths } from "@/utils/cycle";
 import { FormField } from "@/components/ui/form-field";
-import type { FacilityTypeId } from "@/lib/constants/facility-types";
+import type { FacilityTypeId } from "@/constants/facility-types";
 import { Spinner } from "@/components/ui/spinner";
-import { convertArea } from "@/lib/utils/area";
+import { convertArea } from "@/utils/area";
 import { FilterSelect } from "@/components/ui/filter-select";
 
 export default function NewClientPage() {

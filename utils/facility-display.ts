@@ -1,5 +1,5 @@
-import { FACILITY_TYPE_MAP, type FacilityTypeId } from "@/lib/constants/facility-types";
-import { getFacilityCategoryLabel } from "@/lib/constants/facility-category";
+import { FACILITY_TYPE_MAP, type FacilityTypeId } from "@/constants/facility-types";
+import { getFacilityCategoryLabel } from "@/constants/facility-category";
 
 interface ClientLike {
   facility_category: string | null | undefined;

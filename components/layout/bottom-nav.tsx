@@ -14,7 +14,9 @@ import {
   Settings,
   UserPen,
   LogOut,
+  Download,
 } from "lucide-react";
+import { useInstallPrompt } from "@/lib/pwa/install";
 
 interface NavItem {
   href: string;
@@ -40,12 +42,29 @@ export function BottomNav({ role }: { role: "admin" | "member" }) {
   const pathname = usePathname();
   const router = useRouter();
   const [moreOpen, setMoreOpen] = useState(false);
+  const [installing, setInstalling] = useState(false);
+  const installState = useInstallPrompt();
 
   const filteredMoreItems = moreItems.filter(
     (item) => !item.adminOnly || role === "admin"
   );
 
   const isMoreActive = filteredMoreItems.some((item) => pathname.startsWith(item.href));
+
+  async function handleInstallClick() {
+    if (installState.status === "available") {
+      setInstalling(true);
+      try {
+        await installState.install();
+      } finally {
+        setInstalling(false);
+        setMoreOpen(false);
+      }
+    } else if (installState.status === "ios-manual") {
+      setMoreOpen(false);
+      router.push("/install");
+    }
+  }
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -80,6 +99,16 @@ export function BottomNav({ role }: { role: "admin" | "member" }) {
                 </Link>
               );
             })}
+            {(installState.status === "available" || installState.status === "ios-manual") && (
+              <button
+                onClick={handleInstallClick}
+                disabled={installing}
+                className="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium text-foreground hover:bg-muted transition-colors cursor-pointer w-full disabled:opacity-50"
+              >
+                <Download size={22} />
+                {installing ? "처리 중..." : "앱 설치"}
+              </button>
+            )}
             <button
               onClick={() => {
                 setMoreOpen(false);

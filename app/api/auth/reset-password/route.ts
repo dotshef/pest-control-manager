@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase/server";
-import { resetPasswordSchema } from "@/lib/validations/auth";
+import { resetPasswordSchema } from "@/validations/auth";
 import { hashPassword } from "@/lib/auth/password";
 
 export async function POST(request: Request) {

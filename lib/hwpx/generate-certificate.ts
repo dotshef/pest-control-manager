@@ -107,7 +107,7 @@ function appendRunToPara(p: XNode, text: string, charPrIDRef: string): void {
 
 export async function generateCertificateHwpx(input: CertificateInput): Promise<Buffer> {
   // 1. 템플릿 읽기
-  const templatePath = join(process.cwd(), "lib", "template", "소독증명서_템플릿.hwpx");
+  const templatePath = join(process.cwd(), "assets", "templates", "소독증명서_템플릿.hwpx");
   const templateBuffer = await readFile(templatePath);
   const zip = await JSZip.loadAsync(templateBuffer);
 

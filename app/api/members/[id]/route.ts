@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase/server";
 import { getSession } from "@/lib/auth/jwt";
-import { updateMemberSchema } from "@/lib/validations/member";
+import { updateMemberSchema } from "@/validations/member";
 import { hashPassword } from "@/lib/auth/password";
 
 // 멤버 수정

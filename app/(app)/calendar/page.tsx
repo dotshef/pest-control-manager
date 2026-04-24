@@ -11,7 +11,7 @@ import {
   isSameDay,
   isToday,
   ko,
-} from "@/lib/utils/calendar";
+} from "@/utils/calendar";
 import Link from "next/link";
 import { Spinner } from "@/components/ui/spinner";
 

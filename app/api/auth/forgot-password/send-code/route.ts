@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase/server";
-import { sendCodeSchema } from "@/lib/validations/auth";
+import { sendCodeSchema } from "@/validations/auth";
 import { renderPasswordResetEmail } from "@/lib/email/templates/password-reset";
 import { sendEmail } from "@/lib/email/resend";
 

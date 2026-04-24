@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase/server";
 import { getSession } from "@/lib/auth/jwt";
 import { hashPassword } from "@/lib/auth/password";
-import { createMemberSchema } from "@/lib/validations/member";
+import { createMemberSchema } from "@/validations/member";
 
 // 멤버 목록 조회
 export async function GET() {

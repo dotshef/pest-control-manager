@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth/jwt";
 import { getSupabase } from "@/lib/supabase/server";
-import { subscribeSchema, unsubscribeSchema } from "@/lib/validations/push";
+import { subscribeSchema, unsubscribeSchema } from "@/validations/push";
 
 export async function POST(request: Request) {
   const session = await getSession();
