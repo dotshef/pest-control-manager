@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase/server";
 import { getSession } from "@/lib/auth/jwt";
-import { sendPush } from "@/lib/push/send";
-import { visitAssignedPayload } from "@/lib/push/templates";
+import { sendPush, sendPushToUsers } from "@/lib/push/send";
+import { visitAssignedPayload, visitCompletedPayload } from "@/lib/push/templates";
 
 // 방문 상세 조회
 export async function GET(
@@ -52,7 +52,7 @@ export async function PATCH(
   if (body.action === "complete") {
     const { method, disinfectantsUsed, notes } = body;
 
-    const { error: updateError } = await supabase
+    const { data: updatedVisit, error: updateError } = await supabase
       .from("visits")
       .update({
         status: "completed",
@@ -62,9 +62,11 @@ export async function PATCH(
         notes: notes || null,
       })
       .eq("id", id)
-      .eq("tenant_id", session.tenantId);
+      .eq("tenant_id", session.tenantId)
+      .select("client_name")
+      .single();
 
-    if (updateError) {
+    if (updateError || !updatedVisit) {
       return NextResponse.json({ error: "업데이트에 실패했습니다" }, { status: 500 });
     }
 
@@ -88,6 +90,29 @@ export async function PATCH(
             );
         }
       }
+    }
+
+    // admin들에게 완료 알림 (본인이 admin이면 자기 자신 제외)
+    const [{ data: completer }, { data: admins }] = await Promise.all([
+      supabase.from("users").select("name").eq("id", session.userId).single(),
+      supabase
+        .from("users")
+        .select("id")
+        .eq("tenant_id", session.tenantId)
+        .eq("role", "admin")
+        .eq("is_active", true)
+        .neq("id", session.userId),
+    ]);
+
+    if (completer && admins && admins.length > 0) {
+      await sendPushToUsers(
+        admins.map((a) => a.id),
+        visitCompletedPayload({
+          visitId: id,
+          completerName: completer.name,
+          clientName: updatedVisit.client_name,
+        })
+      ).catch((e) => console.error("완료 알림 발송 실패", e));
     }
 
     return NextResponse.json({ success: true });

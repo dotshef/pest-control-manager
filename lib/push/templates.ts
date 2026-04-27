@@ -22,6 +22,25 @@ export function visitAssignedPayload(args: {
   };
 }
 
+export function visitCompletedPayload(args: {
+  visitId: string;
+  completerName: string;
+  clientName: string;
+}): PushPayload {
+  return {
+    title: "소독 완료",
+    body: `${args.completerName}님이 ${args.clientName} 소독을 완료했습니다`,
+    icon: ICON,
+    badge: BADGE,
+    tag: `visit-completed-${args.visitId}`,
+    data: {
+      url: `/visits/${args.visitId}`,
+      type: "visit_completed",
+      entityId: args.visitId,
+    },
+  };
+}
+
 export function visitTomorrowPayload(args: {
   count: number;
   firstClientName: string;

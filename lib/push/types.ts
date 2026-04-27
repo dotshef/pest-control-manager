@@ -1,7 +1,8 @@
 export type NotificationType =
   | "visit_assigned"
   | "visit_tomorrow"
-  | "visit_upcoming";
+  | "visit_upcoming"
+  | "visit_completed";
 
 export interface PushPayload {
   title: string;
