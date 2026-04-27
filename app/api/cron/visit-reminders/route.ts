@@ -21,9 +21,10 @@ export async function GET(request: Request) {
 
   const { data: visits, error } = await supabase
     .from("visits")
-    .select("id, user_id, clients(name)")
+    .select("id, user_id, clients(name), users!inner(is_active)")
     .eq("status", "scheduled")
     .eq("scheduled_date", tomorrowStr)
+    .eq("users.is_active", true)
     .not("user_id", "is", null);
 
   if (error) {
