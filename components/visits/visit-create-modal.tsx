@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { FormField } from "@/components/ui/form-field";
 import { Spinner } from "@/components/ui/spinner";
@@ -25,6 +26,7 @@ interface VisitCreateModalProps {
 }
 
 export function VisitCreateModal({ open, onClose, onCreated }: VisitCreateModalProps) {
+  const router = useRouter();
   const [clients, setClients] = useState<ClientOption[] | null>(null);
   const [members, setMembers] = useState<MemberOption[] | null>(null);
 
@@ -178,6 +180,19 @@ export function VisitCreateModal({ open, onClose, onCreated }: VisitCreateModalP
                   ...(clients || []).map((c) => ({ value: c.id, label: c.name })),
                 ]}
               />
+              <p className="text-base text-muted-foreground mt-1">
+                새로운 고객의 일정인가요?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    router.push("/clients/new");
+                  }}
+                  className="text-primary font-medium hover:underline cursor-pointer"
+                >
+                  새 고객 등록
+                </button>
+              </p>
             </FormField>
 
             <FormField label={<>방문 예정일 <span className="text-destructive">*</span></>}>
