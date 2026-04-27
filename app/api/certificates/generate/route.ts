@@ -49,6 +49,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "업체 정보를 찾을 수 없습니다" }, { status: 500 });
   }
 
+  if (!tenant.address || !tenant.address.trim()) {
+    return NextResponse.json(
+      { error: "업체 설정에서 주소를 먼저 입력해주세요" },
+      { status: 400 }
+    );
+  }
+
   // 기존 증명서 확인
   const { data: existingCert } = await supabase
     .from("certificates")

@@ -35,7 +35,6 @@ export async function PATCH(request: Request) {
 
   const updateData: Record<string, unknown> = { updated_at: now };
   if (body.name !== undefined) updateData.name = body.name;
-  if (body.businessNumber !== undefined) updateData.business_number = body.businessNumber;
   if (body.ownerName !== undefined) updateData.owner_name = body.ownerName;
   if (body.phone !== undefined) updateData.phone = body.phone;
   if (body.address !== undefined) updateData.address = body.address;

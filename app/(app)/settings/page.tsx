@@ -141,8 +141,7 @@ export default function SettingsPage() {
                 type="text"
                 className="w-full"
                 value={form.businessNumber}
-                onChange={(e) => setForm((p) => ({ ...p, businessNumber: e.target.value }))}
-                disabled={!isAdmin}
+                disabled
               />
             </FormField>
 

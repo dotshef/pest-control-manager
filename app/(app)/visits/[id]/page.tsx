@@ -10,6 +10,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useSession } from "@/components/providers/session-provider";
 import { toast } from "sonner";
 import { SendCertificateModal } from "@/components/certificates/send-certificate-modal";
+import { TenantAddressModal } from "@/components/tenant/tenant-address-modal";
 
 interface VisitDetail {
   id: string;
@@ -56,6 +57,7 @@ export default function VisitDetailPage() {
   const [notes, setNotes] = useState("");
   const [generatingCert, setGeneratingCert] = useState(false);
   const [sendModalOpen, setSendModalOpen] = useState(false);
+  const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [issueNumber, setIssueNumber] = useState("1");
   const [recentMethods, setRecentMethods] = useState<{ id: string; name: string }[]>([]);
   const [recentDisinfectants, setRecentDisinfectants] = useState<{ id: string; name: string }[]>([]);
@@ -175,7 +177,13 @@ export default function VisitDetailPage() {
         fetchVisit();
         toast.success("증명서가 생성되었습니다");
       } else {
-        toast.error("증명서 생성에 실패했습니다");
+        const data = await res.json().catch(() => null);
+        const message = data?.error || "증명서 생성에 실패했습니다";
+        if (message.includes("주소")) {
+          setAddressModalOpen(true);
+        } else {
+          toast.error(message);
+        }
       }
     } catch {
       toast.error("증명서 생성에 실패했습니다");
@@ -547,7 +555,7 @@ export default function VisitDetailPage() {
               <>
                 <hr className="border-border" />
                 <div className="space-y-2">
-                  <span className="text-muted-foreground text-base block mb-2">이메일 발송</span>
+                  <span className="text-muted-foreground text-base block mb-2">고객 이메일로 증명서 발송</span>
                   <div className="flex items-center justify-between gap-3">
                     <div className="text-base text-muted-foreground flex-1 min-w-0">
                       {visit.certificates.sent_at && visit.certificates.sent_to ? (
@@ -592,6 +600,13 @@ export default function VisitDetailPage() {
           onSent={() => fetchVisit()}
         />
       )}
+
+      <TenantAddressModal
+        open={addressModalOpen}
+        onClose={() => setAddressModalOpen(false)}
+        onSaved={() => handleGenerateCert()}
+      />
+
 
       {/* 액션 버튼 */}
       <div className="flex gap-3 justify-end">

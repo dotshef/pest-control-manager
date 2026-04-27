@@ -30,6 +30,10 @@ export default function SignupPage() {
   const [verifying, setVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState("");
 
+  const [businessVerified, setBusinessVerified] = useState(false);
+  const [businessVerifying, setBusinessVerifying] = useState(false);
+  const [businessVerifyError, setBusinessVerifyError] = useState("");
+
   function updateField(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
@@ -40,6 +44,41 @@ export default function SignupPage() {
       setVerifyState("idle");
       setCode("");
       setVerifyError("");
+    }
+  }
+
+  function updateBusinessNumber(value: string) {
+    updateField("businessNumber", value);
+    if (businessVerified || businessVerifyError) {
+      setBusinessVerified(false);
+      setBusinessVerifyError("");
+    }
+  }
+
+  async function handleVerifyBusiness() {
+    if (!form.businessNumber) {
+      setBusinessVerifyError("사업자등록번호를 입력해주세요");
+      return;
+    }
+    setBusinessVerifyError("");
+    setBusinessVerifying(true);
+
+    try {
+      const res = await fetch("/api/auth/signup/verify-business", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ businessNumber: form.businessNumber }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setBusinessVerifyError(data.error);
+        return;
+      }
+      setBusinessVerified(true);
+    } catch {
+      setBusinessVerifyError("사업자번호 조회에 실패했습니다");
+    } finally {
+      setBusinessVerifying(false);
     }
   }
 
@@ -102,6 +141,10 @@ export default function SignupPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    if (!businessVerified) {
+      setError("사업자등록번호 인증을 완료해주세요");
+      return;
+    }
     if (verifyState !== "verified") {
       setError("이메일 인증을 완료해주세요");
       return;
@@ -169,16 +212,38 @@ export default function SignupPage() {
               </FormField>
 
               <FormField label={<>사업자등록번호 <span className="text-destructive">*</span></>}>
-                <input
-                  type="text"
-                  placeholder="000-00-00000"
-                  className="w-full"
-                  value={form.businessNumber}
-                  onChange={(e) =>
-                    updateField("businessNumber", e.target.value)
-                  }
-                  required
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="000-00-00000"
+                    className="flex-1"
+                    value={form.businessNumber}
+                    onChange={(e) => updateBusinessNumber(e.target.value)}
+                    required
+                    disabled={businessVerified}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleVerifyBusiness}
+                    disabled={businessVerifying || businessVerified || !form.businessNumber}
+                    className={`shrink-0 px-3 rounded-lg text-base font-medium transition-colors disabled:opacity-50 cursor-pointer ${
+                      businessVerified
+                        ? "bg-success/10 text-success border border-success/20"
+                        : "bg-primary text-primary-foreground"
+                    }`}
+                  >
+                    {businessVerified ? (
+                      "인증됨"
+                    ) : businessVerifying ? (
+                      <Spinner size="sm" />
+                    ) : (
+                      "인증하기"
+                    )}
+                  </button>
+                </div>
+                {businessVerifyError && (
+                  <p className="text-base text-destructive mt-1">{businessVerifyError}</p>
+                )}
               </FormField>
 
               <div className="grid grid-cols-2 gap-3">
@@ -316,7 +381,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-base font-medium bg-primary text-primary-foreground transition-colors disabled:opacity-50 mt-2 cursor-pointer"
-                disabled={loading || verifyState !== "verified"}
+                disabled={loading || verifyState !== "verified" || !businessVerified}
               >
                 {loading ? <Spinner size="sm" /> : "회원가입"}
               </button>
