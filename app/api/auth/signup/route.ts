@@ -3,6 +3,7 @@ import { getSupabase } from "@/lib/supabase/server";
 import { hashPassword } from "@/lib/auth/password";
 import { setSessionCookie } from "@/lib/auth/jwt";
 import { signupSchema } from "@/validations/auth";
+import { checkBusinessStatus, normalizeBusinessNumber } from "@/lib/business/status";
 
 export async function POST(request: Request) {
   try {
@@ -17,6 +18,22 @@ export async function POST(request: Request) {
     }
 
     const { companyName, businessNumber, ownerName, phone, address, email, password, name } = parsed.data;
+
+    // 사업자등록 상태 조회 (계속사업자만 허용)
+    let businessStatus;
+    try {
+      businessStatus = await checkBusinessStatus(businessNumber);
+    } catch (e) {
+      console.error("[signup] business status check failed:", e);
+      return NextResponse.json(
+        { error: "사업자번호 조회 중 오류가 발생했습니다" },
+        { status: 500 }
+      );
+    }
+    if (!businessStatus.ok) {
+      return NextResponse.json({ error: businessStatus.message }, { status: 400 });
+    }
+    const normalizedBusinessNumber = normalizeBusinessNumber(businessNumber);
 
     // 이메일 중복 확인
     const { data: existing } = await getSupabase()
@@ -58,7 +75,7 @@ export async function POST(request: Request) {
       .from("tenants")
       .insert({
         name: companyName,
-        business_number: businessNumber || null,
+        business_number: normalizedBusinessNumber,
         owner_name: ownerName || null,
         phone: phone || null,
         address: address || null,
