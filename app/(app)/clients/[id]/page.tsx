@@ -11,6 +11,7 @@ import { Spinner } from "@/components/ui/spinner";
 
 interface Visit {
   id: string;
+  visit_code: string | null;
   scheduled_date: string;
   completed_at: string | null;
   status: string;
@@ -221,8 +222,8 @@ export default function ClientDetailPage() {
                 href={`/visits/${visit.id}`}
                 className="block p-4 hover:bg-muted/50 transition-colors"
               >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-base font-medium">{visit.scheduled_date}</span>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-base font-mono text-primary">{visit.visit_code || "-"}</span>
                   <span
                     className={`${badgeBase} ${
                       visit.status === "completed"
@@ -238,6 +239,9 @@ export default function ClientDetailPage() {
                       ? "미완료"
                       : "예정"}
                   </span>
+                </div>
+                <div className="text-base text-muted-foreground mb-1">
+                  {visit.scheduled_date}
                 </div>
                 <div className="text-base text-muted-foreground mb-1">
                   {visit.method || "-"}
@@ -291,24 +295,37 @@ export default function ClientDetailPage() {
         <table className="data-table">
           <thead>
             <tr>
-              <th style={{ width: "15%" }}>날짜</th>
-              <th style={{ width: "18%" }}>소독 방법</th>
-              <th style={{ width: "27%" }}>사용 약제</th>
-              <th style={{ width: "12%" }}>상태</th>
-              <th style={{ width: "13%" }}>증명서</th>
-              <th style={{ width: "15%" }}></th>
+              <th style={{ width: "13%" }}>방문 코드</th>
+              <th style={{ width: "13%" }}>날짜</th>
+              <th style={{ width: "15%" }}>소독 방법</th>
+              <th style={{ width: "24%" }}>사용 약제</th>
+              <th style={{ width: "11%" }}>상태</th>
+              <th style={{ width: "11%" }}>증명서</th>
+              <th style={{ width: "13%" }}></th>
             </tr>
           </thead>
           <tbody>
             {sortedVisits.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-6 text-muted-foreground">
+                <td colSpan={7} className="text-center py-6 text-muted-foreground">
                   방문 이력이 없습니다
                 </td>
               </tr>
             ) : (
               sortedVisits.map((visit) => (
                 <tr key={visit.id}>
+                  <td>
+                    {visit.visit_code ? (
+                      <Link
+                        href={`/visits/${visit.id}`}
+                        className="font-medium text-primary hover:underline !text-base font-mono"
+                      >
+                        {visit.visit_code}
+                      </Link>
+                    ) : (
+                      <span className="text-base text-muted-foreground">-</span>
+                    )}
+                  </td>
                   <td className="text-base">{visit.scheduled_date}</td>
                   <td className="text-base">{visit.method || "-"}</td>
                   <td className="text-base">

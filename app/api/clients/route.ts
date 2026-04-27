@@ -15,8 +15,9 @@ export async function GET(request: Request) {
   const search = searchParams.get("search") || "";
   const facilityCategory = searchParams.get("facilityCategory") || "";
   const facilityType = searchParams.get("facilityType") || "";
+  const activeParam = searchParams.get("active");
   const page = parseInt(searchParams.get("page") || "1");
-  const limit = 20;
+  const limit = parseInt(searchParams.get("limit") || "20");
   const offset = (page - 1) * limit;
 
   const supabase = getSupabase();
@@ -36,6 +37,9 @@ export async function GET(request: Request) {
   }
   if (facilityType) {
     query = query.eq("facility_type", facilityType);
+  }
+  if (activeParam === "true") {
+    query = query.eq("is_active", true);
   }
 
   const { data, count, error } = await query;

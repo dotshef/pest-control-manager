@@ -6,6 +6,7 @@ import { ArrowLeft, CheckCircle, XCircle, FileText, Download, Trash2, Send } fro
 import Link from "next/link";
 import { format } from "date-fns";
 import { FormField } from "@/components/ui/form-field";
+import { FilterSelect } from "@/components/ui/filter-select";
 import { Spinner } from "@/components/ui/spinner";
 import { useSession } from "@/components/providers/session-provider";
 import { toast } from "sonner";
@@ -378,19 +379,20 @@ export default function VisitDetailPage() {
                           placeholder="사용량"
                           disabled={isBeforeScheduled}
                         />
-                        <select
-                          className="w-20 min-h-[44px] px-2 py-2 rounded-lg border border-border text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                        <FilterSelect
+                          className="w-20"
                           value={d.unit}
-                          onChange={(e) => updateDisinfectant(i, "unit", e.target.value)}
+                          onChange={(v) => updateDisinfectant(i, "unit", v)}
+                          options={[
+                            { value: "EA", label: "EA" },
+                            { value: "cc", label: "cc" },
+                            { value: "ml", label: "ml" },
+                            { value: "L", label: "L" },
+                            { value: "g", label: "g" },
+                            { value: "kg", label: "kg" },
+                          ]}
                           disabled={isBeforeScheduled}
-                        >
-                          <option value="EA">EA</option>
-                          <option value="cc">cc</option>
-                          <option value="ml">ml</option>
-                          <option value="L">L</option>
-                          <option value="g">g</option>
-                          <option value="kg">kg</option>
-                        </select>
+                        />
                         <button
                           type="button"
                           className="text-destructive hover:text-destructive/80 cursor-pointer p-1 disabled:opacity-50 disabled:cursor-not-allowed"

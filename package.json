@@ -11,6 +11,7 @@
   "dependencies": {
     "@pdf-lib/fontkit": "^1.1.1",
     "@supabase/supabase-js": "^2.102.1",
+    "@vercel/analytics": "^2.0.1",
     "@xmldom/xmldom": "^0.9.9",
     "bcryptjs": "^3.0.3",
     "date-fns": "^4.1.0",

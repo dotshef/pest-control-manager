@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Toaster } from "sonner";
 import { ServiceWorkerBootstrap } from "@/components/pwa/sw-bootstrap";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
   title: "소독노트",
@@ -41,6 +42,7 @@ export default function RootLayout({
             style: { fontSize: "16px" },
           }}
         />
+      <Analytics />
       </body>
     </html>
   );

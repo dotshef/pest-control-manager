@@ -162,13 +162,16 @@ export async function POST(request: Request) {
   // clientId가 같은 tenant 소속인지 확인
   const { data: client, error: clientError } = await supabase
     .from("clients")
-    .select("id")
+    .select("id, is_active")
     .eq("id", clientId)
     .eq("tenant_id", session.tenantId)
     .single();
 
   if (clientError || !client) {
     return NextResponse.json({ error: "존재하지 않는 고객입니다" }, { status: 400 });
+  }
+  if (!client.is_active) {
+    return NextResponse.json({ error: "비활성화된 고객은 일정을 등록할 수 없습니다" }, { status: 400 });
   }
 
   // userId가 제공되면 같은 tenant 소속 member인지 확인

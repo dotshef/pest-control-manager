@@ -45,7 +45,7 @@ export function VisitCreateModal({ open, onClose, onCreated }: VisitCreateModalP
 
     async function load() {
       const [clientsRes, membersRes] = await Promise.all([
-        fetch("/api/clients?limit=500"),
+        fetch("/api/clients?active=true&limit=500"),
         fetch("/api/members"),
       ]);
       const clientsJson = await clientsRes.json();
