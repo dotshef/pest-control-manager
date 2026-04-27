@@ -7,11 +7,22 @@ const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
 const COOKIE_NAME = "session";
 const TOKEN_MAX_AGE = 60 * 60 * 24; // 1일
 
-const PUBLIC_PATHS = ["/login", "/signup", "/forgot-password", "/install", "/api/auth/login", "/api/auth/signup"];
+// 시스템 API — proxy 우회 (각자 자체 인증 사용: api/auth는 자체 검증, api/cron은 CRON_SECRET)
+const SYSTEM_API_PATHS = ["/api/auth/", "/api/cron/"];
+
+// 공개 페이지 — 미로그인도 접근 가능
+const PUBLIC_PATHS = ["/login", "/signup", "/forgot-password", "/install"];
+
+// 관리자 전용 — member 접근 차단
 const ADMIN_ONLY_PATHS = ["/clients"];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // 시스템 API는 즉시 통과
+  if (SYSTEM_API_PATHS.some((path) => pathname.startsWith(path))) {
+    return NextResponse.next();
+  }
 
   const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
   const token = request.cookies.get(COOKIE_NAME)?.value;
@@ -74,8 +85,9 @@ export async function proxy(request: NextRequest) {
   }
 }
 
+// matcher는 정적 자산만 거름 — 그 외 분기는 함수 상단의 명시적 배열에서 처리
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api/auth/|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|json|js|woff2?|ttf)).*)",
+    "/((?!_next/|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|json|js|woff2?|ttf)).*)",
   ],
 };

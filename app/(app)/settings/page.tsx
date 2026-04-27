@@ -126,54 +126,61 @@ export default function SettingsPage() {
           <div className="p-6 space-y-4">
 
             <FormField label="업체명">
-              <input
-                type="text"
-                className="w-full"
-                value={form.name}
-                onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-                required
-                disabled={!isAdmin}
-              />
+              {isAdmin ? (
+                <input
+                  type="text"
+                  className="w-full"
+                  value={form.name}
+                  onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                  required
+                />
+              ) : (
+                <p className="font-medium">{form.name || "-"}</p>
+              )}
             </FormField>
 
             <FormField label="사업자등록번호">
-              <input
-                type="text"
-                className="w-full"
-                value={form.businessNumber}
-                disabled
-              />
+              <p className="font-medium">{form.businessNumber || "-"}</p>
             </FormField>
 
             <div className="grid grid-cols-2 gap-3">
               <FormField label="대표자명">
-                <input
-                  type="text"
-                  className="w-full"
-                  value={form.ownerName}
-                  onChange={(e) => setForm((p) => ({ ...p, ownerName: e.target.value }))}
-                  disabled={!isAdmin}
-                />
+                {isAdmin ? (
+                  <input
+                    type="text"
+                    className="w-full"
+                    value={form.ownerName}
+                    onChange={(e) => setForm((p) => ({ ...p, ownerName: e.target.value }))}
+                  />
+                ) : (
+                  <p className="font-medium">{form.ownerName || "-"}</p>
+                )}
               </FormField>
               <FormField label="전화번호">
-                <input
-                  type="tel"
-                  className="w-full"
-                  value={form.phone}
-                  onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
-                  disabled={!isAdmin}
-                />
+                {isAdmin ? (
+                  <input
+                    type="tel"
+                    className="w-full"
+                    value={form.phone}
+                    onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
+                  />
+                ) : (
+                  <p className="font-medium">{form.phone || "-"}</p>
+                )}
               </FormField>
             </div>
 
             <FormField label="주소">
-              <input
-                type="text"
-                className="w-full"
-                value={form.address}
-                onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))}
-                disabled={!isAdmin}
-              />
+              {isAdmin ? (
+                <input
+                  type="text"
+                  className="w-full"
+                  value={form.address}
+                  onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))}
+                />
+              ) : (
+                <p className="font-medium">{form.address || "-"}</p>
+              )}
             </FormField>
           </div>
         </div>
