@@ -41,7 +41,22 @@
       "Bash(curl -s -o /tmp/test-logo.png -w \"HTTP:%{http_code} SIZE:%{size_download} TYPE:%{content_type}\\\\n\" http://localhost:3000/logo-banner.png)",
       "Bash(node -e \"console.log\\(require\\('./package.json'\\).dependencies.resend || 'NOT INSTALLED'\\)\")",
       "Bash(echo \"EXIT=$?\")",
-      "Bash(git mv *)"
+      "Bash(git mv *)",
+      "mcp__claude_ai_Vercel__list_teams",
+      "mcp__claude_ai_Vercel__list_projects",
+      "mcp__claude_ai_Vercel__get_project",
+      "WebFetch(domain:docs.claude.com)",
+      "mcp__vercel__list_teams",
+      "mcp__vercel__get_project",
+      "mcp__vercel__list_deployments",
+      "mcp__vercel__get_runtime_logs",
+      "mcp__vercel__get_deployment",
+      "Bash(curl -i -s -o - -X GET https://app.sodoknote.com/api/cron/visit-reminders)",
+      "Bash(curl -i -s -o - -X GET https://sodok-note-6ic1jph2i-dotshefs-projects.vercel.app/api/cron/visit-reminders)",
+      "mcp__vercel__search_vercel_documentation",
+      "mcp__vercel__get_deployment_build_logs",
+      "mcp__vercel__web_fetch_vercel_url",
+      "Bash(grep -E \"\\(visits.\\\\\\\\[id\\\\\\\\]|certificates|date-picker\\)\")"
     ],
     "additionalDirectories": [
       "c:\\D\\pest-control\\.claude"

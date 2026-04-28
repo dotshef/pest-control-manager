@@ -118,12 +118,8 @@ export async function PATCH(
     return NextResponse.json({ success: true });
   }
 
-  // 완료 취소 (admin만)
+  // 완료 취소
   if (body.action === "uncomplete") {
-    if (session.role !== "admin") {
-      return NextResponse.json({ error: "관리자만 취소할 수 있습니다" }, { status: 403 });
-    }
-
     const { error: updateError } = await supabase
       .from("visits")
       .update({ status: "scheduled", completed_at: null })

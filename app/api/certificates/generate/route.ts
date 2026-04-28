@@ -3,7 +3,8 @@ import { getSupabase } from "@/lib/supabase/server";
 import { getSession } from "@/lib/auth/jwt";
 import { generateCertificateHwpx } from "@/lib/hwpx/generate-certificate";
 import { generateCertificatePdf } from "@/lib/pdf/generate-certificate-pdf";
-import { format } from "date-fns";
+
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
 export async function POST(request: Request) {
   const session = await getSession();
@@ -12,9 +13,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "관리자만 생성할 수 있습니다" }, { status: 403 });
   }
 
-  const { visitId, issueNumber } = await request.json();
+  const { visitId, issueNumber, disinfectionDate } = await request.json();
   if (!visitId) {
     return NextResponse.json({ error: "visitId가 필요합니다" }, { status: 400 });
+  }
+  if (!disinfectionDate || !DATE_REGEX.test(disinfectionDate)) {
+    return NextResponse.json({ error: "소독 완료일을 올바른 형식(YYYY-MM-DD)으로 입력해주세요" }, { status: 400 });
   }
 
   const supabase = getSupabase();
@@ -23,7 +27,7 @@ export async function POST(request: Request) {
   const { data: visit } = await supabase
     .from("visits")
     .select(`
-      id, scheduled_date, completed_at, method, disinfectants_used,
+      id, scheduled_date, status, method, disinfectants_used,
       client_name, client_address, client_area, client_volume,
       client_contact_name, client_contact_position,
       clients(code)
@@ -36,7 +40,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "방문 건을 찾을 수 없습니다" }, { status: 404 });
   }
 
-  if (visit.completed_at === null) {
+  if (visit.status !== "completed") {
     return NextResponse.json({ error: "완료된 방문 건만 증명서를 생성할 수 있습니다" }, { status: 400 });
   }
 
@@ -85,8 +89,8 @@ export async function POST(request: Request) {
   }
   const certificateNumber = `CERT-${clientCode}-${String(nextSeq).padStart(5, "0")}`;
 
-  // 소독 완료일 (소독기간용)
-  const completedDate = format(new Date(visit.completed_at!), "yyyy.MM.dd");
+  // 소독 완료일 (소독기간용) — admin이 입력한 값 박제
+  const completedDate = disinfectionDate.replace(/-/g, ".");
   // 발급일 (증명서 생성 시점)
   const now = new Date();
 
@@ -120,7 +124,7 @@ export async function POST(request: Request) {
   const pdfBuffer = await generateCertificatePdf(certInput);
 
   // 파일명 생성
-  const completedDateCompact = format(new Date(visit.completed_at!), "yyyyMMdd");
+  const completedDateCompact = disinfectionDate.replace(/-/g, "");
   const baseFileName = `소독증명서_${visit.client_name}_${tenant.name}_${completedDateCompact}`;
   const hwpxFileName = `${baseFileName}.hwpx`;
   const pdfFileName = `${baseFileName}.pdf`;
@@ -165,6 +169,7 @@ export async function POST(request: Request) {
       .update({
         certificate_number: certificateNumber,
         issue_number: issueNumber || null,
+        disinfection_date: disinfectionDate,
         hwpx_file_url: hwpxFilePath,
         hwpx_file_name: hwpxFileName,
         pdf_file_url: pdfFilePath,
@@ -180,6 +185,7 @@ export async function POST(request: Request) {
         tenant_id: session.tenantId,
         certificate_number: certificateNumber,
         issue_number: issueNumber || null,
+        disinfection_date: disinfectionDate,
         hwpx_file_url: hwpxFilePath,
         hwpx_file_name: hwpxFileName,
         pdf_file_url: pdfFilePath,

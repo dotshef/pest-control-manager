@@ -7,6 +7,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { FormField } from "@/components/ui/form-field";
 import { FilterSelect } from "@/components/ui/filter-select";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Spinner } from "@/components/ui/spinner";
 import { useSession } from "@/components/providers/session-provider";
 import { toast } from "sonner";
@@ -67,6 +68,7 @@ export default function VisitDetailPage() {
   const [sendModalOpen, setSendModalOpen] = useState(false);
   const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [issueNumber, setIssueNumber] = useState("1");
+  const [disinfectionDate, setDisinfectionDate] = useState("");
   const [recentMethods, setRecentMethods] = useState<{ id: string; name: string }[]>([]);
   const [recentDisinfectants, setRecentDisinfectants] = useState<{ id: string; name: string }[]>([]);
 
@@ -83,6 +85,9 @@ export default function VisitDetailPage() {
     setMethod(data.method || "");
     setDisinfectants(data.disinfectants_used || []);
     setNotes(data.notes || "");
+    if (data.completed_at) {
+      setDisinfectionDate(format(new Date(data.completed_at), "yyyy-MM-dd"));
+    }
   }
 
   useEffect(() => {
@@ -104,6 +109,9 @@ export default function VisitDetailPage() {
         setMethod(data.method || "");
         setDisinfectants(data.disinfectants_used || []);
         setNotes(data.notes || "");
+        if (data.completed_at) {
+          setDisinfectionDate(format(new Date(data.completed_at), "yyyy-MM-dd"));
+        }
         if (methodsRes.ok) setRecentMethods(await methodsRes.json());
         if (disinfectantsRes.ok) setRecentDisinfectants(await disinfectantsRes.json());
       }
@@ -174,12 +182,20 @@ export default function VisitDetailPage() {
   }
 
   async function handleGenerateCert() {
+    if (!disinfectionDate) {
+      toast.error("소독 완료일을 선택해주세요");
+      return;
+    }
     setGeneratingCert(true);
     try {
       const res = await fetch("/api/certificates/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ visitId: id, issueNumber: issueNumber || undefined }),
+        body: JSON.stringify({
+          visitId: id,
+          issueNumber: issueNumber || undefined,
+          disinfectionDate,
+        }),
       });
       if (res.ok) {
         fetchVisit();
@@ -475,9 +491,9 @@ export default function VisitDetailPage() {
 
             {/* 입력 (admin only) */}
             {role === "admin" && (
-              <div className="space-y-2">
-                <span className="text-muted-foreground text-base block mb-2">발급번호</span>
-                <div className="flex flex-row items-center justify-between gap-3">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <span className="text-muted-foreground text-base block mb-2">발급번호</span>
                   <span className="flex items-center gap-1 text-base">
                     제
                     <input
@@ -493,6 +509,12 @@ export default function VisitDetailPage() {
                     />
                     호
                   </span>
+                </div>
+                <div className="space-y-2">
+                  <span className="text-muted-foreground text-base block mb-2">소독 완료일</span>
+                  <DatePicker value={disinfectionDate} onChange={setDisinfectionDate} />
+                </div>
+                <div className="flex justify-end">
                   <button
                     className={`inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[44px] rounded-lg text-base font-medium transition-colors disabled:opacity-50 cursor-pointer ${
                       visit.certificates
